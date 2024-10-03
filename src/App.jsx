@@ -1,30 +1,24 @@
-import { useState } from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Sidebar from './components/Sidebar';
+import Dashboard from './pages/Dashboard';
+import BuildingDetails from './pages/BuildingDetails';
+import Report from './pages/Report';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-        </a>
-        <a href="https://react.dev" target="_blank">
-        </a>
+    <Router>
+      <div className="flex">
+        <Sidebar />
+        <div className="flex-1 bg-[#fafafa] ml-64 min-h-screen p-4">
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/building-details" element={<BuildingDetails />} />
+            <Route path="/report" element={<Report />} />
+          </Routes>
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </Router>
+  );
 }
 
-export default App
+export default App;

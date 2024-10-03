@@ -10,7 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.5.1",
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
     "@formulajs/formulajs": "^4.4.6",
+    "@fortawesome/fontawesome-svg-core": "^6.6.0",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/react-fontawesome": "^0.2.2",
+    "@mui/icons-material": "^6.1.2",
+    "@mui/material": "^6.1.2",
     "antd": "^5.21.2",
     "express": "^4.21.0",
     "react": "^18.3.1",
