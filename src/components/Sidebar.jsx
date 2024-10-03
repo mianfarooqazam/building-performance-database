@@ -7,7 +7,7 @@ import {
   faUser,
   faSignOutAlt,
 } from '@fortawesome/free-solid-svg-icons';
-import logo from '../assets/bg.jpeg';
+import logo from '../assets/berc-logo.webp';
 
 function Sidebar() {
   const location = useLocation();
@@ -15,7 +15,7 @@ function Sidebar() {
   return (
     <div className="w-64 h-screen bg-white fixed overflow-hidden shadow-lg rounded-tr-lg rounded-br-lg border-r border-gray-200">
       <div className="flex items-center justify-center h-16 border-b">
-        <img src={logo} alt="Logo" className="h-8" />
+        <img src={logo} alt="Logo" className="h-12" /> {/* Increased the logo size */}
       </div>
       <ul className="mt-4">
         <li className={`px-4 py-2 ${location.pathname === '/' ? 'bg-blue-500 text-white rounded-tr-lg' : 'text-gray-700'}`}>
