@@ -13,13 +13,13 @@ import CostAndCO from './tabs/CostAndCo';
 function BuildingDetails() {
   const [value, setValue] = useState(0);
 
-  const handleChange = (event, newValue) => {
+  const handleChange = (newValue) => {
     setValue(newValue);
   };
 
   return (
     <div className="p-4">
-      <Tabs value={value} onChange={handleChange} aria-label="Building Details Tabs" indicatorColor="primary">
+      <Tabs value={value} onChange={(event, newValue) => handleChange(newValue)} aria-label="Building Details Tabs" indicatorColor="primary">
         <Tab label="Building Information" />
         <Tab label="Floor Plan" />
         <Tab label="Fabric Details" />

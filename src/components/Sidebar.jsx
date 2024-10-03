@@ -13,12 +13,12 @@ function Sidebar() {
   const location = useLocation();
 
   return (
-    <div className="w-64 h-screen bg-white fixed overflow-hidden">
+    <div className="w-64 h-screen bg-white fixed overflow-hidden shadow-lg rounded-tr-lg rounded-br-lg border-r border-gray-200">
       <div className="flex items-center justify-center h-16 border-b">
         <img src={logo} alt="Logo" className="h-8" />
       </div>
       <ul className="mt-4">
-        <li className={`px-4 py-2 ${location.pathname === '/' ? 'bg-blue-500 text-white' : 'text-gray-700'}`}>
+        <li className={`px-4 py-2 ${location.pathname === '/' ? 'bg-blue-500 text-white rounded-tr-lg' : 'text-gray-700'}`}>
           <Link to="/" className="flex items-center">
             <FontAwesomeIcon icon={faTachometerAlt} className="mr-2" />
             Dashboard
@@ -45,7 +45,7 @@ function Sidebar() {
             Profile
           </Link>
         </li>
-        <li className={`px-4 py-2 ${location.pathname === '/logout' ? 'bg-blue-500 text-white' : 'text-gray-700'}`}>
+        <li className={`px-4 py-2 ${location.pathname === '/logout' ? 'bg-blue-500 text-white rounded-br-lg' : 'text-gray-700'}`}>
           <Link to="/logout" className="flex items-center">
             <FontAwesomeIcon icon={faSignOutAlt} className="mr-2" />
             Logout
