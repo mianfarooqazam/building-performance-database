@@ -15,63 +15,30 @@ import {
 } from "../../utils/BuildingInformationData";
 import useFloorPlanStore from "../../store/useFloorPlanStore";
 import { useState, useEffect } from "react";
+import {
+  calculateArea,
+  calculateDwellingVolume,
+  getWallInputs,
+} from "../../calculations/FloorPlanCalculation";
 
 function FloorPlan() {
   const {
     buildingOrientation,
     numberOfFloors,
-    showWindowInputs,
-    windowOrientation,
     wallLengths,
     wallHeight,
-    windowArea,
     setBuildingOrientation,
     setNumberOfFloors,
-    setShowWindowInputs,
-    setWindowOrientation,
     setWallLengths,
     setWallHeight,
-    setWindowArea,
   } = useFloorPlanStore();
 
   const [calculatedArea, setCalculatedArea] = useState(0);
+  const [dwellingVolume, setDwellingVolume] = useState(0);
 
-  function getWallInputs(orientation) {
-    let walls = [];
-    if (!orientation) return walls;
-
-    if (OrientationSingleWindow.includes(orientation)) {
-      walls.push(`${orientation} Wall Length (ft)`);
-      if (orientation === "North" || orientation === "South") {
-        walls.push(`East Wall Length (ft)`);
-      } else if (orientation === "East" || orientation === "West") {
-        walls.push(`North Wall Length (ft)`);
-      }
-    } else if (OrientationDoubleWindow.includes(orientation)) {
-      // Adjusted logic for double orientations
-      let wallsToShow = [];
-
-      switch (orientation) {
-        case "North-East":
-          wallsToShow = ["North-East", "South-East"];
-          break;
-        case "North-West":
-          wallsToShow = ["North-West", "South-West"];
-          break;
-        case "South-East":
-          wallsToShow = ["South-East", "North-East"];
-          break;
-        case "South-West":
-          wallsToShow = ["South-West", "North-West"];
-          break;
-        default:
-          wallsToShow = [];
-      }
-
-      walls = wallsToShow.map((dir) => `${dir} Wall Length (ft)`);
-    }
-    return walls;
-  }
+  const [windows, setWindows] = useState([]);
+  const [newWindowOrientation, setNewWindowOrientation] = useState("");
+  const [newWindowArea, setNewWindowArea] = useState("");
 
   function getWindowOrientations() {
     if (OrientationSingleWindow.includes(buildingOrientation)) {
@@ -84,22 +51,41 @@ function FloorPlan() {
   }
 
   useEffect(() => {
-    // Calculate the area based on available wall lengths
-    const wallLabels = getWallInputs(buildingOrientation);
-    if (wallLabels.length === 2) {
-      const length1 = parseFloat(wallLengths[wallLabels[0]]) || 0;
-      const length2 = parseFloat(wallLengths[wallLabels[1]]) || 0;
-      setCalculatedArea(length1 * length2);
-    } else {
-      setCalculatedArea(0);
+    const wallLabels = getWallInputs(
+      buildingOrientation,
+      OrientationSingleWindow,
+      OrientationDoubleWindow
+    );
+    const area = calculateArea(wallLengths, wallLabels);
+    setCalculatedArea(area);
+
+    const volume = calculateDwellingVolume(area, wallHeight);
+    setDwellingVolume(volume);
+  }, [wallLengths, buildingOrientation, wallHeight]);
+
+  const handleAddWindow = () => {
+    if (windows.length < 4 && newWindowOrientation && newWindowArea) {
+      setWindows([
+        ...windows,
+        {
+          orientation: newWindowOrientation,
+          area: parseFloat(newWindowArea),
+        },
+      ]);
+      setNewWindowOrientation("");
+      setNewWindowArea("");
     }
-  }, [wallLengths, buildingOrientation]);
+  };
+
+  const handleRemoveWindow = (index) => {
+    setWindows(windows.filter((_, i) => i !== index));
+  };
 
   return (
     <Box p={3} display="flex" flexDirection="column" gap={2}>
-      <h1 className="font-semibold text-2xl">Wall dimensions</h1>
-      <Box display="flex" gap={2}>
-        <FormControl fullWidth variant="outlined">
+      <h1 className="font-semibold text-2xl">Wall Dimensions</h1>
+      <Box display="flex" flexWrap="wrap" gap={2}>
+        <FormControl fullWidth variant="outlined" sx={{ flex: 1 }}>
           <InputLabel>Building Orientation</InputLabel>
           <Select
             label="Building Orientation"
@@ -116,7 +102,7 @@ function FloorPlan() {
             ))}
           </Select>
         </FormControl>
-        <FormControl fullWidth variant="outlined">
+        <FormControl fullWidth variant="outlined" sx={{ flex: 1 }}>
           <InputLabel>No. of Floors</InputLabel>
           <Select
             label="No. of Floors"
@@ -134,13 +120,18 @@ function FloorPlan() {
 
       {buildingOrientation && (
         <>
-          <Box display="flex" gap={2}>
-            {getWallInputs(buildingOrientation).map((label) => (
+          <Box display="flex" flexWrap="wrap" gap={2}>
+            {getWallInputs(
+              buildingOrientation,
+              OrientationSingleWindow,
+              OrientationDoubleWindow
+            ).map((label) => (
               <TextField
                 key={label}
                 label={label}
                 variant="outlined"
                 fullWidth
+                sx={{ flex: 1 }}
                 value={wallLengths[label] || ""}
                 onChange={(e) =>
                   setWallLengths({
@@ -151,16 +142,17 @@ function FloorPlan() {
               />
             ))}
           </Box>
-          <Box display="flex" gap={2}>
+          <Box display="flex" flexWrap="wrap" gap={2}>
             <TextField
               label="Wall Height (ft)"
               variant="outlined"
               fullWidth
+              sx={{ flex: 1 }}
               value={wallHeight}
               onChange={(e) => setWallHeight(e.target.value)}
             />
           </Box>
-          <Box display="flex" gap={2} alignItems="center">
+          <Box display="flex" flexWrap="nowrap" gap={2} alignItems="center">
             <Box
               p={2}
               width="100%"
@@ -171,25 +163,29 @@ function FloorPlan() {
             >
               Calculated Floor Area: {calculatedArea.toFixed(2)} ft²
             </Box>
+            <Box
+              p={2}
+              width="100%"
+              textAlign="center"
+              bgcolor="lightblue"
+              borderRadius={2}
+              fontWeight="bold"
+            >
+              Dwelling Volume: {dwellingVolume.toFixed(2)} ft³
+            </Box>
           </Box>
         </>
       )}
 
-      <h1 className="font-semibold text-2xl">Window dimensions</h1>
-      <Box display="flex" gap={2}>
-        <Button variant="contained" onClick={() => setShowWindowInputs(true)}>
-          Add
-        </Button>
-      </Box>
-
-      {showWindowInputs && (
-        <Box display="flex" gap={2}>
-          <FormControl fullWidth variant="outlined">
+      <h1 className="font-semibold text-2xl">Window Dimensions</h1>
+      {windows.length < 4 && (
+        <Box display="flex" flexWrap="wrap" gap={2} alignItems="center">
+          <FormControl fullWidth variant="outlined" sx={{ flex: 1 }}>
             <InputLabel>Orientation</InputLabel>
             <Select
               label="Orientation"
-              value={windowOrientation}
-              onChange={(e) => setWindowOrientation(e.target.value)}
+              value={newWindowOrientation}
+              onChange={(e) => setNewWindowOrientation(e.target.value)}
             >
               {getWindowOrientations().map((direction) => (
                 <MenuItem key={direction} value={direction}>
@@ -202,9 +198,47 @@ function FloorPlan() {
             label="Window Area (ft²)"
             variant="outlined"
             fullWidth
-            value={windowArea}
-            onChange={(e) => setWindowArea(e.target.value)}
+            sx={{ flex: 1 }}
+            value={newWindowArea}
+            onChange={(e) => setNewWindowArea(e.target.value)}
           />
+          <Button variant="contained" onClick={handleAddWindow}>
+            Add
+          </Button>
+        </Box>
+      )}
+      {windows.length >= 4 && (
+        <Box>
+          <p>Maximum of 4 windows added.</p>
+        </Box>
+      )}
+      {windows.length > 0 && (
+        <Box mt={2}>
+          <h2 className="font-semibold text-xl">Windows:</h2>
+          {windows.map((window, index) => (
+            <Box
+              key={index}
+              display="flex"
+              alignItems="center"
+              gap={2}
+              p={1}
+              bgcolor="#f0f0f0"
+              borderRadius={2}
+              mt={1}
+            >
+              <p style={{ flex: 1 }}>
+                {index + 1}. Orientation: {window.orientation}, Area:{" "}
+                {window.area} ft²
+              </p>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => handleRemoveWindow(index)}
+              >
+                Remove
+              </Button>
+            </Box>
+          ))}
         </Box>
       )}
     </Box>
