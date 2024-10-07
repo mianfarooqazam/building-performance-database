@@ -19,7 +19,7 @@ import {
   calculateArea,
   calculateDwellingVolume,
   getWallInputs,
-} from "../../calculations/FloorPlanCalculation";
+} from "../../calculations/FloorPlanCal/FloorPlanCalculation";
 
 function FloorPlan() {
   const {
@@ -82,7 +82,7 @@ function FloorPlan() {
   };
 
   return (
-    <Box p={3} display="flex" flexDirection="column" gap={2}>
+    <Box p={3} display="flex" flexDirection="column" gap={2} overflow="hidden">
       <h1 className="font-semibold text-2xl">Wall Dimensions</h1>
       <Box display="flex" flexWrap="wrap" gap={2}>
         <FormControl fullWidth variant="outlined" sx={{ flex: 1 }}>
@@ -152,7 +152,7 @@ function FloorPlan() {
               onChange={(e) => setWallHeight(e.target.value)}
             />
           </Box>
-          <Box display="flex" flexWrap="nowrap" gap={2} alignItems="center">
+          <Box display="flex" flexWrap="wrap" gap={2} alignItems="center">
             <Box
               p={2}
               width="100%"
@@ -178,6 +178,7 @@ function FloorPlan() {
       )}
 
       <h1 className="font-semibold text-2xl">Window Dimensions</h1>
+
       {windows.length < 4 && (
         <Box display="flex" flexWrap="wrap" gap={2} alignItems="center">
           <FormControl fullWidth variant="outlined" sx={{ flex: 1 }}>
@@ -186,7 +187,11 @@ function FloorPlan() {
               label="Orientation"
               value={newWindowOrientation}
               onChange={(e) => setNewWindowOrientation(e.target.value)}
+              displayEmpty
             >
+              <MenuItem value="">
+                <em>Select Orientation</em>
+              </MenuItem>
               {getWindowOrientations().map((direction) => (
                 <MenuItem key={direction} value={direction}>
                   {direction}
@@ -212,24 +217,27 @@ function FloorPlan() {
           <p>Maximum of 4 windows added.</p>
         </Box>
       )}
+
+      {/* Display the added windows in styled boxes */}
       {windows.length > 0 && (
-        <Box mt={2}>
-          <h2 className="font-semibold text-xl">Windows:</h2>
+        <Box mt={2} display="flex" flexDirection="column" gap={2}>
           {windows.map((window, index) => (
             <Box
               key={index}
+              p={2}
+              width="100%"
+              textAlign="center"
+              bgcolor="lightblue"
+              borderRadius={2}
+              fontWeight="bold"
               display="flex"
               alignItems="center"
-              gap={2}
-              p={1}
-              bgcolor="#f0f0f0"
-              borderRadius={2}
-              mt={1}
+              justifyContent="space-between"
             >
-              <p style={{ flex: 1 }}>
-                {index + 1}. Orientation: {window.orientation}, Area:{" "}
+              <Box>
+                Window {index + 1}: Orientation - {window.orientation}, Area -{" "}
                 {window.area} ft²
-              </p>
+              </Box>
               <Button
                 variant="outlined"
                 color="secondary"
