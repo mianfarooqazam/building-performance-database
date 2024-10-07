@@ -1,4 +1,3 @@
-const BuildingType = ["House", "Flat" , "Commercial" , "Hotel" , "Hospital" , "Resturant"];
 
 const States = ["KPK", "Punjab", "Sindh", "Balochistan", "Kashmir AJK", "Gilgit Baltistan", "Islamabad ICT"];
 
@@ -16,24 +15,26 @@ const CitiesGilgitBaltistan = ['Ghanche', 'Shigar', 'Skardu', 'Dambudas', 'Gilgi
 
 const CitiesIslamabadICT = ["Islamabad"];
 
-const Basement = ['Yes', 'No'];
 
-const Orientation = ['North', 'East', 'West', 'South',  'North-East', 'North-West', 'South-East' , 'South-West']; 
+const Orientation = ['North', 'East', 'West', 'South', 'North-East', 'North-West', 'South-East', 'South-West'];
+const OrientationSingleWindow = ['North', 'East', 'West', 'South'];
+const OrientationDoubleWindow = ['North-East', 'North-West', 'South-East', 'South-West'];
 
-const Floors = [1,2,3,4,5,6] ;
+
+const Floors = [1, 2, 3, 4, 5, 6];
 
 
 export {
-    BuildingType,
-    States,
-    CitiesKPK,
-    CitiesPunjab,
-    CitiesSindh,
-    CitiesBalochistan,
-    CitiesKashmirAJK,
-    CitiesGilgitBaltistan,
-    CitiesIslamabadICT,
-    Basement,
-    Orientation,
-    Floors
-  };
+  States,
+  CitiesKPK,
+  CitiesPunjab,
+  CitiesSindh,
+  CitiesBalochistan,
+  CitiesKashmirAJK,
+  CitiesGilgitBaltistan,
+  CitiesIslamabadICT,
+  Orientation,
+  Floors,
+  OrientationSingleWindow,
+  OrientationDoubleWindow
+};

@@ -1,5 +1,12 @@
-import { useState } from 'react';
-import { Box, TextField, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import { useState } from "react";
+import {
+  Box,
+  TextField,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
+} from "@mui/material";
 import {
   States,
   CitiesKPK,
@@ -9,30 +16,27 @@ import {
   CitiesKashmirAJK,
   CitiesGilgitBaltistan,
   CitiesIslamabadICT,
-  BuildingType,
-  Basement,
-  Floors,
-} from '../../utils/BuildingInformationData';
+} from "../../utils/BuildingInformationData";
 
 function BuildingInformation() {
-  const [selectedState, setSelectedState] = useState('');
-  const [selectedCity, setSelectedCity] = useState('');
+  const [selectedState, setSelectedState] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
 
   const getCities = () => {
     switch (selectedState) {
-      case 'KPK':
+      case "KPK":
         return CitiesKPK;
-      case 'Punjab':
+      case "Punjab":
         return CitiesPunjab;
-      case 'Sindh':
+      case "Sindh":
         return CitiesSindh;
-      case 'Balochistan':
+      case "Balochistan":
         return CitiesBalochistan;
-      case 'Kashmir AJK':
+      case "Kashmir AJK":
         return CitiesKashmirAJK;
-      case 'Gilgit Baltistan':
+      case "Gilgit Baltistan":
         return CitiesGilgitBaltistan;
-      case 'Islamabad ICT':
+      case "Islamabad ICT":
         return CitiesIslamabadICT;
       default:
         return [];
@@ -59,7 +63,7 @@ function BuildingInformation() {
             value={selectedState}
             onChange={(e) => {
               setSelectedState(e.target.value);
-              setSelectedCity('');
+              setSelectedCity("");
             }}
             label="State/Province"
           >
@@ -87,42 +91,7 @@ function BuildingInformation() {
             ))}
           </Select>
         </FormControl>
-        <FormControl fullWidth variant="outlined">
-          <InputLabel>Building Type</InputLabel>
-          <Select label="Building Type">
-            {BuildingType.map((type) => (
-              <MenuItem key={type} value={type}>
-                {type}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
       </Box>
-
-      <Box display="flex" gap={2}>
-        <FormControl fullWidth variant="outlined">
-          <InputLabel>No. of Floors</InputLabel>
-          <Select label="No. of Floors">
-            {Floors.map((floor) => (
-              <MenuItem key={floor} value={floor}>
-                {floor}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl fullWidth variant="outlined">
-          <InputLabel>Basement</InputLabel>
-          <Select label="Basement">
-            {Basement.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Box>
-
-     
     </Box>
   );
 }

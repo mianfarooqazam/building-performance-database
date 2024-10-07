@@ -1,5 +1,13 @@
 import { Tabs, Tab, Box } from '@mui/material';
 import { useState } from 'react';
+import HomeIcon from '@mui/icons-material/Home';
+import FloorPlanIcon from '@mui/icons-material/Map';
+import FabricIcon from '@mui/icons-material/Category';
+import LightingIcon from '@mui/icons-material/Lightbulb';
+import AppliancesIcon from '@mui/icons-material/Kitchen';
+import HeatingCoolingIcon from '@mui/icons-material/AcUnit';
+import EnergyIcon from '@mui/icons-material/Speed';
+import CostIcon from '@mui/icons-material/AttachMoney';
 import BuildingInformation from './tabs/BuildingInformation';
 import FloorPlan from './tabs/FloorPlan';
 import FabricDetails from './tabs/FabricDetails';
@@ -13,7 +21,7 @@ function BuildingDetails() {
   const [value, setValue] = useState(0);
 
   const handleChange = (newValue) => {
-    setValue(newValue); // Removed the 'event' parameter
+    setValue(newValue);
   };
 
   return (
@@ -26,30 +34,62 @@ function BuildingDetails() {
           aria-label="Building Details Tabs"
           indicatorColor="primary"
           textColor="primary"
-          variant="scrollable" // Allow scrolling if tabs overflow
-          scrollButtons="auto" // Auto show scroll buttons if needed
+          variant="scrollable"
+          scrollButtons="auto"
           TabIndicatorProps={{
             style: {
-              backgroundColor: '#1976D2', // Custom indicator color
+              backgroundColor: '#1976D2',
             },
           }}
         >
-          {/* Applying custom styles to the individual tabs */}
-          <Tab label="Building Information" className={`${value === 0 ? 'bg-blue-100 rounded-lg' : ''}`} />
-          <Tab label="Floor Plan" className={`${value === 1 ? 'bg-blue-100 rounded-lg' : ''}`} />
-          <Tab label="Fabric Details" className={`${value === 2 ? 'bg-blue-100 rounded-lg' : ''}`} />
-          <Tab label="Lighting Load" className={`${value === 3 ? 'bg-blue-100 rounded-lg' : ''}`} />
-          <Tab label="Appliances Load" className={`${value === 4 ? 'bg-blue-100 rounded-lg' : ''}`} />
-          <Tab label="Heating/Cooling Energy" className={`${value === 5 ? 'bg-blue-100 rounded-lg' : ''}`} />
-          <Tab label="EUI" className={`${value === 6 ? 'bg-blue-100 rounded-lg' : ''}`} />
-          <Tab label="Cost and CO" className={`${value === 7 ? 'bg-blue-100 rounded-lg' : ''}`} />
+         
+          <Tab 
+            icon={<HomeIcon />} 
+            label="Building Information" 
+            className={`${value === 0 ? 'bg-blue-100 rounded-lg' : ''}`} 
+          />
+          <Tab 
+            icon={<FloorPlanIcon />} 
+            label="Floor Plan" 
+            className={`${value === 1 ? 'bg-blue-100 rounded-lg' : ''}`} 
+          />
+          <Tab 
+            icon={<FabricIcon />} 
+            label="Fabric Details" 
+            className={`${value === 2 ? 'bg-blue-100 rounded-lg' : ''}`} 
+          />
+          <Tab 
+            icon={<LightingIcon />} 
+            label="Lighting Load" 
+            className={`${value === 3 ? 'bg-blue-100 rounded-lg' : ''}`} 
+          />
+          <Tab 
+            icon={<AppliancesIcon />} 
+            label="Appliances Load" 
+            className={`${value === 4 ? 'bg-blue-100 rounded-lg' : ''}`} 
+          />
+          <Tab 
+            icon={<HeatingCoolingIcon />} 
+            label="Heating/Cooling Energy" 
+            className={`${value === 5 ? 'bg-blue-100 rounded-lg' : ''}`} 
+          />
+          <Tab 
+            icon={<EnergyIcon />} 
+            label="EUI" 
+            className={`${value === 6 ? 'bg-blue-100 rounded-lg' : ''}`} 
+          />
+          <Tab 
+            icon={<CostIcon />} 
+            label="Cost and CO" 
+            className={`${value === 7 ? 'bg-blue-100 rounded-lg' : ''}`} 
+          />
         </Tabs>
       </div>
 
       {/* Tab Panels with scrollable view */}
       <Box
         sx={{
-          height: '500px', // You can adjust this height as needed
+          height: '500px', 
           overflowY: 'auto',
           padding: 2,
           marginTop: 2,
