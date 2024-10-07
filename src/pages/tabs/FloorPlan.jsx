@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Box,
   MenuItem,
@@ -15,15 +14,27 @@ import {
   Floors,
 } from "../../utils/BuildingInformationData";
 
+import useFloorPlanStore from '../../store/useFloorPlanStore';
+
 function FloorPlan() {
-  const [buildingOrientation, setBuildingOrientation] = useState("");
-  const [numberOfFloors, setNumberOfFloors] = useState("");
-  const [showWindowInputs, setShowWindowInputs] = useState(false);
-  const [windowOrientation, setWindowOrientation] = useState("");
-  const [wallLengths, setWallLengths] = useState({});
-  const [wallHeight, setWallHeight] = useState("");
-  const [totalFloorArea, setTotalFloorArea] = useState("");
-  const [windowArea, setWindowArea] = useState("");
+  const {
+    buildingOrientation,
+    numberOfFloors,
+    showWindowInputs,
+    windowOrientation,
+    wallLengths,
+    wallHeight,
+    totalFloorArea,
+    windowArea,
+    setBuildingOrientation,
+    setNumberOfFloors,
+    setShowWindowInputs,
+    setWindowOrientation,
+    setWallLengths,
+    setWallHeight,
+    setTotalFloorArea,
+    setWindowArea,
+  } = useFloorPlanStore();
 
   function getWallInputs(orientation) {
     let walls = [];
@@ -99,7 +110,10 @@ function FloorPlan() {
                 fullWidth
                 value={wallLengths[label] || ""}
                 onChange={(e) =>
-                  setWallLengths({ ...wallLengths, [label]: e.target.value })
+                  setWallLengths({
+                    ...wallLengths,
+                    [label]: e.target.value,
+                  })
                 }
               />
             ))}

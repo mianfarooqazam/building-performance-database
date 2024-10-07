@@ -1,4 +1,4 @@
-import { useState } from "react";
+
 import {
   Box,
   TextField,
@@ -18,9 +18,25 @@ import {
   CitiesIslamabadICT,
 } from "../../utils/BuildingInformationData";
 
+import useBuildingInformationStore from '../../store/useBuildingInformationStore';
+
 function BuildingInformation() {
-  const [selectedState, setSelectedState] = useState("");
-  const [selectedCity, setSelectedCity] = useState("");
+  const {
+    ownerName,
+    address,
+    plotNo,
+    streetNo,
+    postalCode,
+    selectedState,
+    selectedCity,
+    setOwnerName,
+    setAddress,
+    setPlotNo,
+    setStreetNo,
+    setPostalCode,
+    setSelectedState,
+    setSelectedCity,
+  } = useBuildingInformationStore();
 
   const getCities = () => {
     switch (selectedState) {
@@ -46,17 +62,47 @@ function BuildingInformation() {
   return (
     <Box p={3} display="flex" flexDirection="column" gap={2}>
       <Box display="flex" gap={2}>
-        <TextField label="Owner Name" variant="outlined" fullWidth />
-        <TextField label="Address" variant="outlined" fullWidth />
+        <TextField
+          label="Owner Name"
+          variant="outlined"
+          fullWidth
+          value={ownerName}
+          onChange={(e) => setOwnerName(e.target.value)}
+        />
+        <TextField
+          label="Address"
+          variant="outlined"
+          fullWidth
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+        />
       </Box>
 
       <Box display="flex" gap={2}>
-        <TextField label="Plot No." variant="outlined" fullWidth />
-        <TextField label="Street No." variant="outlined" fullWidth />
+        <TextField
+          label="Plot No."
+          variant="outlined"
+          fullWidth
+          value={plotNo}
+          onChange={(e) => setPlotNo(e.target.value)}
+        />
+        <TextField
+          label="Street No."
+          variant="outlined"
+          fullWidth
+          value={streetNo}
+          onChange={(e) => setStreetNo(e.target.value)}
+        />
       </Box>
 
       <Box display="flex" gap={2}>
-        <TextField label="Postal Code" variant="outlined" fullWidth />
+        <TextField
+          label="Postal Code"
+          variant="outlined"
+          fullWidth
+          value={postalCode}
+          onChange={(e) => setPostalCode(e.target.value)}
+        />
         <FormControl fullWidth variant="outlined">
           <InputLabel>State/Province</InputLabel>
           <Select
