@@ -13,8 +13,8 @@ import {
   OrientationDoubleWindow,
   Floors,
 } from "../../utils/BuildingInformationData";
-
-import useFloorPlanStore from '../../store/useFloorPlanStore';
+import useFloorPlanStore from "../../store/useFloorPlanStore";
+import { useState, useEffect } from "react";
 
 function FloorPlan() {
   const {
@@ -24,7 +24,6 @@ function FloorPlan() {
     windowOrientation,
     wallLengths,
     wallHeight,
-    totalFloorArea,
     windowArea,
     setBuildingOrientation,
     setNumberOfFloors,
@@ -32,9 +31,10 @@ function FloorPlan() {
     setWindowOrientation,
     setWallLengths,
     setWallHeight,
-    setTotalFloorArea,
     setWindowArea,
   } = useFloorPlanStore();
+
+  const [calculatedArea, setCalculatedArea] = useState(0);
 
   function getWallInputs(orientation) {
     let walls = [];
@@ -48,9 +48,27 @@ function FloorPlan() {
         walls.push(`North Wall Length (ft)`);
       }
     } else if (OrientationDoubleWindow.includes(orientation)) {
-      const directions = orientation.split("-");
-      walls.push(`${directions[0]} Wall Length (ft)`);
-      walls.push(`${directions[1]} Wall Length (ft)`);
+      // Adjusted logic for double orientations
+      let wallsToShow = [];
+
+      switch (orientation) {
+        case "North-East":
+          wallsToShow = ["North-East", "South-East"];
+          break;
+        case "North-West":
+          wallsToShow = ["North-West", "South-West"];
+          break;
+        case "South-East":
+          wallsToShow = ["South-East", "North-East"];
+          break;
+        case "South-West":
+          wallsToShow = ["South-West", "North-West"];
+          break;
+        default:
+          wallsToShow = [];
+      }
+
+      walls = wallsToShow.map((dir) => `${dir} Wall Length (ft)`);
     }
     return walls;
   }
@@ -65,16 +83,31 @@ function FloorPlan() {
     }
   }
 
+  useEffect(() => {
+    // Calculate the area based on available wall lengths
+    const wallLabels = getWallInputs(buildingOrientation);
+    if (wallLabels.length === 2) {
+      const length1 = parseFloat(wallLengths[wallLabels[0]]) || 0;
+      const length2 = parseFloat(wallLengths[wallLabels[1]]) || 0;
+      setCalculatedArea(length1 * length2);
+    } else {
+      setCalculatedArea(0);
+    }
+  }, [wallLengths, buildingOrientation]);
+
   return (
     <Box p={3} display="flex" flexDirection="column" gap={2}>
-      <h1>Wall dimensions</h1>
+      <h1 className="font-semibold text-2xl">Wall dimensions</h1>
       <Box display="flex" gap={2}>
         <FormControl fullWidth variant="outlined">
           <InputLabel>Building Orientation</InputLabel>
           <Select
             label="Building Orientation"
             value={buildingOrientation}
-            onChange={(e) => setBuildingOrientation(e.target.value)}
+            onChange={(e) => {
+              setBuildingOrientation(e.target.value);
+              setWallLengths({}); // Reset wall lengths when orientation changes
+            }}
           >
             {Orientation.map((direction) => (
               <MenuItem key={direction} value={direction}>
@@ -127,24 +160,24 @@ function FloorPlan() {
               onChange={(e) => setWallHeight(e.target.value)}
             />
           </Box>
-          <Box display="flex" gap={2}>
-            <TextField
-              label="Total Floor Area (ft²)"
-              variant="outlined"
-              fullWidth
-              value={totalFloorArea}
-              onChange={(e) => setTotalFloorArea(e.target.value)}
-            />
+          <Box display="flex" gap={2} alignItems="center">
+            <Box
+              p={2}
+              width="100%"
+              textAlign="center"
+              bgcolor="lightblue"
+              borderRadius={2}
+              fontWeight="bold"
+            >
+              Calculated Floor Area: {calculatedArea.toFixed(2)} ft²
+            </Box>
           </Box>
         </>
       )}
 
-      <h1>Window dimensions</h1>
+      <h1 className="font-semibold text-2xl">Window dimensions</h1>
       <Box display="flex" gap={2}>
-        <Button
-          variant="contained"
-          onClick={() => setShowWindowInputs(true)}
-        >
+        <Button variant="contained" onClick={() => setShowWindowInputs(true)}>
           Add
         </Button>
       </Box>
