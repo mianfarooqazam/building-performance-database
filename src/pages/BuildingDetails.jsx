@@ -88,40 +88,41 @@ function BuildingDetails() {
 
       {/* Tab Panels with scrollable view */}
       <Box
-        sx={{
-          height: '500px', 
-          overflowY: 'auto',
-          padding: 2,
-          marginTop: 2,
-          backgroundColor: '#f9f9f9',
-          borderRadius: '8px',
-        }}
-      >
-        <Box role="tabpanel" hidden={value !== 0}>
-          <BuildingInformation />
-        </Box>
-        <Box role="tabpanel" hidden={value !== 1}>
-          <FloorPlan />
-        </Box>
-        <Box role="tabpanel" hidden={value !== 2}>
-          <FabricDetails />
-        </Box>
-        <Box role="tabpanel" hidden={value !== 3}>
-          <LightingLoad />
-        </Box>
-        <Box role="tabpanel" hidden={value !== 4}>
-          <AppliancesLoad />
-        </Box>
-        <Box role="tabpanel" hidden={value !== 5}>
-          <HeatingCoolingEnergy />
-        </Box>
-        <Box role="tabpanel" hidden={value !== 6}>
-          <Eui />
-        </Box>
-        <Box role="tabpanel" hidden={value !== 7}>
-          <CostAndCO />
-        </Box>
-      </Box>
+  sx={{
+    padding: 2,
+    marginTop: 2,
+    backgroundColor: '#f9f9f9',
+    borderRadius: '8px',
+    flexGrow: 1,  // Adjusted to allow the content to use available screen space
+    overflowY: 'auto' // Keeps auto overflow only when absolutely necessary
+  }}
+>
+  <Box role="tabpanel" hidden={value !== 0}>
+    <BuildingInformation />
+  </Box>
+  <Box role="tabpanel" hidden={value !== 1}>
+    <FloorPlan />
+  </Box>
+  <Box role="tabpanel" hidden={value !== 2}>
+    <FabricDetails />
+  </Box>
+  <Box role="tabpanel" hidden={value !== 3}>
+    <LightingLoad />
+  </Box>
+  <Box role="tabpanel" hidden={value !== 4}>
+    <AppliancesLoad />
+  </Box>
+  <Box role="tabpanel" hidden={value !== 5}>
+    <HeatingCoolingEnergy />
+  </Box>
+  <Box role="tabpanel" hidden={value !== 6}>
+    <Eui />
+  </Box>
+  <Box role="tabpanel" hidden={value !== 7}>
+    <CostAndCO />
+  </Box>
+</Box>
+
     </div>
   );
 }
