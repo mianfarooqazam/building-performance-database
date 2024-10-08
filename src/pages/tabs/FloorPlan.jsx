@@ -11,6 +11,8 @@ import {
   Orientation,
   OrientationSingleWindow,
   OrientationDoubleWindow,
+  OrientationSingleDoor,
+  OrientationDoubleDoor,
   Floors,
 } from "../../utils/BuildingInformationData";
 import useFloorPlanStore from "../../store/useFloorPlanStore";
@@ -40,11 +42,25 @@ function FloorPlan() {
   const [newWindowOrientation, setNewWindowOrientation] = useState("");
   const [newWindowArea, setNewWindowArea] = useState("");
 
+  const [doors, setDoors] = useState([]);
+  const [newDoorOrientation, setNewDoorOrientation] = useState("");
+  const [newDoorArea, setNewDoorArea] = useState("");
+
   function getWindowOrientations() {
     if (OrientationSingleWindow.includes(buildingOrientation)) {
       return OrientationSingleWindow;
     } else if (OrientationDoubleWindow.includes(buildingOrientation)) {
       return OrientationDoubleWindow;
+    } else {
+      return [];
+    }
+  }
+
+  function getDoorOrientations() {
+    if (OrientationSingleDoor.includes(buildingOrientation)) {
+      return OrientationSingleDoor;
+    } else if (OrientationDoubleDoor.includes(buildingOrientation)) {
+      return OrientationDoubleDoor;
     } else {
       return [];
     }
@@ -81,6 +97,24 @@ function FloorPlan() {
     setWindows(windows.filter((_, i) => i !== index));
   };
 
+  const handleAddDoor = () => {
+    if (doors.length < 4 && newDoorOrientation && newDoorArea) {
+      setDoors([
+        ...doors,
+        {
+          orientation: newDoorOrientation,
+          area: parseFloat(newDoorArea),
+        },
+      ]);
+      setNewDoorOrientation("");
+      setNewDoorArea("");
+    }
+  };
+
+  const handleRemoveDoor = (index) => {
+    setDoors(doors.filter((_, i) => i !== index));
+  };
+
   return (
     <Box p={3} display="flex" flexDirection="column" gap={2} overflow="hidden">
       <h1 className="font-semibold text-2xl">Wall Dimensions</h1>
@@ -92,7 +126,9 @@ function FloorPlan() {
             value={buildingOrientation}
             onChange={(e) => {
               setBuildingOrientation(e.target.value);
-              setWallLengths({}); // Reset wall lengths when orientation changes
+              setWallLengths({}); 
+              setWindows([]);     
+              setDoors([]);      
             }}
           >
             {Orientation.map((direction) => (
@@ -189,9 +225,6 @@ function FloorPlan() {
               onChange={(e) => setNewWindowOrientation(e.target.value)}
               displayEmpty
             >
-              <MenuItem value="">
-                <em>Select Orientation</em>
-              </MenuItem>
               {getWindowOrientations().map((direction) => (
                 <MenuItem key={direction} value={direction}>
                   {direction}
@@ -214,11 +247,11 @@ function FloorPlan() {
       )}
       {windows.length >= 4 && (
         <Box>
-          <p>Maximum of 4 windows added.</p>
+          <p>Maximum of 4 windows can be added.</p>
         </Box>
       )}
 
-      {/* Display the added windows in styled boxes */}
+      {/* Display the added windows */}
       {windows.length > 0 && (
         <Box mt={2} display="flex" flexDirection="column" gap={2}>
           {windows.map((window, index) => (
@@ -240,8 +273,78 @@ function FloorPlan() {
               </Box>
               <Button
                 variant="outlined"
-                color="secondary"
+                color="error"
                 onClick={() => handleRemoveWindow(index)}
+              >
+                Remove
+              </Button>
+            </Box>
+          ))}
+        </Box>
+      )}
+
+      <h1 className="font-semibold text-2xl">Door Dimensions</h1>
+
+      {doors.length < 4 && (
+        <Box display="flex" flexWrap="wrap" gap={2} alignItems="center">
+          <FormControl fullWidth variant="outlined" sx={{ flex: 1 }}>
+            <InputLabel>Orientation</InputLabel>
+            <Select
+              label="Orientation"
+              value={newDoorOrientation}
+              onChange={(e) => setNewDoorOrientation(e.target.value)}
+              displayEmpty
+            >
+              {getDoorOrientations().map((direction) => (
+                <MenuItem key={direction} value={direction}>
+                  {direction}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <TextField
+            label="Door Area (ft²)"
+            variant="outlined"
+            fullWidth
+            sx={{ flex: 1 }}
+            value={newDoorArea}
+            onChange={(e) => setNewDoorArea(e.target.value)}
+          />
+          <Button variant="contained" onClick={handleAddDoor}>
+            Add
+          </Button>
+        </Box>
+      )}
+      {doors.length >= 4 && (
+        <Box>
+          <p>Maximum of 4 doors can be added.</p>
+        </Box>
+      )}
+
+      {/* Display the added doors */}
+      {doors.length > 0 && (
+        <Box mt={2} display="flex" flexDirection="column" gap={2}>
+          {doors.map((door, index) => (
+            <Box
+              key={index}
+              p={2}
+              width="100%"
+              textAlign="center"
+              bgcolor="lightblue"
+              borderRadius={2}
+              fontWeight="bold"
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <Box>
+                Door {index + 1}: Orientation - {door.orientation}, Area -{" "}
+                {door.area} ft²
+              </Box>
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={() => handleRemoveDoor(index)}
               >
                 Remove
               </Button>

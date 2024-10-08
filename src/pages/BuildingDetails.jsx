@@ -27,7 +27,7 @@ function BuildingDetails() {
   return (
     <div className="p-4">
       {/* Red background wrapper for the entire tabs section */}
-      <div className="bg-white p-2 rounded-lg">
+      <div className=" p-2 rounded-lg" style={{backgroundColor:"#ffc100"}}>
         <Tabs
           value={value}
           onChange={(event, newValue) => handleChange(newValue)}
@@ -38,7 +38,7 @@ function BuildingDetails() {
           scrollButtons="auto"
           TabIndicatorProps={{
             style: {
-              backgroundColor: '#1976D2',
+              backgroundColor: '#fff',
             },
           }}
         >

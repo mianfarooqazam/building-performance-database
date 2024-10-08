@@ -19,6 +19,8 @@ const CitiesIslamabadICT = ["Islamabad"];
 const Orientation = ['North', 'East', 'West', 'South', 'North-East', 'North-West', 'South-East', 'South-West'];
 const OrientationSingleWindow = ['North', 'East', 'West', 'South'];
 const OrientationDoubleWindow = ['North-East', 'North-West', 'South-East', 'South-West'];
+const OrientationSingleDoor = ['North', 'East', 'West', 'South'];
+const OrientationDoubleDoor = ['North-East', 'North-West', 'South-East', 'South-West'];
 
 
 const Floors = [1, 2, 3, 4, 5, 6];
@@ -36,5 +38,7 @@ export {
   Orientation,
   Floors,
   OrientationSingleWindow,
-  OrientationDoubleWindow
+  OrientationDoubleWindow,
+  OrientationSingleDoor,
+  OrientationDoubleDoor
 };

@@ -13,42 +13,66 @@ function Sidebar() {
   const location = useLocation();
 
   return (
-    <div className="w-64 h-screen bg-white fixed overflow-hidden shadow-lg rounded-tr-lg rounded-br-lg border-r border-gray-200">
-      <div className="flex items-center justify-center h-16 border-b">
-        <img src={logo} alt="Logo" className="h-12" /> {/* Increased the logo size */}
+    <div className="w-64 h-screen fixed shadow-lg rounded-tr-lg rounded-br-lg border-r border-gray-200 flex flex-col" style={{backgroundColor:"#fafafa"}}>
+      <div className="flex items-center justify-center h-20">
+        <img src={logo} alt="Logo" className="h-20" /> {/* Larger logo */}
       </div>
-      <ul className="mt-4">
-        <li className={`px-4 py-2 ${location.pathname === '/' ? 'bg-blue-500 text-white rounded-tr-lg' : 'text-gray-700'}`}>
-          <Link to="/" className="flex items-center">
-            <FontAwesomeIcon icon={faTachometerAlt} className="mr-2" />
-            Dashboard
+      <hr className="my-4" />
+
+      <ul className="mt-8 flex-1">
+        <li
+          className={`mb-2 transition-all duration-300 ease-in-out ${
+            location.pathname === '/' ? 'bg-blue-500 text-white rounded-l-full shadow-md' : 'text-black hover:bg-white hover:shadow-inner'
+          }`}
+        >
+          <Link to="/" className="flex items-center px-6 py-4 w-full h-full">
+            <FontAwesomeIcon icon={faTachometerAlt} className="mr-3 text-lg" />
+            <span className="font-medium text-lg">Dashboard</span>
           </Link>
         </li>
-        <li className={`px-4 py-2 ${location.pathname === '/building-details' ? 'bg-blue-500 text-white' : 'text-gray-700'}`}>
-          <Link to="/building-details" className="flex items-center">
-            <FontAwesomeIcon icon={faBuilding} className="mr-2" />
-            Building Details
+        <li
+          className={`mb-2 transition-all duration-300 ease-in-out ${
+            location.pathname === '/building-details' ? 'bg-blue-500 text-white rounded-l-full shadow-md' : 'text-black hover:bg-white hover:shadow-inner'
+          }`}
+        >
+          <Link to="/building-details" className="flex items-center px-6 py-4 w-full h-full">
+            <FontAwesomeIcon icon={faBuilding} className="mr-3 text-lg" />
+            <span className="font-medium text-lg">Building Details</span>
           </Link>
         </li>
-        <li className={`px-4 py-2 ${location.pathname === '/report' ? 'bg-blue-500 text-white' : 'text-gray-700'}`}>
-          <Link to="/report" className="flex items-center">
-            <FontAwesomeIcon icon={faFileAlt} className="mr-2" />
-            Reports
+        <li
+          className={`mb-2 transition-all duration-300 ease-in-out ${
+            location.pathname === '/report' ? 'bg-blue-500 text-white rounded-l-full shadow-md' : 'text-black hover:bg-white hover:shadow-inner'
+          }`}
+        >
+          <Link to="/report" className="flex items-center px-6 py-4 w-full h-full">
+            <FontAwesomeIcon icon={faFileAlt} className="mr-3 text-lg" />
+            <span className="font-medium text-lg">Reports</span>
           </Link>
         </li>
       </ul>
+
       <hr className="my-4" />
+
       <ul>
-        <li className={`px-4 py-2 ${location.pathname === '/profile' ? 'bg-blue-500 text-white' : 'text-gray-700'}`}>
-          <Link to="/profile" className="flex items-center">
-            <FontAwesomeIcon icon={faUser} className="mr-2" />
-            Profile
+        <li
+          className={`mb-2 transition-all duration-300 ease-in-out ${
+            location.pathname === '/profile' ? 'bg-blue-500 text-white rounded-l-full shadow-md' : 'text-gray-700 hover:bg-gray-100 hover:shadow-inner'
+          }`}
+        >
+          <Link to="/profile" className="flex items-center px-6 py-4 w-full h-full">
+            <FontAwesomeIcon icon={faUser} className="mr-3 text-lg" />
+            <span className="font-medium text-lg">Profile</span>
           </Link>
         </li>
-        <li className={`px-4 py-2 ${location.pathname === '/logout' ? 'bg-blue-500 text-white rounded-br-lg' : 'text-gray-700'}`}>
-          <Link to="/logout" className="flex items-center">
-            <FontAwesomeIcon icon={faSignOutAlt} className="mr-2" />
-            Logout
+        <li
+          className={`mb-2 transition-all duration-300 ease-in-out ${
+            location.pathname === '/logout' ? 'bg-red-500 text-white rounded-l-full shadow-md' : 'text-red-500 hover:bg-gray-100 hover:shadow-inner'
+          }`}
+        >
+          <Link to="/logout" className="flex items-center px-6 py-4 w-full h-full">
+            <FontAwesomeIcon icon={faSignOutAlt} className="mr-3 text-lg" />
+            <span className="font-medium text-lg">Logout</span>
           </Link>
         </li>
       </ul>
