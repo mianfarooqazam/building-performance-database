@@ -27,7 +27,7 @@ function BuildingDetails() {
   return (
     <div className="p-4">
       {/* Red background wrapper for the entire tabs section */}
-      <div className=" p-2 rounded-lg" style={{backgroundColor:"#ffc100"}}>
+      <div className=" p-2 rounded-lg" style={{backgroundColor:"#fff"}}>
         <Tabs
           value={value}
           onChange={(event, newValue) => handleChange(newValue)}
