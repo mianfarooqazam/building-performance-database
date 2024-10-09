@@ -171,27 +171,24 @@ function FabricDetails() {
         />
       </Box>
 
-      {/* Horizontal Rule */}
-      <Divider sx={{ my: 3 }} />
-
       {/* Display the layers in a table */}
       {layers.length > 0 && (
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Serial Number</TableCell>
-              <TableCell>Layer Type</TableCell>
-              <TableCell>Material Selected</TableCell>
-              <TableCell>Thickness (inches)</TableCell>
+              <TableCell sx={{ backgroundColor: 'lightblue' , textAlign:'center'}}>Serial Number</TableCell>
+              <TableCell sx={{ backgroundColor: 'lightblue', textAlign:'center' }}>Layer Type</TableCell>
+              <TableCell sx={{ backgroundColor: 'lightblue' , textAlign:'center'}}>Material Selected</TableCell>
+              <TableCell sx={{ backgroundColor: 'lightblue' , textAlign:'center'}}>Thickness (inches)</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {layers.map((layer, index) => (
               <TableRow key={index}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>{layer.type}</TableCell>
-                <TableCell>{layer.material}</TableCell>
-                <TableCell>{layer.thickness}</TableCell>
+                <TableCell sx={{textAlign:'center'}}>{index + 1}</TableCell>
+                <TableCell sx={{textAlign:'center'}}>{layer.type}</TableCell>
+                <TableCell sx={{textAlign:'center'}}>{layer.material}</TableCell>
+                <TableCell sx={{textAlign:'center'}}>{layer.thickness}</TableCell>
               </TableRow>
             ))}
           </TableBody>
