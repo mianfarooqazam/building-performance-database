@@ -1,3 +1,5 @@
+// FabricDetails.js
+
 import { useState } from 'react';
 import {
   Box,
@@ -11,7 +13,10 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  Tooltip,
+  IconButton,
 } from "@mui/material";
+import InfoIcon from '@mui/icons-material/Info';
 
 import {
   OuterLayer,
@@ -20,7 +25,11 @@ import {
   InnerLayer,
 } from '../../utils/RoofLayerData.js';
 
-import { calculateRValue } from '../../calculations/FabricDetailCal/RoofCalculation.js'; 
+import {
+  calculateRValue,
+  calculateRTotal,
+  calculateUValue
+} from '../../calculations/FabricDetailCal/RoofCalculation.js';
 
 function FabricDetails() {
   // State variables for each layer's material and thickness
@@ -33,8 +42,13 @@ function FabricDetails() {
   const [innerLayerMaterial, setInnerLayerMaterial] = useState(null);
   const [innerLayerThickness, setInnerLayerThickness] = useState('');
 
+  // State variables for hi and ho
+  const [hi, setHi] = useState(0.4);
+  const [ho, setHo] = useState(0.09);
+
   // Collect layers that have both material and thickness specified
   const layers = [];
+  const rValues = [];
 
   if (outerLayerMaterial && outerLayerThickness) {
     const rValue = calculateRValue(parseFloat(outerLayerThickness), outerLayerMaterial.k_value);
@@ -44,6 +58,7 @@ function FabricDetails() {
       thickness: parseFloat(outerLayerThickness),
       rValue: rValue.toFixed(4),
     });
+    rValues.push(parseFloat(rValue.toFixed(4)));
   }
 
   if (coreLayerMaterial && coreLayerThickness) {
@@ -54,6 +69,7 @@ function FabricDetails() {
       thickness: parseFloat(coreLayerThickness),
       rValue: rValue.toFixed(4),
     });
+    rValues.push(parseFloat(rValue.toFixed(4)));
   }
 
   if (insulationLayerMaterial && insulationLayerThickness) {
@@ -64,6 +80,7 @@ function FabricDetails() {
       thickness: parseFloat(insulationLayerThickness),
       rValue: rValue.toFixed(4),
     });
+    rValues.push(parseFloat(rValue.toFixed(4)));
   }
 
   if (innerLayerMaterial && innerLayerThickness) {
@@ -74,11 +91,61 @@ function FabricDetails() {
       thickness: parseFloat(innerLayerThickness),
       rValue: rValue.toFixed(4),
     });
+    rValues.push(parseFloat(rValue.toFixed(4)));
+  }
+
+  // Calculate rTotal and U-value if there are layers
+  let rTotal = null;
+  let uValue = null;
+
+  if (layers.length > 0) {
+    rTotal = calculateRTotal(rValues, hi, ho).toFixed(4);
+    uValue = calculateUValue(rTotal).toFixed(4);
   }
 
   return (
     <Box p={3} display="flex" flexDirection="column" gap={2}>
       <h1 className="font-semibold text-2xl">Roof Details</h1>
+
+      {/* hi and ho Inputs */}
+      <Box display="flex" gap={2} alignItems="center">
+        <TextField
+          label={
+            <Box display="flex" alignItems="center">
+            <span>
+          h<sub>i</sub> 
+        </span>
+              <Tooltip title="This value hi (0.4) is taken from Design Builder. You can use this or enter your own value.">
+                <IconButton size="small">
+                  <InfoIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          }
+          variant="outlined"
+          fullWidth
+          value={hi}
+          onChange={(e) => setHi(e.target.value)}
+        />
+        <TextField
+          label={
+            <Box display="flex" alignItems="center">
+             <span>
+          h<sub>0</sub> 
+        </span>
+              <Tooltip title="This value ho (0.09) is taken from Design Builder. You can use this or enter your own value.">
+                <IconButton size="small">
+                  <InfoIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          }
+          variant="outlined"
+          fullWidth
+          value={ho}
+          onChange={(e) => setHo(e.target.value)}
+        />
+      </Box>
 
       {/* Outer Layer Inputs */}
       <Box display="flex" gap={2} alignItems="center">
@@ -192,19 +259,44 @@ function FabricDetails() {
         />
       </Box>
 
-      {/* Divider */}
-      {/* <Divider sx={{ my: 3 }} /> */}
+      {/* rTotal Display */}
+      {layers.length > 0 && (
+        <Box
+          p={2}
+          mt={2}
+          bgcolor="lightblue"
+          borderRadius={2}
+          fontWeight="bold"
+          textAlign="center"
+        >
+          Total R-Value: {rTotal}
+        </Box>
+      )}
+
+      {/* U-value Display */}
+      {layers.length > 0 && (
+        <Box
+          p={2}
+          mt={2}
+          bgcolor="lightblue"
+          borderRadius={2}
+          fontWeight="bold"
+          textAlign="center"
+        >
+         Calculated U-Value: {uValue}
+        </Box>
+      )}
 
       {/* Display the layers in a table */}
       {layers.length > 0 && (
-        <Table>
+        <Table sx={{ mt: 2 }}>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ backgroundColor: 'lightblue', textAlign: 'center', fontWeight:"bold" }}>Serial Number</TableCell>
-              <TableCell sx={{ backgroundColor: 'lightblue', textAlign: 'center', fontWeight:"bold" }}>Layer Type</TableCell>
-              <TableCell sx={{ backgroundColor: 'lightblue', textAlign: 'center', fontWeight:"bold" }}>Material Selected</TableCell>
-              <TableCell sx={{ backgroundColor: 'lightblue', textAlign: 'center', fontWeight:"bold" }}>Thickness (inches)</TableCell>
-              <TableCell sx={{ backgroundColor: 'lightblue', textAlign: 'center' , fontWeight:"bold"}}>R-Value</TableCell>
+              <TableCell sx={{ backgroundColor: 'lightblue', textAlign: 'center', fontWeight: "bold" }}>Serial Number</TableCell>
+              <TableCell sx={{ backgroundColor: 'lightblue', textAlign: 'center', fontWeight: "bold" }}>Layer Type</TableCell>
+              <TableCell sx={{ backgroundColor: 'lightblue', textAlign: 'center', fontWeight: "bold" }}>Material Selected</TableCell>
+              <TableCell sx={{ backgroundColor: 'lightblue', textAlign: 'center', fontWeight: "bold" }}>Thickness (inches)</TableCell>
+              <TableCell sx={{ backgroundColor: 'lightblue', textAlign: 'center', fontWeight: "bold" }}>R-Value</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
