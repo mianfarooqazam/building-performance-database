@@ -1,6 +1,6 @@
 // FabricDetails.js
 
-import { useState } from 'react';
+import { useState } from "react";
 import {
   Box,
   MenuItem,
@@ -16,44 +16,47 @@ import {
   Tooltip,
   IconButton,
 } from "@mui/material";
-import InfoIcon from '@mui/icons-material/Info';
+import InfoIcon from "@mui/icons-material/Info";
 
 import {
   OuterLayer,
   CoreLayer,
   InsulationLayer,
   InnerLayer,
-} from '../../utils/RoofLayerData.js';
+} from "../../utils/RoofLayerData.js";
 
 import {
   calculateRValue,
   calculateRTotal,
-  calculateUValue
-} from '../../calculations/FabricDetailCal/RoofCalculation.js';
+  calculateUValue,
+} from "../../calculations/FabricDetailCal/RoofCalculation.js";
 
 function FabricDetails() {
   // State variables for each layer's material and thickness
   const [outerLayerMaterial, setOuterLayerMaterial] = useState(null);
-  const [outerLayerThickness, setOuterLayerThickness] = useState('');
+  const [outerLayerThickness, setOuterLayerThickness] = useState("");
   const [coreLayerMaterial, setCoreLayerMaterial] = useState(null);
-  const [coreLayerThickness, setCoreLayerThickness] = useState('');
+  const [coreLayerThickness, setCoreLayerThickness] = useState("");
   const [insulationLayerMaterial, setInsulationLayerMaterial] = useState(null);
-  const [insulationLayerThickness, setInsulationLayerThickness] = useState('');
+  const [insulationLayerThickness, setInsulationLayerThickness] = useState("");
   const [innerLayerMaterial, setInnerLayerMaterial] = useState(null);
-  const [innerLayerThickness, setInnerLayerThickness] = useState('');
+  const [innerLayerThickness, setInnerLayerThickness] = useState("");
 
   // State variables for hi and ho
-  const [hi, setHi] = useState(0.4);
-  const [ho, setHo] = useState(0.09);
+  const [hi, setHi] = useState(2.5);
+  const [ho, setHo] = useState(11.54);
 
   // Collect layers that have both material and thickness specified
   const layers = [];
   const rValues = [];
 
   if (outerLayerMaterial && outerLayerThickness) {
-    const rValue = calculateRValue(parseFloat(outerLayerThickness), outerLayerMaterial.k_value);
+    const rValue = calculateRValue(
+      parseFloat(outerLayerThickness),
+      outerLayerMaterial.k_value
+    );
     layers.push({
-      type: 'Outer Layer',
+      type: "Outer Layer",
       material: outerLayerMaterial.name,
       thickness: parseFloat(outerLayerThickness),
       rValue: rValue.toFixed(4),
@@ -62,9 +65,12 @@ function FabricDetails() {
   }
 
   if (coreLayerMaterial && coreLayerThickness) {
-    const rValue = calculateRValue(parseFloat(coreLayerThickness), coreLayerMaterial.k_value);
+    const rValue = calculateRValue(
+      parseFloat(coreLayerThickness),
+      coreLayerMaterial.k_value
+    );
     layers.push({
-      type: 'Core Layer',
+      type: "Core Layer",
       material: coreLayerMaterial.name,
       thickness: parseFloat(coreLayerThickness),
       rValue: rValue.toFixed(4),
@@ -73,9 +79,12 @@ function FabricDetails() {
   }
 
   if (insulationLayerMaterial && insulationLayerThickness) {
-    const rValue = calculateRValue(parseFloat(insulationLayerThickness), insulationLayerMaterial.k_value);
+    const rValue = calculateRValue(
+      parseFloat(insulationLayerThickness),
+      insulationLayerMaterial.k_value
+    );
     layers.push({
-      type: 'Insulation Layer',
+      type: "Insulation Layer",
       material: insulationLayerMaterial.name,
       thickness: parseFloat(insulationLayerThickness),
       rValue: rValue.toFixed(4),
@@ -84,9 +93,12 @@ function FabricDetails() {
   }
 
   if (innerLayerMaterial && innerLayerThickness) {
-    const rValue = calculateRValue(parseFloat(innerLayerThickness), innerLayerMaterial.k_value);
+    const rValue = calculateRValue(
+      parseFloat(innerLayerThickness),
+      innerLayerMaterial.k_value
+    );
     layers.push({
-      type: 'Inner Layer',
+      type: "Inner Layer",
       material: innerLayerMaterial.name,
       thickness: parseFloat(innerLayerThickness),
       rValue: rValue.toFixed(4),
@@ -107,55 +119,17 @@ function FabricDetails() {
     <Box p={3} display="flex" flexDirection="column" gap={2}>
       <h1 className="font-semibold text-2xl">Roof Details</h1>
 
-      {/* hi and ho Inputs */}
-      <Box display="flex" gap={2} alignItems="center">
-        <TextField
-          label={
-            <Box display="flex" alignItems="center">
-            <span>
-          h<sub>i</sub> 
-        </span>
-              <Tooltip title="This value hi (0.4) is taken from Design Builder. You can use this or enter your own value.">
-                <IconButton size="small">
-                  <InfoIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-            </Box>
-          }
-          variant="outlined"
-          fullWidth
-          value={hi}
-          onChange={(e) => setHi(e.target.value)}
-        />
-        <TextField
-          label={
-            <Box display="flex" alignItems="center">
-             <span>
-          h<sub>0</sub> 
-        </span>
-              <Tooltip title="This value ho (0.09) is taken from Design Builder. You can use this or enter your own value.">
-                <IconButton size="small">
-                  <InfoIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-            </Box>
-          }
-          variant="outlined"
-          fullWidth
-          value={ho}
-          onChange={(e) => setHo(e.target.value)}
-        />
-      </Box>
-
       {/* Outer Layer Inputs */}
       <Box display="flex" gap={2} alignItems="center">
         <FormControl fullWidth variant="outlined">
           <InputLabel>Outer Layer</InputLabel>
           <Select
             label="Outer Layer"
-            value={outerLayerMaterial ? outerLayerMaterial.name : ''}
+            value={outerLayerMaterial ? outerLayerMaterial.name : ""}
             onChange={(e) => {
-              const selectedMaterial = OuterLayer.find(material => material.name === e.target.value);
+              const selectedMaterial = OuterLayer.find(
+                (material) => material.name === e.target.value
+              );
               setOuterLayerMaterial(selectedMaterial);
             }}
           >
@@ -181,9 +155,11 @@ function FabricDetails() {
           <InputLabel>Core Layer</InputLabel>
           <Select
             label="Core Layer"
-            value={coreLayerMaterial ? coreLayerMaterial.name : ''}
+            value={coreLayerMaterial ? coreLayerMaterial.name : ""}
             onChange={(e) => {
-              const selectedMaterial = CoreLayer.find(material => material.name === e.target.value);
+              const selectedMaterial = CoreLayer.find(
+                (material) => material.name === e.target.value
+              );
               setCoreLayerMaterial(selectedMaterial);
             }}
           >
@@ -209,9 +185,11 @@ function FabricDetails() {
           <InputLabel>Insulation Layer</InputLabel>
           <Select
             label="Insulation Layer"
-            value={insulationLayerMaterial ? insulationLayerMaterial.name : ''}
+            value={insulationLayerMaterial ? insulationLayerMaterial.name : ""}
             onChange={(e) => {
-              const selectedMaterial = InsulationLayer.find(material => material.name === e.target.value);
+              const selectedMaterial = InsulationLayer.find(
+                (material) => material.name === e.target.value
+              );
               setInsulationLayerMaterial(selectedMaterial);
             }}
           >
@@ -237,9 +215,11 @@ function FabricDetails() {
           <InputLabel>Inner Layer</InputLabel>
           <Select
             label="Inner Layer"
-            value={innerLayerMaterial ? innerLayerMaterial.name : ''}
+            value={innerLayerMaterial ? innerLayerMaterial.name : ""}
             onChange={(e) => {
-              const selectedMaterial = InnerLayer.find(material => material.name === e.target.value);
+              const selectedMaterial = InnerLayer.find(
+                (material) => material.name === e.target.value
+              );
               setInnerLayerMaterial(selectedMaterial);
             }}
           >
@@ -259,6 +239,45 @@ function FabricDetails() {
         />
       </Box>
 
+      {/* hi and ho Inputs */}
+      <Box display="flex" gap={2} alignItems="center">
+        <TextField
+          label={
+            <Box display="flex" alignItems="center">
+              <span>
+                h<sub>i</sub>
+              </span>
+              <Tooltip title="This value hi (2.5) is taken from Design Builder. You can use this or enter your own value.">
+                <IconButton size="small">
+                  <InfoIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          }
+          variant="outlined"
+          fullWidth
+          value={hi}
+          onChange={(e) => setHi(e.target.value)}
+        />
+        <TextField
+          label={
+            <Box display="flex" alignItems="center">
+              <span>
+                h<sub>0</sub>
+              </span>
+              <Tooltip title="This value ho (11.54) is taken from Design Builder. You can use this or enter your own value.">
+                <IconButton size="small">
+                  <InfoIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          }
+          variant="outlined"
+          fullWidth
+          value={ho}
+          onChange={(e) => setHo(e.target.value)}
+        />
+      </Box>
       {/* rTotal Display */}
       {layers.length > 0 && (
         <Box
@@ -283,7 +302,7 @@ function FabricDetails() {
           fontWeight="bold"
           textAlign="center"
         >
-         Calculated U-Value: {uValue}
+          Calculated U-Value: {uValue}
         </Box>
       )}
 
@@ -292,21 +311,67 @@ function FabricDetails() {
         <Table sx={{ mt: 2 }}>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ backgroundColor: 'lightblue', textAlign: 'center', fontWeight: "bold" }}>Serial Number</TableCell>
-              <TableCell sx={{ backgroundColor: 'lightblue', textAlign: 'center', fontWeight: "bold" }}>Layer Type</TableCell>
-              <TableCell sx={{ backgroundColor: 'lightblue', textAlign: 'center', fontWeight: "bold" }}>Material Selected</TableCell>
-              <TableCell sx={{ backgroundColor: 'lightblue', textAlign: 'center', fontWeight: "bold" }}>Thickness (inches)</TableCell>
-              <TableCell sx={{ backgroundColor: 'lightblue', textAlign: 'center', fontWeight: "bold" }}>R-Value</TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: "lightblue",
+                  textAlign: "center",
+                  fontWeight: "bold",
+                }}
+              >
+                Serial Number
+              </TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: "lightblue",
+                  textAlign: "center",
+                  fontWeight: "bold",
+                }}
+              >
+                Layer Type
+              </TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: "lightblue",
+                  textAlign: "center",
+                  fontWeight: "bold",
+                }}
+              >
+                Material Selected
+              </TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: "lightblue",
+                  textAlign: "center",
+                  fontWeight: "bold",
+                }}
+              >
+                Thickness (inches)
+              </TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: "lightblue",
+                  textAlign: "center",
+                  fontWeight: "bold",
+                }}
+              >
+                R-Value
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {layers.map((layer, index) => (
               <TableRow key={index}>
-                <TableCell sx={{ textAlign: 'center' }}>{index + 1}</TableCell>
-                <TableCell sx={{ textAlign: 'center' }}>{layer.type}</TableCell>
-                <TableCell sx={{ textAlign: 'center' }}>{layer.material}</TableCell>
-                <TableCell sx={{ textAlign: 'center' }}>{layer.thickness}</TableCell>
-                <TableCell sx={{ textAlign: 'center' }}>{layer.rValue}</TableCell>
+                <TableCell sx={{ textAlign: "center" }}>{index + 1}</TableCell>
+                <TableCell sx={{ textAlign: "center" }}>{layer.type}</TableCell>
+                <TableCell sx={{ textAlign: "center" }}>
+                  {layer.material}
+                </TableCell>
+                <TableCell sx={{ textAlign: "center" }}>
+                  {layer.thickness}
+                </TableCell>
+                <TableCell sx={{ textAlign: "center" }}>
+                  {layer.rValue}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

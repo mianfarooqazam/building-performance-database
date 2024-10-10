@@ -10,7 +10,7 @@ export function calculateRValue(thicknessInches, kValue) {
     return rValue;
   }
   
-  export function calculateRTotal(rValues, hi = 0.4, ho = 0.09) {
+  export function calculateRTotal(rValues, hi = 2.5, ho = 11.54) {
     // Sum the R-values
     const sumRValues = rValues.reduce((sum, rValue) => sum + rValue, 0);
   
