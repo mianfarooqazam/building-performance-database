@@ -11,10 +11,7 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Tooltip,
-  IconButton,
 } from "@mui/material";
-import InfoIcon from "@mui/icons-material/Info";
 
 import {
   OuterLayer,
@@ -40,73 +37,35 @@ function RoofFabricDetails() {
   const [innerLayerMaterial, setInnerLayerMaterial] = useState(null);
   const [innerLayerThickness, setInnerLayerThickness] = useState("");
 
-  // State variables for hi and ho
-  const [hi, setHi] = useState(2.5);
-  const [ho, setHo] = useState(11.54);
-
-  // State variables for errors
-  const [hiError, setHiError] = useState("");
-  const [hoError, setHoError] = useState("");
+  // default values for hi and ho.
+  const hi = 2.5;
+  const ho = 11.54;
 
   // Collect layers that have both material and thickness specified
   const layers = [];
   const rValues = [];
 
-  if (outerLayerMaterial && outerLayerThickness) {
-    const rValue = calculateRValue(
-      parseFloat(outerLayerThickness),
-      outerLayerMaterial.k_value
-    );
-    layers.push({
-      type: "Outer Layer",
-      material: outerLayerMaterial.name,
-      thickness: parseFloat(outerLayerThickness),
-      rValue: rValue.toFixed(4),
-    });
-    rValues.push(parseFloat(rValue.toFixed(4)));
-  }
+  // Helper function to process each layer
+  const processLayer = (layerMaterial, layerThickness, layerType) => {
+    if (layerMaterial && layerThickness !== "") {
+      const thickness = parseFloat(layerThickness);
+      const kValue = layerMaterial.k_value;
+      const rValue = calculateRValue(thickness, kValue);
+      layers.push({
+        type: layerType,
+        material: layerMaterial.name,
+        thickness: thickness,
+        rValue: rValue.toFixed(4),
+      });
+      rValues.push(parseFloat(rValue.toFixed(4)));
+    }
+  };
 
-  if (coreLayerMaterial && coreLayerThickness) {
-    const rValue = calculateRValue(
-      parseFloat(coreLayerThickness),
-      coreLayerMaterial.k_value
-    );
-    layers.push({
-      type: "Core Layer",
-      material: coreLayerMaterial.name,
-      thickness: parseFloat(coreLayerThickness),
-      rValue: rValue.toFixed(4),
-    });
-    rValues.push(parseFloat(rValue.toFixed(4)));
-  }
-
-  if (insulationLayerMaterial && insulationLayerThickness) {
-    const rValue = calculateRValue(
-      parseFloat(insulationLayerThickness),
-      insulationLayerMaterial.k_value
-    );
-    layers.push({
-      type: "Insulation Layer",
-      material: insulationLayerMaterial.name,
-      thickness: parseFloat(insulationLayerThickness),
-      rValue: rValue.toFixed(4),
-    });
-    rValues.push(parseFloat(rValue.toFixed(4)));
-  }
-
-  if (innerLayerMaterial && innerLayerThickness) {
-    const rValue = calculateRValue(
-      parseFloat(innerLayerThickness),
-      innerLayerMaterial.k_value
-    );
-    layers.push({
-      type: "Inner Layer",
-      material: innerLayerMaterial.name,
-      thickness: parseFloat(innerLayerThickness),
-      rValue: rValue.toFixed(4),
-    });
-    rValues.push(parseFloat(rValue.toFixed(4)));
-  }
+  // Process each layer
+  processLayer(outerLayerMaterial, outerLayerThickness, "Outer Layer");
+  processLayer(coreLayerMaterial, coreLayerThickness, "Core Layer");
+  processLayer(insulationLayerMaterial, insulationLayerThickness, "Insulation Layer");
+  processLayer(innerLayerMaterial, innerLayerThickness, "Inner Layer");
 
   // Calculate rTotal and U-value if there are layers
   let rTotal = null;
@@ -115,11 +74,8 @@ function RoofFabricDetails() {
 
   if (layers.length > 0) {
     try {
-      const hiValue = parseFloat(hi) || 1; // Default to 1 if hi is invalid
-      const hoValue = parseFloat(ho) || 1; // Default to 1 if ho is invalid
-
-      rTotal = calculateRTotal(rValues, hiValue, hoValue).toFixed(4);
-      uValue = calculateUValue(rTotal).toFixed(3); // Updated to 3 decimal points
+      rTotal = calculateRTotal(rValues, hi, ho).toFixed(4);
+      uValue = calculateUValue(rTotal).toFixed(3);
     } catch (error) {
       calculationError = error.message;
     }
@@ -127,7 +83,7 @@ function RoofFabricDetails() {
 
   return (
     <Box p={3} display="flex" flexDirection="column" gap={2}>
-      <h1 className="font-semibold text-2xl">Roof Details</h1>
+      {/* <h1 className="font-semibold text-2xl">Roof Details</h1> */}
 
       {/* Outer Layer Inputs */}
       <Box display="flex" gap={2} alignItems="center">
@@ -141,6 +97,11 @@ function RoofFabricDetails() {
                 (material) => material.name === e.target.value
               );
               setOuterLayerMaterial(selectedMaterial);
+              if (selectedMaterial && selectedMaterial.name === "None") {
+                setOuterLayerThickness("0");
+              } else {
+                setOuterLayerThickness("");
+              }
             }}
           >
             {OuterLayer.map((material) => (
@@ -156,6 +117,7 @@ function RoofFabricDetails() {
           fullWidth
           value={outerLayerThickness}
           onChange={(e) => setOuterLayerThickness(e.target.value)}
+          disabled={outerLayerMaterial && outerLayerMaterial.name === "None"}
         />
       </Box>
 
@@ -171,6 +133,11 @@ function RoofFabricDetails() {
                 (material) => material.name === e.target.value
               );
               setCoreLayerMaterial(selectedMaterial);
+              if (selectedMaterial && selectedMaterial.name === "None") {
+                setCoreLayerThickness("0");
+              } else {
+                setCoreLayerThickness("");
+              }
             }}
           >
             {CoreLayer.map((material) => (
@@ -186,6 +153,7 @@ function RoofFabricDetails() {
           fullWidth
           value={coreLayerThickness}
           onChange={(e) => setCoreLayerThickness(e.target.value)}
+          disabled={coreLayerMaterial && coreLayerMaterial.name === "None"}
         />
       </Box>
 
@@ -201,6 +169,11 @@ function RoofFabricDetails() {
                 (material) => material.name === e.target.value
               );
               setInsulationLayerMaterial(selectedMaterial);
+              if (selectedMaterial && selectedMaterial.name === "None") {
+                setInsulationLayerThickness("0");
+              } else {
+                setInsulationLayerThickness("");
+              }
             }}
           >
             {InsulationLayer.map((material) => (
@@ -216,6 +189,7 @@ function RoofFabricDetails() {
           fullWidth
           value={insulationLayerThickness}
           onChange={(e) => setInsulationLayerThickness(e.target.value)}
+          disabled={insulationLayerMaterial && insulationLayerMaterial.name === "None"}
         />
       </Box>
 
@@ -231,6 +205,11 @@ function RoofFabricDetails() {
                 (material) => material.name === e.target.value
               );
               setInnerLayerMaterial(selectedMaterial);
+              if (selectedMaterial && selectedMaterial.name === "None") {
+                setInnerLayerThickness("0");
+              } else {
+                setInnerLayerThickness("");
+              }
             }}
           >
             {InnerLayer.map((material) => (
@@ -246,70 +225,9 @@ function RoofFabricDetails() {
           fullWidth
           value={innerLayerThickness}
           onChange={(e) => setInnerLayerThickness(e.target.value)}
+          disabled={innerLayerMaterial && innerLayerMaterial.name === "None"}
         />
       </Box>
-
-      {/* hi and ho Inputs */}
-      {/* <Box display="flex" gap={2} alignItems="center">
-        <TextField
-          label={
-            <Box display="flex" alignItems="center">
-              <span>
-                h<sub>i</sub> (W/m<sup>2</sup>·K)
-              </span>
-              <Tooltip title="This value hi (2.5) is taken from Design Builder. You can use this or enter your own value.">
-                <IconButton size="small">
-                  <InfoIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-            </Box>
-          }
-          variant="outlined"
-          fullWidth
-          value={hi}
-          error={!!hiError}
-          helperText={hiError}
-          onChange={(e) => {
-            const value = e.target.value;
-            if (value === "" || parseFloat(value) > 0) {
-              setHi(value);
-              setHiError("");
-            } else {
-              setHi(value);
-              setHiError("hi must be a positive number");
-            }
-          }}
-        />
-        <TextField
-          label={
-            <Box display="flex" alignItems="center">
-              <span>
-                h<sub>o</sub> (W/m<sup>2</sup>·K)
-              </span>
-              <Tooltip title="This value ho (11.54) is taken from Design Builder. You can use this or enter your own value.">
-                <IconButton size="small">
-                  <InfoIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-            </Box>
-          }
-          variant="outlined"
-          fullWidth
-          value={ho}
-          error={!!hoError}
-          helperText={hoError}
-          onChange={(e) => {
-            const value = e.target.value;
-            if (value === "" || parseFloat(value) > 0) {
-              setHo(value);
-              setHoError("");
-            } else {
-              setHo(value);
-              setHoError("ho must be a positive number");
-            }
-          }}
-        />
-      </Box> */}
 
       {/* Calculation Error Display */}
       {calculationError && (

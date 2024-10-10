@@ -1,5 +1,3 @@
-// FabricDetails.js
-
 import { useState } from "react";
 import { Box, Tabs, Tab } from "@mui/material";
 import RoofFabricDetails from "../tabs/fabricDetails/RoofFabricDetails";

@@ -1,4 +1,5 @@
 const OuterLayer = [
+  { name: "None", k_value:1 },
     { name: "Cement plaster (sand aggregate)", k_value: 0.72 },
     { name: "Gypsum plaster (sand aggregate)", k_value: 0.22 },
     { name: "Gypsum plaster (Vermiculite aggregate)", k_value: 0.25 },
@@ -22,6 +23,7 @@ const OuterLayer = [
   
   // refrence usman (obviouslu pick higher k-value than k-lower for same names)
   const CoreLayer = [
+    { name: "None", k_value:1 },
     { name: " Brick Common", k_value: 0.72 },
     { name: " Brick, face", k_value: 1.3 },
     { name: " Brick, fire clay", k_value: 1.34 },
@@ -35,6 +37,7 @@ const OuterLayer = [
   
   
   const InsulationLayer = [
+    { name: "None", k_value:1 },
     { name: "Air Space", k_value: 0.01516 },
     { name: "Poly Styrene (R-12)", k_value: 0.027 },
     { name: "Poly Styrene (molded beads)", k_value: 0.04 },
@@ -52,6 +55,7 @@ const OuterLayer = [
   
   
   const InnerLayer = [
+    { name: "None", k_value:1 },
     { name: "Cement plaster (sand aggregate)", k_value: 0.72 },
     { name: "Gypsum plaster (sand aggregate)", k_value: 0.22 },
     { name: "Gypsum plaster (Vermiculite aggregate)", k_value: 0.25 },
