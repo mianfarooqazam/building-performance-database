@@ -46,6 +46,10 @@ function FabricDetails() {
   const [hi, setHi] = useState(2.5);
   const [ho, setHo] = useState(11.54);
 
+  // State variables for errors
+  const [hiError, setHiError] = useState("");
+  const [hoError, setHoError] = useState("");
+
   // Collect layers that have both material and thickness specified
   const layers = [];
   const rValues = [];
@@ -109,10 +113,18 @@ function FabricDetails() {
   // Calculate rTotal and U-value if there are layers
   let rTotal = null;
   let uValue = null;
+  let calculationError = null;
 
   if (layers.length > 0) {
-    rTotal = calculateRTotal(rValues, hi, ho).toFixed(4);
-    uValue = calculateUValue(rTotal).toFixed(4);
+    try {
+      const hiValue = parseFloat(hi) || 1; // Default to 1 if hi is invalid
+      const hoValue = parseFloat(ho) || 1; // Default to 1 if ho is invalid
+
+      rTotal = calculateRTotal(rValues, hiValue, hoValue).toFixed(4);
+      uValue = calculateUValue(rTotal).toFixed(4);
+    } catch (error) {
+      calculationError = error.message;
+    }
   }
 
   return (
@@ -245,7 +257,7 @@ function FabricDetails() {
           label={
             <Box display="flex" alignItems="center">
               <span>
-                h<sub>i</sub>
+                h<sub>i</sub> (W/m <sup>2</sup>.K)
               </span>
               <Tooltip title="This value hi (2.5) is taken from Design Builder. You can use this or enter your own value.">
                 <IconButton size="small">
@@ -257,13 +269,24 @@ function FabricDetails() {
           variant="outlined"
           fullWidth
           value={hi}
-          onChange={(e) => setHi(e.target.value)}
+          error={!!hiError}
+          helperText={hiError}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (value === "" || parseFloat(value) > 0) {
+              setHi(value);
+              setHiError("");
+            } else {
+              setHi(value);
+              setHiError("hi must be a positive number");
+            }
+          }}
         />
         <TextField
           label={
             <Box display="flex" alignItems="center">
               <span>
-                h<sub>0</sub>
+                h<sub>o</sub>(W/m <sup>2</sup>.K)
               </span>
               <Tooltip title="This value ho (11.54) is taken from Design Builder. You can use this or enter your own value.">
                 <IconButton size="small">
@@ -275,11 +298,37 @@ function FabricDetails() {
           variant="outlined"
           fullWidth
           value={ho}
-          onChange={(e) => setHo(e.target.value)}
+          error={!!hoError}
+          helperText={hoError}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (value === "" || parseFloat(value) > 0) {
+              setHo(value);
+              setHoError("");
+            } else {
+              setHo(value);
+              setHoError("ho must be a positive number");
+            }
+          }}
         />
       </Box>
+
+      {/* Calculation Error Display */}
+      {calculationError && (
+        <Box
+          p={2}
+          mt={2}
+          bgcolor="lightcoral"
+          borderRadius={2}
+          fontWeight="bold"
+          textAlign="center"
+        >
+          Error: {calculationError}
+        </Box>
+      )}
+
       {/* rTotal Display */}
-      {layers.length > 0 && (
+      {rTotal && !calculationError && (
         <Box
           p={2}
           mt={2}
@@ -293,7 +342,7 @@ function FabricDetails() {
       )}
 
       {/* U-value Display */}
-      {layers.length > 0 && (
+      {uValue && !calculationError && (
         <Box
           p={2}
           mt={2}
