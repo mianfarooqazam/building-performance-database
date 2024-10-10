@@ -1,4 +1,5 @@
 const OuterLayer = [
+  { name: "None", k_value:1 },
   { name: "Cement plaster (sand aggregate)", k_value: 0.72 },
   { name: "Gypsum plaster (sand aggregate)", k_value: 0.22 },
   { name: "Gypsum plaster (Vermiculite aggregate)", k_value: 0.25 },
