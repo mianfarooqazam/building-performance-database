@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Box, Tabs, Tab } from "@mui/material";
 import RoofFabricDetails from "../tabs/fabricDetails/RoofFabricDetails";
 import WallFarbricDetails from "../tabs/fabricDetails/WallFabricDetails";
-import WindowFarbricDetails from "../tabs/fabricDetails/WallFabricDetails";
+import WindowFarbricDetails from "../tabs/fabricDetails/WindowFabricDetails";
 
 function FabricDetails() {
   const [selectedTab, setSelectedTab] = useState(0);
