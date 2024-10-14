@@ -64,7 +64,11 @@ function RoofFabricDetails() {
   // Process each layer
   processLayer(outerLayerMaterial, outerLayerThickness, "Outer Layer");
   processLayer(coreLayerMaterial, coreLayerThickness, "Core Layer");
-  processLayer(insulationLayerMaterial, insulationLayerThickness, "Insulation Layer");
+  processLayer(
+    insulationLayerMaterial,
+    insulationLayerThickness,
+    "Insulation Layer"
+  );
   processLayer(innerLayerMaterial, innerLayerThickness, "Inner Layer");
 
   // Calculate rTotal and U-value if there are layers
@@ -189,7 +193,9 @@ function RoofFabricDetails() {
           fullWidth
           value={insulationLayerThickness}
           onChange={(e) => setInsulationLayerThickness(e.target.value)}
-          disabled={insulationLayerMaterial && insulationLayerMaterial.name === "None"}
+          disabled={
+            insulationLayerMaterial && insulationLayerMaterial.name === "None"
+          }
         />
       </Box>
 
