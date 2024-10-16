@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 function Eui() {
   return (
     <Box p={3}>
-      <p>Fabric details and fields...</p>
+      <p>EUI details and fields...</p>
       {/* Add inputs related to fabric details */}
     </Box>
   );

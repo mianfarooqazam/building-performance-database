@@ -1,12 +1,12 @@
 import { Box } from '@mui/material';
 
-function AppliancesLoad() {
+function Ventilation() {
   return (
     <Box p={3}>
-      <p>appliances details and fields...</p>
+      <p>Ventilation details and fields...</p>
       {/* Add inputs related to fabric details */}
     </Box>
   );
 }
 
-export default AppliancesLoad;
+export default Ventilation;
