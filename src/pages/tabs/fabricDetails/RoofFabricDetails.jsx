@@ -1,17 +1,4 @@
-import { useState } from "react";
-import {
-  Box,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
-  TextField,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-} from "@mui/material";
+import { Box, MenuItem, Select, InputLabel, FormControl, TextField, Table, TableHead, TableBody, TableRow, TableCell } from "@mui/material";
 
 import {
   OuterLayer,
@@ -26,16 +13,28 @@ import {
   calculateUValue,
 } from "../../../calculations/FabricDetailCal/RoofCalculation.js";
 
+import useRoofFabricDetailsStore from '../../../store/useRoofFabricDetailsStore.js';
+
 function RoofFabricDetails() {
-  // State variables for each layer's material and thickness
-  const [outerLayerMaterial, setOuterLayerMaterial] = useState(null);
-  const [outerLayerThickness, setOuterLayerThickness] = useState("");
-  const [coreLayerMaterial, setCoreLayerMaterial] = useState(null);
-  const [coreLayerThickness, setCoreLayerThickness] = useState("");
-  const [insulationLayerMaterial, setInsulationLayerMaterial] = useState(null);
-  const [insulationLayerThickness, setInsulationLayerThickness] = useState("");
-  const [innerLayerMaterial, setInnerLayerMaterial] = useState(null);
-  const [innerLayerThickness, setInnerLayerThickness] = useState("");
+  const {
+    outerLayerMaterial,
+    setOuterLayerMaterial,
+    outerLayerThickness,
+    setOuterLayerThickness,
+    coreLayerMaterial,
+    setCoreLayerMaterial,
+    coreLayerThickness,
+    setCoreLayerThickness,
+    insulationLayerMaterial,
+    setInsulationLayerMaterial,
+    insulationLayerThickness,
+    setInsulationLayerThickness,
+    innerLayerMaterial,
+    setInnerLayerMaterial,
+    innerLayerThickness,
+    setInnerLayerThickness,
+  } = useRoofFabricDetailsStore();
+
 
   // default values for hi and ho.
   const hi = 2.5;
@@ -87,8 +86,6 @@ function RoofFabricDetails() {
 
   return (
     <Box p={3} display="flex" flexDirection="column" gap={2}>
-      {/* <h1 className="font-semibold text-2xl">Roof Details</h1> */}
-
       {/* Outer Layer Inputs */}
       <Box display="flex" gap={2} alignItems="center">
         <FormControl fullWidth variant="outlined">

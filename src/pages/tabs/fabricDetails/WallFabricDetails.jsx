@@ -1,4 +1,4 @@
-import { useState } from "react";
+// Import necessary libraries and components
 import {
   Box,
   MenuItem,
@@ -26,16 +26,28 @@ import {
   calculateUValue,
 } from "../../../calculations/FabricDetailCal/RoofCalculation.js";
 
+import useWallFabricDetailsStore from '../../../store/useWallFabricDetailsStore.js';
+
 function WallFabricDetails() {
-  // State variables for each layer's material and thickness
-  const [outerLayerMaterial, setOuterLayerMaterial] = useState(null);
-  const [outerLayerThickness, setOuterLayerThickness] = useState("");
-  const [coreLayerMaterial, setCoreLayerMaterial] = useState(null);
-  const [coreLayerThickness, setCoreLayerThickness] = useState("");
-  const [insulationLayerMaterial, setInsulationLayerMaterial] = useState(null);
-  const [insulationLayerThickness, setInsulationLayerThickness] = useState("");
-  const [innerLayerMaterial, setInnerLayerMaterial] = useState(null);
-  const [innerLayerThickness, setInnerLayerThickness] = useState("");
+  // Use Zustand store instead of useState
+  const {
+    outerLayerMaterial,
+    setOuterLayerMaterial,
+    outerLayerThickness,
+    setOuterLayerThickness,
+    coreLayerMaterial,
+    setCoreLayerMaterial,
+    coreLayerThickness,
+    setCoreLayerThickness,
+    insulationLayerMaterial,
+    setInsulationLayerMaterial,
+    insulationLayerThickness,
+    setInsulationLayerThickness,
+    innerLayerMaterial,
+    setInnerLayerMaterial,
+    innerLayerThickness,
+    setInnerLayerThickness,
+  } = useWallFabricDetailsStore();
 
   // hi and ho are set to default values and used in calculations
   const hi = 2.5;
@@ -83,8 +95,6 @@ function WallFabricDetails() {
 
   return (
     <Box p={3} display="flex" flexDirection="column" gap={2}>
-      {/* <h1 className="font-semibold text-2xl">Wall Details</h1> */}
-
       {/* Outer Layer Inputs */}
       <Box display="flex" gap={2} alignItems="center">
         <FormControl fullWidth variant="outlined">
@@ -189,7 +199,9 @@ function WallFabricDetails() {
           fullWidth
           value={insulationLayerThickness}
           onChange={(e) => setInsulationLayerThickness(e.target.value)}
-          disabled={insulationLayerMaterial && insulationLayerMaterial.name === "None"}
+          disabled={
+            insulationLayerMaterial && insulationLayerMaterial.name === "None"
+          }
         />
       </Box>
 
