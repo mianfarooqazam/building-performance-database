@@ -6,6 +6,7 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  Grid,
 } from '@mui/material';
 
 import {
@@ -46,7 +47,7 @@ function Ventilation() {
       dwellingVolumeM3 = dwellingVolume * 0.0283168;
     }
 
-    if (numberOfFans !== '') {
+    if (numberOfFans !== '' && parseFloat(numberOfFans) >= 2) {
       m3PerHr = calculateM3PerHr(parseFloat(numberOfFans));
 
       if (dwellingVolumeM3 && dwellingVolumeM3 !== 0) {
@@ -90,130 +91,159 @@ function Ventilation() {
   }
 
   return (
-    <Box p={3} display="flex" flexDirection="column" gap={2}>
-      {/* Number of Intermittent Fans Input */}
-      <TextField
-        label="Number of Intermittent Fans"
-        variant="outlined"
-        fullWidth
-        value={numberOfFans}
-        onChange={(e) => setNumberOfFans(e.target.value)}
-      />
+    <Box p={3}>
+      {/* Inputs Side by Side */}
+      <Grid container spacing={2}>
+        {/* Number of Intermittent Fans Input */}
+        <Grid item xs={6}>
+          <TextField
+            label="Number of Intermittent Fans"
+            variant="outlined"
+            fullWidth
+            value={numberOfFans}
+            onChange={(e) => setNumberOfFans(e.target.value)}
+            type="number"
+            inputProps={{ min: 2 }}
+            error={numberOfFans !== '' && parseFloat(numberOfFans) < 2}
+            helperText={
+              numberOfFans !== '' && parseFloat(numberOfFans) < 2
+                ? 'Minimum number of intermittent fans required are 2'
+                : ''
+            }
+          />
+        </Grid>
 
-      {/* Display Ventilation Rate (m³/hr) */}
-      {m3PerHr !== null && (
-        <Box
-          p={2}
-          mt={2}
-          bgcolor="lightblue"
-          borderRadius={2}
-          fontWeight="bold"
-          textAlign="center"
-        >
-          Ventilation Rate (m³/hr): {m3PerHr}
-        </Box>
-      )}
+        {/* Construction Type Input */}
+        <Grid item xs={6}>
+          <FormControl fullWidth variant="outlined">
+            <InputLabel>Construction Type</InputLabel>
+            <Select
+              label="Construction Type"
+              value={constructionType}
+              onChange={(e) => setConstructionType(e.target.value)}
+            >
+              <MenuItem value="masonry">Masonry</MenuItem>
+              <MenuItem value="steel">Steel</MenuItem>
+              <MenuItem value="timber">Timber</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
 
-      {/* Display Dwelling Volume in m³ */}
-      {dwellingVolumeM3 !== null && (
-        <Box
-          p={2}
-          bgcolor="lightblue"
-          borderRadius={2}
-          fontWeight="bold"
-          textAlign="center"
-        >
-          Dwelling Volume (m³): {dwellingVolumeM3.toFixed(4)}
-        </Box>
-      )}
+        {/* Lobby Type Input */}
+        <Grid item xs={6}>
+          <FormControl fullWidth variant="outlined">
+            <InputLabel>Lobby Type</InputLabel>
+            <Select
+              label="Lobby Type"
+              value={lobbyType}
+              onChange={(e) => setLobbyType(e.target.value)}
+            >
+              <MenuItem value="No draught">No Draught</MenuItem>
+              <MenuItem value="Draught">Draught</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
 
-      {/* Display ACH */}
-      {ACH !== null && (
-        <Box
-          p={2}
-          bgcolor="lightblue"
-          borderRadius={2}
-          fontWeight="bold"
-          textAlign="center"
-        >
-          ACH: {ACH.toFixed(4)}
-        </Box>
-      )}
+        {/* Percentage of Windows/Doors Draught Proofed */}
+        <Grid item xs={6}>
+          <TextField
+            label="Percentage of Windows/Doors Draught Proofed (%)"
+            variant="outlined"
+            fullWidth
+            value={percentageDraughtProofed}
+            onChange={(e) => setPercentageDraughtProofed(e.target.value)}
+            type="number"
+            inputProps={{ min: 0, max: 100 }}
+          />
+        </Grid>
+      </Grid>
 
-      {/* Display Additional Infiltration */}
-      {additionalInfiltration !== null && (
-        <Box
-          p={2}
-          bgcolor="lightblue"
-          borderRadius={2}
-          fontWeight="bold"
-          textAlign="center"
-        >
-          Additional Infiltration: {additionalInfiltration.toFixed(4)}
-        </Box>
-      )}
+      {/* Blue Background Values Below Inputs */}
+      <Box mt={4}>
+        {/* Display Ventilation Rate (m³/hr) */}
+        {m3PerHr !== null && (
+          <Box
+            p={2}
+            mt={2}
+            bgcolor="lightblue"
+            borderRadius={2}
+            fontWeight="bold"
+            textAlign="center"
+          >
+            Ventilation Rate (m³/hr): {m3PerHr}
+          </Box>
+        )}
 
-      {/* Construction Type Input */}
-      <FormControl fullWidth variant="outlined">
-        <InputLabel>Construction Type</InputLabel>
-        <Select
-          label="Construction Type"
-          value={constructionType}
-          onChange={(e) => setConstructionType(e.target.value)}
-        >
-          <MenuItem value="masonry">Masonry</MenuItem>
-          <MenuItem value="steel">Steel</MenuItem>
-          <MenuItem value="timber">Timber</MenuItem>
-        </Select>
-      </FormControl>
+        {/* Display Dwelling Volume in m³ */}
+        {dwellingVolumeM3 !== null && (
+          <Box
+            p={2}
+            mt={2}
+            bgcolor="lightblue"
+            borderRadius={2}
+            fontWeight="bold"
+            textAlign="center"
+          >
+            Dwelling Volume (m³): {dwellingVolumeM3.toFixed(4)}
+          </Box>
+        )}
 
-      {/* Lobby Type Input */}
-      <FormControl fullWidth variant="outlined">
-        <InputLabel>Lobby Type</InputLabel>
-        <Select
-          label="Lobby Type"
-          value={lobbyType}
-          onChange={(e) => setLobbyType(e.target.value)}
-        >
-          <MenuItem value="No draught">No Draught</MenuItem>
-          <MenuItem value="Draught">Draught</MenuItem>
-        </Select>
-      </FormControl>
+        {/* Display ACH */}
+        {ACH !== null && (
+          <Box
+            p={2}
+            mt={2}
+            bgcolor="lightblue"
+            borderRadius={2}
+            fontWeight="bold"
+            textAlign="center"
+          >
+            ACH: {ACH.toFixed(4)}
+          </Box>
+        )}
 
-      {/* Percentage of Windows/Doors Draught Proofed */}
-      <TextField
-        label="Percentage of Windows/Doors Draught Proofed (%)"
-        variant="outlined"
-        fullWidth
-        value={percentageDraughtProofed}
-        onChange={(e) => setPercentageDraughtProofed(e.target.value)}
-      />
+        {/* Display Additional Infiltration */}
+        {additionalInfiltration !== null && (
+          <Box
+            p={2}
+            mt={2}
+            bgcolor="lightblue"
+            borderRadius={2}
+            fontWeight="bold"
+            textAlign="center"
+          >
+            Additional Infiltration: {additionalInfiltration.toFixed(4)}
+          </Box>
+        )}
 
-      {/* Display Window Infiltration */}
-      {windowInfiltration !== null && (
-        <Box
-          p={2}
-          bgcolor="lightblue"
-          borderRadius={2}
-          fontWeight="bold"
-          textAlign="center"
-        >
-          Window Infiltration: {windowInfiltration.toFixed(4)}
-        </Box>
-      )}
+        {/* Display Window Infiltration */}
+        {windowInfiltration !== null && (
+          <Box
+            p={2}
+            mt={2}
+            bgcolor="lightblue"
+            borderRadius={2}
+            fontWeight="bold"
+            textAlign="center"
+          >
+            Window Infiltration: {windowInfiltration.toFixed(4)}
+          </Box>
+        )}
 
-      {/* Display Infiltration Rate */}
-      {infiltrationRate !== null && (
-        <Box
-          p={2}
-          bgcolor="lightblue"
-          borderRadius={2}
-          fontWeight="bold"
-          textAlign="center"
-        >
-          Infiltration Rate: {infiltrationRate.toFixed(4)}
-        </Box>
-      )}
+        {/* Display Infiltration Rate */}
+        {infiltrationRate !== null && (
+          <Box
+            p={2}
+            mt={2}
+            bgcolor="lightblue"
+            borderRadius={2}
+            fontWeight="bold"
+            textAlign="center"
+          >
+            Infiltration Rate: {infiltrationRate.toFixed(4)}
+          </Box>
+        )}
+      </Box>
     </Box>
   );
 }

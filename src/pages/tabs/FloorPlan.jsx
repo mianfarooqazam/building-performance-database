@@ -1,5 +1,3 @@
-// src/components/FloorPlan.jsx
-
 import {
   Box,
   MenuItem,
@@ -79,9 +77,9 @@ function FloorPlan() {
     const area = calculateArea(wallLengths, wallLabels) || 0;
     setCalculatedArea(area);
 
-    const volume = calculateDwellingVolume(area, wallHeight) || 0;
+    const volume = calculateDwellingVolume(area, wallHeight, numberOfFloors) || 0;
     setDwellingVolume(volume);
-  }, [wallLengths, buildingOrientation, wallHeight, setDwellingVolume]);
+  }, [wallLengths, buildingOrientation, wallHeight, numberOfFloors, setDwellingVolume]);
 
   const handleAddWindow = () => {
     if (windows.length < 4 && newWindowOrientation && newWindowArea) {

@@ -1,4 +1,3 @@
-
 export function getWallInputs(orientation, OrientationSingleWindow, OrientationDoubleWindow) {
   let walls = [];
   if (!orientation) return walls;
@@ -44,7 +43,8 @@ export function calculateArea(wallLengths, wallLabels) {
   return 0;
 }
 
-export function calculateDwellingVolume(area, wallHeight) {
+export function calculateDwellingVolume(area, wallHeight, numberOfFloors) {
   const height = parseFloat(wallHeight) || 0;
-  return area * height;
+  const floors = parseInt(numberOfFloors) || 1;
+  return area * height * floors;
 }

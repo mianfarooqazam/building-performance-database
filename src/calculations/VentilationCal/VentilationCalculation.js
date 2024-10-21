@@ -1,4 +1,7 @@
 export const calculateM3PerHr = (numberOfFans) => {
+    if (numberOfFans < 2) {
+      throw new Error('Minimum number of intermittent fans is 2.');
+    }
     return numberOfFans * 10;
   };
   
