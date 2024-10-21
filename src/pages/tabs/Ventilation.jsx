@@ -1,10 +1,219 @@
-import { Box } from '@mui/material';
+import { useState } from 'react';
+import {
+  Box,
+  TextField,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+} from '@mui/material';
+
+import {
+  calculateM3PerHr,
+  calculateACH,
+  calculateAdditionalInfiltration,
+  constructionTypeValue,
+  lobbyTypeValue,
+  calculateWindowInfiltration,
+  calculateInfiltrationRate,
+} from '../../calculations/VentilationCal/VentilationCalculation.js';
+
+import useFloorPlanStore from '../../store/useFloorPlanStore.js';
 
 function Ventilation() {
+  // State variables
+  const [numberOfFans, setNumberOfFans] = useState('');
+  const [constructionType, setConstructionType] = useState('');
+  const [lobbyType, setLobbyType] = useState('');
+  const [percentageDraughtProofed, setPercentageDraughtProofed] = useState('');
+
+  // Get dwellingVolume and numberOfFloors from the store
+  const { dwellingVolume, numberOfFloors } = useFloorPlanStore();
+
+  // Calculations
+  let m3PerHr = null;
+  let ACH = null;
+  let additionalInfiltration = null;
+  let constructionValue = null;
+  let lobbyValue = null;
+  let windowInfiltration = null;
+  let infiltrationRate = null;
+  let dwellingVolumeM3 = null;
+
+  try {
+    // Convert dwelling volume from ft³ to m³
+    if (dwellingVolume) {
+      dwellingVolumeM3 = dwellingVolume * 0.0283168;
+    }
+
+    if (numberOfFans !== '') {
+      m3PerHr = calculateM3PerHr(parseFloat(numberOfFans));
+
+      if (dwellingVolumeM3 && dwellingVolumeM3 !== 0) {
+        ACH = calculateACH(m3PerHr, dwellingVolumeM3);
+      }
+    }
+
+    if (numberOfFloors) {
+      additionalInfiltration = calculateAdditionalInfiltration(parseFloat(numberOfFloors));
+    }
+
+    if (constructionType) {
+      constructionValue = constructionTypeValue(constructionType);
+    }
+
+    if (lobbyType) {
+      lobbyValue = lobbyTypeValue(lobbyType);
+    }
+
+    if (percentageDraughtProofed !== '') {
+      windowInfiltration = calculateWindowInfiltration(parseFloat(percentageDraughtProofed));
+    }
+
+    if (
+      ACH !== null &&
+      additionalInfiltration !== null &&
+      constructionValue !== null &&
+      lobbyValue !== null &&
+      windowInfiltration !== null
+    ) {
+      infiltrationRate = calculateInfiltrationRate(
+        ACH,
+        additionalInfiltration,
+        constructionValue,
+        lobbyValue,
+        windowInfiltration
+      );
+    }
+  } catch (error) {
+    console.error(error.message);
+  }
+
   return (
-    <Box p={3}>
-      <p>Ventilation details and fields...</p>
-      {/* Add inputs related to fabric details */}
+    <Box p={3} display="flex" flexDirection="column" gap={2}>
+      {/* Number of Intermittent Fans Input */}
+      <TextField
+        label="Number of Intermittent Fans"
+        variant="outlined"
+        fullWidth
+        value={numberOfFans}
+        onChange={(e) => setNumberOfFans(e.target.value)}
+      />
+
+      {/* Display Ventilation Rate (m³/hr) */}
+      {m3PerHr !== null && (
+        <Box
+          p={2}
+          mt={2}
+          bgcolor="lightblue"
+          borderRadius={2}
+          fontWeight="bold"
+          textAlign="center"
+        >
+          Ventilation Rate (m³/hr): {m3PerHr}
+        </Box>
+      )}
+
+      {/* Display Dwelling Volume in m³ */}
+      {dwellingVolumeM3 !== null && (
+        <Box
+          p={2}
+          bgcolor="lightblue"
+          borderRadius={2}
+          fontWeight="bold"
+          textAlign="center"
+        >
+          Dwelling Volume (m³): {dwellingVolumeM3.toFixed(4)}
+        </Box>
+      )}
+
+      {/* Display ACH */}
+      {ACH !== null && (
+        <Box
+          p={2}
+          bgcolor="lightblue"
+          borderRadius={2}
+          fontWeight="bold"
+          textAlign="center"
+        >
+          ACH: {ACH.toFixed(4)}
+        </Box>
+      )}
+
+      {/* Display Additional Infiltration */}
+      {additionalInfiltration !== null && (
+        <Box
+          p={2}
+          bgcolor="lightblue"
+          borderRadius={2}
+          fontWeight="bold"
+          textAlign="center"
+        >
+          Additional Infiltration: {additionalInfiltration.toFixed(4)}
+        </Box>
+      )}
+
+      {/* Construction Type Input */}
+      <FormControl fullWidth variant="outlined">
+        <InputLabel>Construction Type</InputLabel>
+        <Select
+          label="Construction Type"
+          value={constructionType}
+          onChange={(e) => setConstructionType(e.target.value)}
+        >
+          <MenuItem value="masonry">Masonry</MenuItem>
+          <MenuItem value="steel">Steel</MenuItem>
+          <MenuItem value="timber">Timber</MenuItem>
+        </Select>
+      </FormControl>
+
+      {/* Lobby Type Input */}
+      <FormControl fullWidth variant="outlined">
+        <InputLabel>Lobby Type</InputLabel>
+        <Select
+          label="Lobby Type"
+          value={lobbyType}
+          onChange={(e) => setLobbyType(e.target.value)}
+        >
+          <MenuItem value="No draught">No Draught</MenuItem>
+          <MenuItem value="Draught">Draught</MenuItem>
+        </Select>
+      </FormControl>
+
+      {/* Percentage of Windows/Doors Draught Proofed */}
+      <TextField
+        label="Percentage of Windows/Doors Draught Proofed (%)"
+        variant="outlined"
+        fullWidth
+        value={percentageDraughtProofed}
+        onChange={(e) => setPercentageDraughtProofed(e.target.value)}
+      />
+
+      {/* Display Window Infiltration */}
+      {windowInfiltration !== null && (
+        <Box
+          p={2}
+          bgcolor="lightblue"
+          borderRadius={2}
+          fontWeight="bold"
+          textAlign="center"
+        >
+          Window Infiltration: {windowInfiltration.toFixed(4)}
+        </Box>
+      )}
+
+      {/* Display Infiltration Rate */}
+      {infiltrationRate !== null && (
+        <Box
+          p={2}
+          bgcolor="lightblue"
+          borderRadius={2}
+          fontWeight="bold"
+          textAlign="center"
+        >
+          Infiltration Rate: {infiltrationRate.toFixed(4)}
+        </Box>
+      )}
     </Box>
   );
 }

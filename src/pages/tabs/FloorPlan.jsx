@@ -1,3 +1,5 @@
+// src/components/FloorPlan.jsx
+
 import {
   Box,
   MenuItem,
@@ -33,10 +35,11 @@ function FloorPlan() {
     setNumberOfFloors,
     setWallLengths,
     setWallHeight,
+    dwellingVolume,
+    setDwellingVolume,
   } = useFloorPlanStore();
 
   const [calculatedArea, setCalculatedArea] = useState(0);
-  const [dwellingVolume, setDwellingVolume] = useState(0);
 
   const [windows, setWindows] = useState([]);
   const [newWindowOrientation, setNewWindowOrientation] = useState("");
@@ -72,12 +75,13 @@ function FloorPlan() {
       OrientationSingleWindow,
       OrientationDoubleWindow
     );
-    const area = calculateArea(wallLengths, wallLabels);
+
+    const area = calculateArea(wallLengths, wallLabels) || 0;
     setCalculatedArea(area);
 
-    const volume = calculateDwellingVolume(area, wallHeight);
+    const volume = calculateDwellingVolume(area, wallHeight) || 0;
     setDwellingVolume(volume);
-  }, [wallLengths, buildingOrientation, wallHeight]);
+  }, [wallLengths, buildingOrientation, wallHeight, setDwellingVolume]);
 
   const handleAddWindow = () => {
     if (windows.length < 4 && newWindowOrientation && newWindowArea) {
@@ -126,9 +130,9 @@ function FloorPlan() {
             value={buildingOrientation}
             onChange={(e) => {
               setBuildingOrientation(e.target.value);
-              setWallLengths({}); 
-              setWindows([]);     
-              setDoors([]);      
+              setWallLengths({});
+              setWindows([]);
+              setDoors([]);
             }}
           >
             {Orientation.map((direction) => (
@@ -143,7 +147,7 @@ function FloorPlan() {
           <Select
             label="No. of Floors"
             value={numberOfFloors}
-            onChange={(e) => setNumberOfFloors(e.target.value)}
+            onChange={(e) => setNumberOfFloors(parseInt(e.target.value))}
           >
             {Floors.map((floor) => (
               <MenuItem key={floor} value={floor}>
@@ -172,9 +176,10 @@ function FloorPlan() {
                 onChange={(e) =>
                   setWallLengths({
                     ...wallLengths,
-                    [label]: e.target.value,
+                    [label]: parseFloat(e.target.value) || "",
                   })
                 }
+                type="number"
               />
             ))}
           </Box>
@@ -185,7 +190,8 @@ function FloorPlan() {
               fullWidth
               sx={{ flex: 1 }}
               value={wallHeight}
-              onChange={(e) => setWallHeight(e.target.value)}
+              onChange={(e) => setWallHeight(parseFloat(e.target.value) || "")}
+              type="number"
             />
           </Box>
           <Box display="flex" flexWrap="wrap" gap={2} alignItems="center">
@@ -197,7 +203,11 @@ function FloorPlan() {
               borderRadius={2}
               fontWeight="bold"
             >
-              Calculated Floor Area: {calculatedArea.toFixed(2)} ft²
+              Calculated Floor Area:{" "}
+              {typeof calculatedArea === "number" && !isNaN(calculatedArea)
+                ? calculatedArea.toFixed(2)
+                : "N/A"}{" "}
+              ft²
             </Box>
             <Box
               p={2}
@@ -207,7 +217,11 @@ function FloorPlan() {
               borderRadius={2}
               fontWeight="bold"
             >
-              Dwelling Volume: {dwellingVolume.toFixed(2)} ft³
+              Dwelling Volume:{" "}
+              {typeof dwellingVolume === "number" && !isNaN(dwellingVolume)
+                ? dwellingVolume.toFixed(2)
+                : "N/A"}{" "}
+              ft³
             </Box>
           </Box>
         </>
@@ -239,6 +253,7 @@ function FloorPlan() {
             sx={{ flex: 1 }}
             value={newWindowArea}
             onChange={(e) => setNewWindowArea(e.target.value)}
+            type="number"
           />
           <Button variant="contained" onClick={handleAddWindow}>
             Add
@@ -309,6 +324,7 @@ function FloorPlan() {
             sx={{ flex: 1 }}
             value={newDoorArea}
             onChange={(e) => setNewDoorArea(e.target.value)}
+            type="number"
           />
           <Button variant="contained" onClick={handleAddDoor}>
             Add

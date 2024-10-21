@@ -1,4 +1,3 @@
-// src/components/DoorFabricDetails.js
 
 import {
   Box,
