@@ -1,4 +1,5 @@
-import { useState } from "react";
+// src/components/DoorFabricDetails.js
+
 import {
   Box,
   MenuItem,
@@ -21,10 +22,16 @@ import {
   calculateUValue,
 } from "../../../calculations/FabricDetailCal/RoofCalculation.js";
 
+import useDoorFabricDetailsStore from '../../../store/useDoorFabricDetailsStore';
+
 function DoorFabricDetails() {
-  // State variables for Door Type and Thickness
-  const [doorMaterial, setDoorMaterial] = useState(null);
-  const [doorThickness, setDoorThickness] = useState("");
+  // Use Zustand store instead of useState
+  const {
+    doorMaterial,
+    setDoorMaterial,
+    doorThickness,
+    setDoorThickness,
+  } = useDoorFabricDetailsStore();
 
   // Default values for hi and ho
   const hi = 2.5;
@@ -104,20 +111,6 @@ function DoorFabricDetails() {
           disabled={doorMaterial && doorMaterial.name === "None"}
         />
       </Box>
-
-      {/* Display K-Value */}
-      {/* {doorMaterial && (
-        <Box
-          p={2}
-          mt={2}
-          bgcolor="lightgreen"
-          borderRadius={2}
-          fontWeight="bold"
-          textAlign="center"
-        >
-          K-Value: {doorMaterial.k_value}
-        </Box>
-      )} */}
 
       {/* Calculation Error Display */}
       {calculationError && (

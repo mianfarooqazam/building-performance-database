@@ -1,6 +1,5 @@
-// WindowDetails.js
+// src/components/WindowFabricDetails.js
 
-import { useState } from "react";
 import {
   Box,
   MenuItem,
@@ -17,11 +16,18 @@ import {
 import { WindowType, FrameType, ShadingCover } from "../../../utils/WindowLayerData.js";
 import { calculateEffectiveUValue } from "../../../calculations/FabricDetailCal/WindowCalculation.js";
 
+import useWindowFabricDetailsStore from '../../../store/useWindowFabricDetailsStore.js';
+
 function WindowFabricDetails() {
-  // State variables for selections
-  const [selectedWindowType, setSelectedWindowType] = useState(null);
-  const [selectedFrameType, setSelectedFrameType] = useState(null);
-  const [selectedShadingCover, setSelectedShadingCover] = useState(null);
+  // Use Zustand store instead of useState
+  const {
+    selectedWindowType,
+    setSelectedWindowType,
+    selectedFrameType,
+    setSelectedFrameType,
+    selectedShadingCover,
+    setSelectedShadingCover,
+  } = useWindowFabricDetailsStore();
 
   // Effective U-value calculation
   let effectiveUValue = null;
