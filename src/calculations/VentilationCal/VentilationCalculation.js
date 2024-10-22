@@ -40,8 +40,7 @@ export const calculateM3PerHr = (numberOfFans) => {
   };
   
   export const calculateWindowInfiltration = (percentageDraughtProofed) => {
-    // Corrected formula: 0.25 - [0.2 x (percentageDraughtProofed ÷ 100)]
-    return 0.25 - (0.2 * percentageDraughtProofed) / 100;
+    return 0.25 - [0.2 * (percentageDraughtProofed) / 100] ;
   };
   
   export const calculateInfiltrationRate = (
