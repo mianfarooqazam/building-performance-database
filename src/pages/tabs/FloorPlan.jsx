@@ -35,10 +35,11 @@ function FloorPlan() {
     setWallHeight,
     dwellingVolume,
     setDwellingVolume,
+    sidesConnected,
+    setSidesConnected,
   } = useFloorPlanStore();
 
   const [calculatedArea, setCalculatedArea] = useState(0);
-  const [sidesConnected, setSidesConnected] = useState(0);
 
   const [windows, setWindows] = useState([]);
   const [newWindowOrientation, setNewWindowOrientation] = useState("");

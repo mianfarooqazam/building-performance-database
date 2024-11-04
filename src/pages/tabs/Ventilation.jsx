@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 import {
   Box,
   TextField,
@@ -7,7 +7,7 @@ import {
   InputLabel,
   FormControl,
   Grid,
-} from '@mui/material';
+} from "@mui/material";
 
 import {
   calculateM3PerHr,
@@ -17,19 +17,21 @@ import {
   lobbyTypeValue,
   calculateWindowInfiltration,
   calculateInfiltrationRate,
-} from '../../calculations/VentilationCal/VentilationCalculation.js';
+  calculateShelterFactor,
+} from "../../calculations/VentilationCal/VentilationCalculation.js";
 
-import useFloorPlanStore from '../../store/useFloorPlanStore.js';
+import useFloorPlanStore from "../../store/useFloorPlanStore.js";
 
 function Ventilation() {
   // State variables
-  const [numberOfFans, setNumberOfFans] = useState('');
-  const [constructionType, setConstructionType] = useState('');
-  const [lobbyType, setLobbyType] = useState('');
-  const [percentageDraughtProofed, setPercentageDraughtProofed] = useState('');
+  const [numberOfFans, setNumberOfFans] = useState("");
+  const [constructionType, setConstructionType] = useState("");
+  const [lobbyType, setLobbyType] = useState("");
+  const [percentageDraughtProofed, setPercentageDraughtProofed] = useState("");
 
-  // Get dwellingVolume and numberOfFloors from the store
-  const { dwellingVolume, numberOfFloors } = useFloorPlanStore();
+  // Get dwellingVolume, numberOfFloors, and sidesConnected from the store
+  const { dwellingVolume, numberOfFloors, sidesConnected } =
+    useFloorPlanStore();
 
   // Calculations
   let m3PerHr = null;
@@ -40,14 +42,14 @@ function Ventilation() {
   let windowInfiltration = null;
   let infiltrationRate = null;
   let dwellingVolumeM3 = null;
-
+  let shelterFactor = null; 
   try {
     // Convert dwelling volume from ft³ to m³
     if (dwellingVolume) {
       dwellingVolumeM3 = dwellingVolume * 0.0283168;
     }
 
-    if (numberOfFans !== '' && parseFloat(numberOfFans) >= 2) {
+    if (numberOfFans !== "" && parseFloat(numberOfFans) >= 2) {
       m3PerHr = calculateM3PerHr(parseFloat(numberOfFans));
 
       if (dwellingVolumeM3 && dwellingVolumeM3 !== 0) {
@@ -56,7 +58,9 @@ function Ventilation() {
     }
 
     if (numberOfFloors) {
-      additionalInfiltration = calculateAdditionalInfiltration(parseFloat(numberOfFloors));
+      additionalInfiltration = calculateAdditionalInfiltration(
+        parseFloat(numberOfFloors)
+      );
     }
 
     if (constructionType) {
@@ -67,8 +71,15 @@ function Ventilation() {
       lobbyValue = lobbyTypeValue(lobbyType);
     }
 
-    if (percentageDraughtProofed !== '') {
-      windowInfiltration = calculateWindowInfiltration(parseFloat(percentageDraughtProofed));
+    if (percentageDraughtProofed !== "") {
+      windowInfiltration = calculateWindowInfiltration(
+        parseFloat(percentageDraughtProofed)
+      );
+    }
+
+    // Calculate Shelter Factor
+    if (sidesConnected !== null && sidesConnected !== undefined) {
+      shelterFactor = calculateShelterFactor(sidesConnected);
     }
 
     if (
@@ -104,11 +115,11 @@ function Ventilation() {
             onChange={(e) => setNumberOfFans(e.target.value)}
             type="number"
             inputProps={{ min: 2 }}
-            error={numberOfFans !== '' && parseFloat(numberOfFans) < 2}
+            error={numberOfFans !== "" && parseFloat(numberOfFans) < 2}
             helperText={
-              numberOfFans !== '' && parseFloat(numberOfFans) < 2
-                ? 'Minimum number of intermittent fans required are 2'
-                : ''
+              numberOfFans !== "" && parseFloat(numberOfFans) < 2
+                ? "Minimum number of intermittent fans required are 2"
+                : ""
             }
           />
         </Grid>
@@ -184,7 +195,7 @@ function Ventilation() {
             fontWeight="bold"
             textAlign="center"
           >
-            Dwelling Volume (m³): {dwellingVolumeM3.toFixed(4)}
+            Dwelling Volume (m³): {dwellingVolumeM3}
           </Box>
         )}
 
@@ -198,7 +209,7 @@ function Ventilation() {
             fontWeight="bold"
             textAlign="center"
           >
-            ACH: {ACH.toFixed(4)}
+            ACH: {ACH}
           </Box>
         )}
 
@@ -212,7 +223,7 @@ function Ventilation() {
             fontWeight="bold"
             textAlign="center"
           >
-            Additional Infiltration: {additionalInfiltration.toFixed(4)}
+            Additional Infiltration: {additionalInfiltration}
           </Box>
         )}
 
@@ -226,7 +237,7 @@ function Ventilation() {
             fontWeight="bold"
             textAlign="center"
           >
-            Window Infiltration: {windowInfiltration.toFixed(4)}
+            Window Infiltration: {windowInfiltration}
           </Box>
         )}
 
@@ -241,6 +252,20 @@ function Ventilation() {
             textAlign="center"
           >
             Infiltration Rate: {infiltrationRate.toFixed(4)}
+          </Box>
+        )}
+
+        {/* Display Shelter Factor */}
+        {shelterFactor !== null && (
+          <Box
+            p={2}
+            mt={2}
+            bgcolor="lightblue"
+            borderRadius={2}
+            fontWeight="bold"
+            textAlign="center"
+          >
+            Shelter Factor: {shelterFactor.toFixed(2)}
           </Box>
         )}
       </Box>

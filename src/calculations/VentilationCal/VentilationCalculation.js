@@ -53,3 +53,9 @@ export const calculateM3PerHr = (numberOfFans) => {
     return ACH + additionalInfiltration + constructionValue + lobbyValue + windowInfiltration;
   };
   
+  export const calculateShelterFactor = (sidesConnected) => {
+    if (sidesConnected < 0 || sidesConnected > 4) {
+      throw new Error('Number of sides connected must be between 0 and 4.');
+    }
+    return 1 - (0.075 * sidesConnected);
+  };
