@@ -15,6 +15,7 @@ const useFloorPlanStore = create(
       totalFloorArea: '',
       windowArea: '',
       dwellingVolume: 0,  
+      sidesConnected: 0, 
 
       // Actions
       setBuildingOrientation: (buildingOrientation) => set({ buildingOrientation }),
@@ -25,7 +26,8 @@ const useFloorPlanStore = create(
       setWallHeight: (wallHeight) => set({ wallHeight }),
       setTotalFloorArea: (totalFloorArea) => set({ totalFloorArea }),
       setWindowArea: (windowArea) => set({ windowArea }),
-      setDwellingVolume: (dwellingVolume) => set({ dwellingVolume }),  // Ensure it's a number
+      setDwellingVolume: (dwellingVolume) => set({ dwellingVolume }),  
+      setSidesConnected: (sidesConnected) => set({ sidesConnected }),
     }),
     {
       name: 'floorplan-storage', // Unique name for the storage key
@@ -34,3 +36,4 @@ const useFloorPlanStore = create(
 );
 
 export default useFloorPlanStore;
+

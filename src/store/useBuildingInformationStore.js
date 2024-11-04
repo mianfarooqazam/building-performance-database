@@ -1,5 +1,3 @@
-// src/stores/useBuildingInformationStore.js
-
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -11,7 +9,6 @@ const useBuildingInformationStore = create(
       plotNo: '',
       streetNo: '',
       postalCode: '',
-      selectedState: '',
       selectedCity: '',
 
       // Actions
@@ -20,7 +17,6 @@ const useBuildingInformationStore = create(
       setPlotNo: (plotNo) => set({ plotNo }),
       setStreetNo: (streetNo) => set({ streetNo }),
       setPostalCode: (postalCode) => set({ postalCode }),
-      setSelectedState: (selectedState) => set({ selectedState }),
       setSelectedCity: (selectedCity) => set({ selectedCity }),
     }),
     {

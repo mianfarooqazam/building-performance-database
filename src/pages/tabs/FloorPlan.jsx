@@ -38,6 +38,7 @@ function FloorPlan() {
   } = useFloorPlanStore();
 
   const [calculatedArea, setCalculatedArea] = useState(0);
+  const [sidesConnected, setSidesConnected] = useState(0);
 
   const [windows, setWindows] = useState([]);
   const [newWindowOrientation, setNewWindowOrientation] = useState("");
@@ -77,9 +78,16 @@ function FloorPlan() {
     const area = calculateArea(wallLengths, wallLabels) || 0;
     setCalculatedArea(area);
 
-    const volume = calculateDwellingVolume(area, wallHeight, numberOfFloors) || 0;
+    const volume =
+      calculateDwellingVolume(area, wallHeight, numberOfFloors) || 0;
     setDwellingVolume(volume);
-  }, [wallLengths, buildingOrientation, wallHeight, numberOfFloors, setDwellingVolume]);
+  }, [
+    wallLengths,
+    buildingOrientation,
+    wallHeight,
+    numberOfFloors,
+    setDwellingVolume,
+  ]);
 
   const handleAddWindow = () => {
     if (windows.length < 4 && newWindowOrientation && newWindowArea) {
@@ -181,6 +189,7 @@ function FloorPlan() {
               />
             ))}
           </Box>
+
           <Box display="flex" flexWrap="wrap" gap={2}>
             <TextField
               label="Wall Height (ft)"
@@ -191,7 +200,22 @@ function FloorPlan() {
               onChange={(e) => setWallHeight(parseFloat(e.target.value) || "")}
               type="number"
             />
+            <FormControl fullWidth variant="outlined" sx={{ flex: 1 }}>
+              <InputLabel>No. of Sides Connected to Other Building</InputLabel>
+              <Select
+                label="No. of Sides Connected to Other Building"
+                value={sidesConnected}
+                onChange={(e) => setSidesConnected(parseInt(e.target.value))}
+              >
+                {[0, 1, 2, 3].map((side) => (
+                  <MenuItem key={side} value={side}>
+                    {side}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Box>
+
           <Box display="flex" flexWrap="wrap" gap={2} alignItems="center">
             <Box
               p={2}
