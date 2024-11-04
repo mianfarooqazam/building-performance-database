@@ -42,7 +42,9 @@ function Ventilation() {
   let windowInfiltration = null;
   let infiltrationRate = null;
   let dwellingVolumeM3 = null;
-  let shelterFactor = null; 
+  let shelterFactor = null;
+  let infiltrationRateWithShelterFactor = null;
+
   try {
     // Convert dwelling volume from ft³ to m³
     if (dwellingVolume) {
@@ -77,11 +79,6 @@ function Ventilation() {
       );
     }
 
-    // Calculate Shelter Factor
-    if (sidesConnected !== null && sidesConnected !== undefined) {
-      shelterFactor = calculateShelterFactor(sidesConnected);
-    }
-
     if (
       ACH !== null &&
       additionalInfiltration !== null &&
@@ -96,6 +93,16 @@ function Ventilation() {
         lobbyValue,
         windowInfiltration
       );
+    }
+
+    // Calculate Shelter Factor
+    if (sidesConnected !== null && sidesConnected !== undefined) {
+      shelterFactor = calculateShelterFactor(sidesConnected);
+    }
+
+    // Calculate Infiltration Rate Incorporating Shelter Factor
+    if (infiltrationRate !== null && shelterFactor !== null) {
+      infiltrationRateWithShelterFactor = infiltrationRate * shelterFactor;
     }
   } catch (error) {
     console.error(error.message);
@@ -266,6 +273,20 @@ function Ventilation() {
             textAlign="center"
           >
             Shelter Factor: {shelterFactor.toFixed(2)}
+          </Box>
+        )}
+
+        {/* Display Infiltration Rate Incorporating Shelter Factor */}
+        {infiltrationRateWithShelterFactor !== null && (
+          <Box
+            p={2}
+            mt={2}
+            bgcolor="lightblue"
+            borderRadius={2}
+            fontWeight="bold"
+            textAlign="center"
+          >
+            Infiltration Rate Incorporating Shelter Factor: {infiltrationRateWithShelterFactor.toFixed(4)}
           </Box>
         )}
       </Box>
