@@ -1,3 +1,4 @@
+// BuildingInformation.jsx
 import {
   Box,
   TextField,
@@ -6,7 +7,7 @@ import {
   InputLabel,
   FormControl,
 } from "@mui/material";
-import useBuildingInformationStore from '../../store/useBuildingInformationStore';
+import useBuildingInformationStore from "../../store/useBuildingInformationStore";
 
 function BuildingInformation() {
   const {
@@ -67,7 +68,7 @@ function BuildingInformation() {
           label="Postal Code"
           variant="outlined"
           fullWidth
-          type='number'
+          type="number"
           value={postalCode}
           onChange={(e) => setPostalCode(e.target.value)}
         />

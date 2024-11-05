@@ -1,3 +1,4 @@
+// Ventilation.jsx
 import { useState } from "react";
 import {
   Box,
@@ -7,6 +8,14 @@ import {
   InputLabel,
   FormControl,
   Grid,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Typography,
 } from "@mui/material";
 
 import {
@@ -18,9 +27,19 @@ import {
   calculateWindowInfiltration,
   calculateInfiltrationRate,
   calculateShelterFactor,
+  calculateWindFactor,
+  calculateAdjustedInfiltrationRate,
 } from "../../calculations/VentilationCal/VentilationCalculation.js";
 
 import useFloorPlanStore from "../../store/useFloorPlanStore.js";
+import useBuildingInformationStore from "../../store/useBuildingInformationStore";
+
+// Import wind data JSON files
+import IslamabadWind from "../../utils/wind/IslamabadWind.json";
+import KarachiWind from "../../utils/wind/KarachiWind.json";
+import LahoreWind from "../../utils/wind/LahoreWind.json";
+import MultanWind from "../../utils/wind/MultanWind.json";
+import PeshawarWind from "../../utils/wind/PeshawarWind.json";
 
 function Ventilation() {
   // State variables
@@ -33,6 +52,21 @@ function Ventilation() {
   const { dwellingVolume, numberOfFloors, sidesConnected } =
     useFloorPlanStore();
 
+  // Get selectedCity from the building information store
+  const { selectedCity } = useBuildingInformationStore();
+
+  // Mapping of cities to wind data
+  const windData = {
+    Islamabad: IslamabadWind,
+    Karachi: KarachiWind,
+    Lahore: LahoreWind,
+    Multan: MultanWind,
+    Peshawar: PeshawarWind,
+  };
+
+  // Retrieve wind data for the selected city
+  const cityWindData = selectedCity ? windData[selectedCity] : null;
+
   // Calculations
   let m3PerHr = null;
   let ACH = null;
@@ -44,6 +78,23 @@ function Ventilation() {
   let dwellingVolumeM3 = null;
   let shelterFactor = null;
   let infiltrationRateWithShelterFactor = null;
+  let windFactor = null;
+  let adjustedInfiltrationRate = null;
+
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
   try {
     // Convert dwelling volume from ft³ to m³
@@ -103,6 +154,22 @@ function Ventilation() {
     // Calculate Infiltration Rate Incorporating Shelter Factor
     if (infiltrationRate !== null && shelterFactor !== null) {
       infiltrationRateWithShelterFactor = infiltrationRate * shelterFactor;
+    }
+
+    // Calculate Wind Factor
+    if (cityWindData) {
+      // Extract wind data values in the order of months
+      const windDataArray = months.map((month) => cityWindData[month]);
+
+      windFactor = calculateWindFactor(windDataArray);
+    }
+
+    // Calculate Adjusted Infiltration Rate
+    if (windFactor && infiltrationRateWithShelterFactor !== null) {
+      adjustedInfiltrationRate = calculateAdjustedInfiltrationRate(
+        windFactor,
+        infiltrationRateWithShelterFactor
+      );
     }
   } catch (error) {
     console.error(error.message);
@@ -202,7 +269,7 @@ function Ventilation() {
             fontWeight="bold"
             textAlign="center"
           >
-            Dwelling Volume (m³): {dwellingVolumeM3}
+            Dwelling Volume (m³): {dwellingVolumeM3.toFixed(2)}
           </Box>
         )}
 
@@ -216,7 +283,7 @@ function Ventilation() {
             fontWeight="bold"
             textAlign="center"
           >
-            ACH: {ACH}
+            ACH: {ACH.toFixed(4)}
           </Box>
         )}
 
@@ -230,7 +297,7 @@ function Ventilation() {
             fontWeight="bold"
             textAlign="center"
           >
-            Additional Infiltration: {additionalInfiltration}
+            Additional Infiltration: {additionalInfiltration.toFixed(4)}
           </Box>
         )}
 
@@ -244,7 +311,7 @@ function Ventilation() {
             fontWeight="bold"
             textAlign="center"
           >
-            Window Infiltration: {windowInfiltration}
+            Window Infiltration: {windowInfiltration.toFixed(4)}
           </Box>
         )}
 
@@ -286,10 +353,56 @@ function Ventilation() {
             fontWeight="bold"
             textAlign="center"
           >
-            Infiltration Rate Incorporating Shelter Factor: {infiltrationRateWithShelterFactor.toFixed(4)}
+            Infiltration Rate Incorporating Shelter Factor:{" "}
+            {infiltrationRateWithShelterFactor.toFixed(4)}
           </Box>
         )}
       </Box>
+
+      {/* Display Wind Data and Calculations */}
+      {cityWindData && (
+        <Box mt={4}>
+          <Typography variant="h6" gutterBottom>
+            Wind Data and Calculations
+          </Typography>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Month</TableCell>
+                  <TableCell>Selected City Wind Data</TableCell>
+                  <TableCell>Wind Factor</TableCell>
+                  <TableCell>Adjusted Infiltration Rate</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {months.map((month, index) => {
+                  const windValue = cityWindData[month];
+                  const windFactorValue = windFactor ? windFactor[index] : null;
+                  const adjustedInfiltrationValue = adjustedInfiltrationRate
+                    ? adjustedInfiltrationRate[index]
+                    : null;
+
+                  return (
+                    <TableRow key={month}>
+                      <TableCell>{month}</TableCell>
+                      <TableCell>{windValue !== undefined ? windValue : "-"}</TableCell>
+                      <TableCell>
+                        {windFactorValue !== null ? windFactorValue.toFixed(2) : "-"}
+                      </TableCell>
+                      <TableCell>
+                        {adjustedInfiltrationValue !== null
+                          ? adjustedInfiltrationValue.toFixed(2)
+                          : "-"}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
+      )}
     </Box>
   );
 }

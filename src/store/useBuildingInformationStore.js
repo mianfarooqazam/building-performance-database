@@ -1,15 +1,16 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+// useBuildingInformationStore.js
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 const useBuildingInformationStore = create(
   persist(
     (set) => ({
-      ownerName: '',
-      address: '',
-      plotNo: '',
-      streetNo: '',
-      postalCode: '',
-      selectedCity: '',
+      ownerName: "",
+      address: "",
+      plotNo: "",
+      streetNo: "",
+      postalCode: "",
+      selectedCity: "",
 
       // Actions
       setOwnerName: (ownerName) => set({ ownerName }),
@@ -20,7 +21,7 @@ const useBuildingInformationStore = create(
       setSelectedCity: (selectedCity) => set({ selectedCity }),
     }),
     {
-      name: 'building-information-storage', // Unique name for the storage key
+      name: "building-information-storage",
     }
   )
 );
