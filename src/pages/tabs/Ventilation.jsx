@@ -361,48 +361,49 @@ function Ventilation() {
 
       {/* Display Wind Data and Calculations */}
       {cityWindData && (
-        <Box mt={4}>
-          <Typography variant="h6" gutterBottom>
-            Wind Data and Calculations
-          </Typography>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Month</TableCell>
-                  <TableCell>Selected City Wind Data</TableCell>
-                  <TableCell>Wind Factor</TableCell>
-                  <TableCell>Adjusted Infiltration Rate</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {months.map((month, index) => {
-                  const windValue = cityWindData[month];
-                  const windFactorValue = windFactor ? windFactor[index] : null;
-                  const adjustedInfiltrationValue = adjustedInfiltrationRate
-                    ? adjustedInfiltrationRate[index]
-                    : null;
+  <Box mt={4}>
+    <Typography variant="h6" gutterBottom textAlign="center" fontWeight="bold">
+      Wind Data and Calculations
+    </Typography>
+    <TableContainer component={Paper}>
+      <Table>
+        <TableHead style={{ backgroundColor: "#add8e6" }}> {/* Light blue background */}
+          <TableRow>
+            <TableCell align="center" style={{ fontWeight: "bold" }}>Month</TableCell>
+            <TableCell align="center" style={{ fontWeight: "bold" }}>Selected City Wind Data</TableCell>
+            <TableCell align="center" style={{ fontWeight: "bold" }}>Wind Factor</TableCell>
+            <TableCell align="center" style={{ fontWeight: "bold" }}>Adjusted Infiltration Rate</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {months.map((month, index) => {
+            const windValue = cityWindData[month];
+            const windFactorValue = windFactor ? windFactor[index] : null;
+            const adjustedInfiltrationValue = adjustedInfiltrationRate
+              ? adjustedInfiltrationRate[index]
+              : null;
 
-                  return (
-                    <TableRow key={month}>
-                      <TableCell>{month}</TableCell>
-                      <TableCell>{windValue !== undefined ? windValue : "-"}</TableCell>
-                      <TableCell>
-                        {windFactorValue !== null ? windFactorValue.toFixed(2) : "-"}
-                      </TableCell>
-                      <TableCell>
-                        {adjustedInfiltrationValue !== null
-                          ? adjustedInfiltrationValue.toFixed(2)
-                          : "-"}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Box>
-      )}
+            return (
+              <TableRow key={month}>
+                <TableCell align="center">{month}</TableCell>
+                <TableCell align="center">{windValue !== undefined ? windValue : "-"}</TableCell>
+                <TableCell align="center">
+                  {windFactorValue !== null ? windFactorValue.toFixed(2) : "-"}
+                </TableCell>
+                <TableCell align="center">
+                  {adjustedInfiltrationValue !== null
+                    ? adjustedInfiltrationValue.toFixed(2)
+                    : "-"}
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  </Box>
+)}
+
     </Box>
   );
 }
