@@ -4,6 +4,7 @@ import { TextField, Button, Typography, Box } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import AuthBg from "../assets/auth-bg.jpg";
 
 const SignUp = () => {
   const [name, setName] = useState('');
