@@ -367,7 +367,7 @@ function Ventilation() {
     </Typography>
     <TableContainer component={Paper}>
       <Table>
-        <TableHead style={{ backgroundColor: "#add8e6" }}> {/* Light blue background */}
+        <TableHead style={{ backgroundColor: "#add8e6" }}>
           <TableRow>
             <TableCell align="center" style={{ fontWeight: "bold" }}>Month</TableCell>
             <TableCell align="center" style={{ fontWeight: "bold" }}>Selected City Wind Data</TableCell>
