@@ -1,23 +1,57 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import BuildingDetails from './pages/BuildingDetails';
 import Report from './pages/Report';
+import Login from './auth/Login';
+import SignUp from './auth/SignUp';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Check for token on component mount
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+    toast.info('Logged out successfully.');
+  };
+
   return (
-    <Router>
-      <div className="flex">
-        <Sidebar />
-        <div className="flex-1 bg-[#fafafa] ml-64 min-h-screen p-4">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/building-details" element={<BuildingDetails />} />
-            <Route path="/report" element={<Report />} />
-          </Routes>
+    <>
+      <ToastContainer position="top-right" autoClose={3000} />
+      <Router>
+        <div className="flex">
+          {isLoggedIn ? (
+            <>
+              <Sidebar onLogout={handleLogout} /> {/* Pass handleLogout to Sidebar */}
+              <div className="flex-1 bg-[#fafafa] ml-64 min-h-screen p-4">
+                <Routes>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/building-details" element={<BuildingDetails />} />
+                  <Route path="/report" element={<Report />} />
+                  <Route path="*" element={<Navigate to="/" />} />
+                </Routes>
+              </div>
+            </>
+          ) : (
+            <Routes>
+              <Route path="/" element={<Login onLogin={() => setIsLoggedIn(true)} />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+          )}
         </div>
-      </div>
-    </Router>
+      </Router>
+    </>
   );
 }
 
