@@ -79,3 +79,20 @@ export const calculateAdjustedInfiltrationRate = (
     (value) => value * infiltrationRateWithShelterFactor
   );
 };
+
+export const calculateFinalInfiltrationRate = (
+  adjustedInfiltrationRateArray,
+  ventilationType
+) => {
+  if (ventilationType === "Mechanical Ventilation") {
+    return adjustedInfiltrationRateArray.map(
+      (value) => 0.5 + value * value * 0.5
+    );
+  } else if (ventilationType === "Natural Ventilation") {
+    return adjustedInfiltrationRateArray.map(
+      (value) => value + 0.5 * 0.5
+    );
+  } else {
+    throw new Error("Invalid ventilation type.");
+  }
+};

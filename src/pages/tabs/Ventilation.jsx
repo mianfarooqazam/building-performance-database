@@ -29,6 +29,7 @@ import {
   calculateShelterFactor,
   calculateWindFactor,
   calculateAdjustedInfiltrationRate,
+  calculateFinalInfiltrationRate, // Import the new function
 } from "../../calculations/VentilationCal/VentilationCalculation.js";
 
 import useFloorPlanStore from "../../store/useFloorPlanStore.js";
@@ -47,6 +48,7 @@ function Ventilation() {
   const [constructionType, setConstructionType] = useState("");
   const [lobbyType, setLobbyType] = useState("");
   const [percentageDraughtProofed, setPercentageDraughtProofed] = useState("");
+  const [ventilationType, setVentilationType] = useState(""); // New state variable
 
   // Get dwellingVolume, numberOfFloors, and sidesConnected from the store
   const { dwellingVolume, numberOfFloors, sidesConnected } =
@@ -80,6 +82,7 @@ function Ventilation() {
   let infiltrationRateWithShelterFactor = null;
   let windFactor = null;
   let adjustedInfiltrationRate = null;
+  let finalInfiltrationRateArray = null; // New variable
 
   const months = [
     "January",
@@ -171,6 +174,14 @@ function Ventilation() {
         infiltrationRateWithShelterFactor
       );
     }
+
+    // Calculate Final Infiltration Rate based on Ventilation Type
+    if (adjustedInfiltrationRate && ventilationType) {
+      finalInfiltrationRateArray = calculateFinalInfiltrationRate(
+        adjustedInfiltrationRate,
+        ventilationType
+      );
+    }
   } catch (error) {
     console.error(error.message);
   }
@@ -240,6 +251,21 @@ function Ventilation() {
             type="number"
             inputProps={{ min: 0, max: 100 }}
           />
+        </Grid>
+
+        {/* Ventilation Type Input */}
+        <Grid item xs={6}>
+          <FormControl fullWidth variant="outlined">
+            <InputLabel>Ventilation Type</InputLabel>
+            <Select
+              label="Ventilation Type"
+              value={ventilationType}
+              onChange={(e) => setVentilationType(e.target.value)}
+            >
+              <MenuItem value="Natural Ventilation">Natural Ventilation</MenuItem>
+              <MenuItem value="Mechanical Ventilation">Mechanical Ventilation</MenuItem>
+            </Select>
+          </FormControl>
         </Grid>
       </Grid>
 
@@ -361,49 +387,78 @@ function Ventilation() {
 
       {/* Display Wind Data and Calculations */}
       {cityWindData && (
-  <Box mt={4}>
-    <Typography variant="h6" gutterBottom textAlign="center" fontWeight="bold">
-      Wind Data and Calculations
-    </Typography>
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead style={{ backgroundColor: "#add8e6" }}>
-          <TableRow>
-            <TableCell align="center" style={{ fontWeight: "bold" }}>Month</TableCell>
-            <TableCell align="center" style={{ fontWeight: "bold" }}>Selected City Wind Data</TableCell>
-            <TableCell align="center" style={{ fontWeight: "bold" }}>Wind Factor</TableCell>
-            <TableCell align="center" style={{ fontWeight: "bold" }}>Adjusted Infiltration Rate</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {months.map((month, index) => {
-            const windValue = cityWindData[month];
-            const windFactorValue = windFactor ? windFactor[index] : null;
-            const adjustedInfiltrationValue = adjustedInfiltrationRate
-              ? adjustedInfiltrationRate[index]
-              : null;
+        <Box mt={4}>
+          <Typography
+            variant="h6"
+            gutterBottom
+            textAlign="center"
+            fontWeight="bold"
+          >
+            Wind Data and Calculations
+          </Typography>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead style={{ backgroundColor: "#add8e6" }}>
+                <TableRow>
+                  <TableCell align="center" style={{ fontWeight: "bold" }}>
+                    Month
+                  </TableCell>
+                  <TableCell align="center" style={{ fontWeight: "bold" }}>
+                    Selected City Wind Data
+                  </TableCell>
+                  <TableCell align="center" style={{ fontWeight: "bold" }}>
+                    Wind Factor
+                  </TableCell>
+                  <TableCell align="center" style={{ fontWeight: "bold" }}>
+                    Adjusted Infiltration Rate
+                  </TableCell>
+                  <TableCell align="center" style={{ fontWeight: "bold" }}>
+                    {ventilationType
+                      ? `${ventilationType} Calculation`
+                      : "Calculation"}
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {months.map((month, index) => {
+                  const windValue = cityWindData[month];
+                  const windFactorValue = windFactor ? windFactor[index] : null;
+                  const adjustedInfiltrationValue = adjustedInfiltrationRate
+                    ? adjustedInfiltrationRate[index]
+                    : null;
+                  const finalInfiltrationValue = finalInfiltrationRateArray
+                    ? finalInfiltrationRateArray[index]
+                    : null;
 
-            return (
-              <TableRow key={month}>
-                <TableCell align="center">{month}</TableCell>
-                <TableCell align="center">{windValue !== undefined ? windValue : "-"}</TableCell>
-                <TableCell align="center">
-                  {windFactorValue !== null ? windFactorValue.toFixed(2) : "-"}
-                </TableCell>
-                <TableCell align="center">
-                  {adjustedInfiltrationValue !== null
-                    ? adjustedInfiltrationValue.toFixed(2)
-                    : "-"}
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  </Box>
-)}
-
+                  return (
+                    <TableRow key={month}>
+                      <TableCell align="center">{month}</TableCell>
+                      <TableCell align="center">
+                        {windValue !== undefined ? windValue : "-"}
+                      </TableCell>
+                      <TableCell align="center">
+                        {windFactorValue !== null
+                          ? windFactorValue.toFixed(2)
+                          : "-"}
+                      </TableCell>
+                      <TableCell align="center">
+                        {adjustedInfiltrationValue !== null
+                          ? adjustedInfiltrationValue.toFixed(4)
+                          : "-"}
+                      </TableCell>
+                      <TableCell align="center">
+                        {finalInfiltrationValue !== null
+                          ? finalInfiltrationValue.toFixed(4)
+                          : "-"}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
+      )}
     </Box>
   );
 }
