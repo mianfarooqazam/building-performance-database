@@ -21,7 +21,7 @@ const OuterLayer = [
 
 
 
-// refrence usman (obviouslu pick higher k-value than k-lower for same names)
+// refrence usman (obviously pick higher k-value than k-lower for same names)
 const CoreLayer = [
   { name: "None", k_value:1 },
   { name: " Brick Common", k_value: 0.72 },
