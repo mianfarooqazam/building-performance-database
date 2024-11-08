@@ -20,6 +20,7 @@ const useFloorPlanStore = create(
       totalWindowArea: 0,
       totalDoorArea: 0,
       netWallArea: 0,
+      totalArea: 0, 
 
       // Actions
       setBuildingOrientation: (buildingOrientation) => set({ buildingOrientation }),
@@ -36,6 +37,7 @@ const useFloorPlanStore = create(
       setTotalWindowArea: (totalWindowArea) => set({ totalWindowArea }),
       setTotalDoorArea: (totalDoorArea) => set({ totalDoorArea }),
       setNetWallArea: (netWallArea) => set({ netWallArea }),
+      setTotalArea: (totalArea) => set({ totalArea }), 
     }),
     {
       name: 'floorplan-storage', // Unique name for the storage key

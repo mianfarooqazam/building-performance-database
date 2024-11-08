@@ -1,3 +1,5 @@
+// src/components/FloorPlan.jsx
+
 import {
   Box,
   MenuItem,
@@ -26,8 +28,9 @@ import {
   calculateTotalWindowArea,
   calculateTotalDoorArea,
   calculateNetWallArea,
+  calculateTotalArea, // Added this line
 } from "../../calculations/FloorPlanCal/FloorPlanCalculation";
-import PropTypes from "prop-types"; // Import PropTypes for prop validation
+import PropTypes from "prop-types";
 
 function FloorPlan() {
   const {
@@ -51,6 +54,8 @@ function FloorPlan() {
     setTotalDoorArea,
     netWallArea,
     setNetWallArea,
+    totalArea, // Added this line
+    setTotalArea, // Added this line
   } = useFloorPlanStore();
 
   const [calculatedArea, setCalculatedArea] = useState(0);
@@ -118,6 +123,15 @@ function FloorPlan() {
         totalDoorAreaValue
       ) || 0;
     setNetWallArea(netWallAreaValue);
+
+    const totalAreaValue =
+      calculateTotalArea(
+        area,
+        totalWallAreaValue,
+        totalWindowAreaValue,
+        totalDoorAreaValue
+      ) || 0;
+    setTotalArea(totalAreaValue);
   }, [
     wallLengths,
     buildingOrientation,
@@ -130,6 +144,7 @@ function FloorPlan() {
     setTotalWindowArea,
     setTotalDoorArea,
     setNetWallArea,
+    setTotalArea, // Added this line
   ]);
 
   const handleAddWindow = () => {
@@ -178,14 +193,16 @@ function FloorPlan() {
             backgroundColor: "lightblue",
             padding: "8px",
             borderRadius: "4px",
-            textAlign:'center'
+            textAlign: "center",
           }}
         >
           {label}
         </Typography>
-        <Typography  sx={{
-            textAlign:'center'
-          }}>
+        <Typography
+          sx={{
+            textAlign: "center",
+          }}
+        >
           {typeof areaInSqFt === "number" && !isNaN(areaInSqFt)
             ? `${areaInSqFt.toFixed(2)} ft² [${areaInSqM.toFixed(2)} m²]`
             : "N/A"}
@@ -204,14 +221,16 @@ function FloorPlan() {
             backgroundColor: "lightblue",
             padding: "8px",
             borderRadius: "4px",
-            textAlign:'center'
+            textAlign: "center",
           }}
         >
           {label}
         </Typography>
-        <Typography sx={{
-            textAlign:'center'
-          }}>
+        <Typography
+          sx={{
+            textAlign: "center",
+          }}
+        >
           {typeof volumeInCubicFt === "number" && !isNaN(volumeInCubicFt)
             ? `${volumeInCubicFt.toFixed(2)} ft³ [${volumeInCubicM.toFixed(
                 2
@@ -314,7 +333,9 @@ function FloorPlan() {
                 type="number"
               />
               <FormControl fullWidth variant="outlined" sx={{ flex: 1 }}>
-                <InputLabel>No. of Sides Connected to Other Building</InputLabel>
+                <InputLabel>
+                  No. of Sides Connected to Other Building
+                </InputLabel>
                 <Select
                   label="No. of Sides Connected to Other Building"
                   value={sidesConnected}
@@ -498,6 +519,7 @@ function FloorPlan() {
         <DisplayArea label="Total Window Area" areaInSqFt={totalWindowArea} />
         <DisplayArea label="Total Door Area" areaInSqFt={totalDoorArea} />
         <DisplayArea label="Net Wall Area" areaInSqFt={netWallArea} />
+        <DisplayArea label="Total Area" areaInSqFt={totalArea} /> {/* Added this line */}
         <DisplayVolume
           label="Dwelling Volume"
           volumeInCubicFt={dwellingVolume}

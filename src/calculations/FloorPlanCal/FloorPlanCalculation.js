@@ -1,3 +1,5 @@
+// src/calculations/FloorPlanCal/FloorPlanCalculation.js
+
 export function getWallInputs(orientation, OrientationSingleWindow, OrientationDoubleWindow) {
   let walls = [];
   if (!orientation) return walls;
@@ -70,4 +72,9 @@ export function calculateDwellingVolume(area, wallHeight, numberOfFloors) {
   const height = parseFloat(wallHeight) || 0;
   const floors = parseInt(numberOfFloors) || 1;
   return area * height * floors;
+}
+
+export function calculateTotalArea(floorArea, totalWallArea, totalWindowArea, totalDoorArea) {
+  const roofArea = floorArea; // Assuming roof area is the same as floor area
+  return floorArea + roofArea + totalWallArea + totalWindowArea + totalDoorArea;
 }
