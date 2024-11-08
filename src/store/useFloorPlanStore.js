@@ -1,5 +1,3 @@
-// src/store/useFloorPlanStore.js
-
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -20,7 +18,9 @@ const useFloorPlanStore = create(
       totalWindowArea: 0,
       totalDoorArea: 0,
       netWallArea: 0,
-      totalArea: 0, 
+      totalArea: 0,
+      windows: [], 
+      doors: [],  
 
       // Actions
       setBuildingOrientation: (buildingOrientation) => set({ buildingOrientation }),
@@ -37,7 +37,9 @@ const useFloorPlanStore = create(
       setTotalWindowArea: (totalWindowArea) => set({ totalWindowArea }),
       setTotalDoorArea: (totalDoorArea) => set({ totalDoorArea }),
       setNetWallArea: (netWallArea) => set({ netWallArea }),
-      setTotalArea: (totalArea) => set({ totalArea }), 
+      setTotalArea: (totalArea) => set({ totalArea }),
+      setWindows: (windows) => set({ windows }), 
+      setDoors: (doors) => set({ doors }),      
     }),
     {
       name: 'floorplan-storage', // Unique name for the storage key

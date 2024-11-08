@@ -1,5 +1,3 @@
-// src/components/FloorPlan.jsx
-
 import {
   Box,
   MenuItem,
@@ -28,7 +26,7 @@ import {
   calculateTotalWindowArea,
   calculateTotalDoorArea,
   calculateNetWallArea,
-  calculateTotalArea, // Added this line
+  calculateTotalArea,
 } from "../../calculations/FloorPlanCal/FloorPlanCalculation";
 import PropTypes from "prop-types";
 
@@ -54,17 +52,19 @@ function FloorPlan() {
     setTotalDoorArea,
     netWallArea,
     setNetWallArea,
-    totalArea, // Added this line
-    setTotalArea, // Added this line
+    totalArea,
+    setTotalArea,
+    windows,        // Added this line
+    setWindows,     // Added this line
+    doors,          // Added this line
+    setDoors,       // Added this line
   } = useFloorPlanStore();
 
   const [calculatedArea, setCalculatedArea] = useState(0);
 
-  const [windows, setWindows] = useState([]);
   const [newWindowOrientation, setNewWindowOrientation] = useState("");
   const [newWindowArea, setNewWindowArea] = useState("");
 
-  const [doors, setDoors] = useState([]);
   const [newDoorOrientation, setNewDoorOrientation] = useState("");
   const [newDoorArea, setNewDoorArea] = useState("");
 
@@ -144,7 +144,7 @@ function FloorPlan() {
     setTotalWindowArea,
     setTotalDoorArea,
     setNetWallArea,
-    setTotalArea, // Added this line
+    setTotalArea,
   ]);
 
   const handleAddWindow = () => {
@@ -519,7 +519,7 @@ function FloorPlan() {
         <DisplayArea label="Total Window Area" areaInSqFt={totalWindowArea} />
         <DisplayArea label="Total Door Area" areaInSqFt={totalDoorArea} />
         <DisplayArea label="Net Wall Area" areaInSqFt={netWallArea} />
-        <DisplayArea label="Total Area" areaInSqFt={totalArea} /> {/* Added this line */}
+        <DisplayArea label="Total Area" areaInSqFt={totalArea} />
         <DisplayVolume
           label="Dwelling Volume"
           volumeInCubicFt={dwellingVolume}
