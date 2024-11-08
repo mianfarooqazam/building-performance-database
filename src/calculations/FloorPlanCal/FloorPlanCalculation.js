@@ -43,6 +43,29 @@ export function calculateArea(wallLengths, wallLabels) {
   return 0;
 }
 
+export function calculateTotalWallArea(wallLengths, wallLabels, wallHeight) {
+  if (wallLabels.length === 2) {
+    const length1 = parseFloat(wallLengths[wallLabels[0]]) || 0;
+    const length2 = parseFloat(wallLengths[wallLabels[1]]) || 0;
+    const perimeter = 2 * (length1 + length2);
+    const height = parseFloat(wallHeight) || 0;
+    return perimeter * height;
+  }
+  return 0;
+}
+
+export function calculateTotalWindowArea(windows) {
+  return windows.reduce((total, window) => total + (parseFloat(window.area) || 0), 0);
+}
+
+export function calculateTotalDoorArea(doors) {
+  return doors.reduce((total, door) => total + (parseFloat(door.area) || 0), 0);
+}
+
+export function calculateNetWallArea(totalWallArea, totalWindowArea, totalDoorArea) {
+  return totalWallArea - totalWindowArea - totalDoorArea;
+}
+
 export function calculateDwellingVolume(area, wallHeight, numberOfFloors) {
   const height = parseFloat(wallHeight) || 0;
   const floors = parseInt(numberOfFloors) || 1;
