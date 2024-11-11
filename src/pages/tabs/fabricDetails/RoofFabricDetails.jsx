@@ -1,6 +1,6 @@
 // File: RoofFabricDetails.jsx
 
-import React, { useState, useEffect, useMemo } from 'react';
+import{ useState, useEffect, useMemo } from 'react';
 import {
   Box,
   MenuItem,
@@ -144,7 +144,7 @@ function RoofFabricDetails() {
   return (
     <Box p={3} display="flex" flexDirection="row" gap={2}>
       {/* Inputs Section */}
-      <Box width="70%" display="flex" flexDirection="column" gap={2}>
+      <Box width="80%" display="flex" flexDirection="column" gap={2}>
         {/* Outer Layer Inputs */}
         <Box display="flex" gap={2} alignItems="center">
           <FormControl fullWidth variant="outlined">
@@ -385,7 +385,7 @@ function RoofFabricDetails() {
       <Divider orientation="vertical" flexItem />
 
       {/* Calculations Section */}
-      <Box width="30%" display="flex" flexDirection="column" gap={2}>
+      <Box width="20%" display="flex" flexDirection="column" gap={2}>
         {/* rTotal Display */}
         {rTotal && !calculationError && (
           <Box
