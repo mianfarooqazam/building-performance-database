@@ -499,7 +499,7 @@ function FloorPlan() {
       <Box
         display="flex"
         flexDirection="column"
-        gap={2}
+        gap={2} 
         width="30%"
         borderLeft="1px solid grey"
         pl={2}
@@ -513,11 +513,11 @@ function FloorPlan() {
         >
           Calculated Values
         </h1>
-        <DisplayArea label="Calculated Floor Area" areaInSqFt={calculatedArea} />
         <DisplayArea label="Roof Area" areaInSqFt={calculatedArea} />
-        <DisplayArea label="Total Wall Area" areaInSqFt={totalWallArea} />
-        <DisplayArea label="Total Window Area" areaInSqFt={totalWindowArea} />
-        <DisplayArea label="Total Door Area" areaInSqFt={totalDoorArea} />
+        <DisplayArea label="Floor Area" areaInSqFt={calculatedArea} />
+        <DisplayArea label="Wall Area" areaInSqFt={totalWallArea} />
+        <DisplayArea label="Door Area" areaInSqFt={totalDoorArea} />
+        <DisplayArea label="Window Area" areaInSqFt={totalWindowArea} />
         <DisplayArea label="Net Wall Area" areaInSqFt={netWallArea} />
         <DisplayArea label="Total Area" areaInSqFt={totalArea} />
         <DisplayVolume
