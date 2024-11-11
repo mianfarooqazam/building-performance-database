@@ -394,7 +394,7 @@ function WallFabricDetails() {
             fontWeight="bold"
             textAlign="center"
           >
-            Total R-Value: {rTotal}
+           R-Value: {rTotal}
           </Box>
         )}
 
@@ -408,7 +408,7 @@ function WallFabricDetails() {
             fontWeight="bold"
             textAlign="center"
           >
-            Calculated U-Value: {uValue}
+            U-Value: {uValue}
           </Box>
         )}
 
