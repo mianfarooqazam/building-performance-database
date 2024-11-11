@@ -1,24 +1,53 @@
+// File: SlabFabricDetails.jsx
+
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   MenuItem,
   Select,
   InputLabel,
   FormControl,
-  Typography,
   Divider,
 } from '@mui/material';
 
 import { SlabLayer } from '../../../utils/SlabLayerData.js';
 import useSlabFabricDetailsStore from '../../../store/useSlabFabricDetailsStore.js';
+import useFloorPlanStore from '../../../store/useFloorPlanStore.js';
 
 function SlabFabricDetails() {
-  // Use Zustand store
-  const { selectedSlabType, setSelectedSlabType } = useSlabFabricDetailsStore();
+  const { selectedSlabType, setSelectedSlabType, uValue, setUValue } = useSlabFabricDetailsStore();
+  const { totalFloorArea } = useFloorPlanStore();
+
+  const [calculationError, setCalculationError] = useState(null);
+  const [uaValue, setUaValue] = useState(null);
+
+  useEffect(() => {
+    if (selectedSlabType) {
+      try {
+        const uValue = parseFloat(selectedSlabType.u_value);
+        setUValue(uValue);
+
+        const areaInFt2 = parseFloat(totalFloorArea) || 0;
+        const areaInM2 = areaInFt2 * 0.092903;
+
+        const ua = (uValue * areaInM2).toFixed(3);
+        setUaValue(ua);
+        setCalculationError(null);
+      } catch (error) {
+        setCalculationError(error.message);
+        setUValue(null);
+        setUaValue(null);
+      }
+    } else {
+      setUValue(null);
+      setUaValue(null);
+    }
+  }, [selectedSlabType, totalFloorArea, setUValue]);
 
   return (
     <Box p={3} display="flex" flexDirection="row" gap={2}>
-      {/* Left Side - Input (80%) */}
-      <Box flex={4}>
+      {/* Inputs Section */}
+      <Box width="70%" display="flex" flexDirection="column" gap={2}>
         <FormControl fullWidth variant="outlined">
           <InputLabel>Slab Type</InputLabel>
           <Select
@@ -36,35 +65,83 @@ function SlabFabricDetails() {
             ))}
           </Select>
         </FormControl>
+
+        {calculationError && (
+          <Box
+            p={2}
+            mt={2}
+            bgcolor="lightcoral"
+            borderRadius={2}
+            fontWeight="bold"
+            textAlign="center"
+          >
+            Error: {calculationError}
+          </Box>
+        )}
       </Box>
 
-      {/* Vertical Divider */}
+      {/* Divider */}
       <Divider orientation="vertical" flexItem />
 
-      {/* Right Side - Display U-Value and R-Value (20%) */}
-      <Box
-        flex={1}
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-        bgcolor="lightblue"
-        borderRadius={2}
-        p={2}
-      >
+      {/* Calculations Section */}
+      <Box width="30%" display="flex" flexDirection="column" gap={2}>
         {selectedSlabType ? (
           <>
-            <Typography variant="h6" fontWeight="bold">
+            <Box
+              p={2}
+              mt={2}
+              bgcolor="lightblue"
+              borderRadius={2}
+              fontWeight="bold"
+              textAlign="center"
+            >
               U-Value: {selectedSlabType.u_value}
-            </Typography>
-            <Typography variant="h6" fontWeight="bold">
+            </Box>
+            <Box
+              p={2}
+              mt={2}
+              bgcolor="lightblue"
+              borderRadius={2}
+              fontWeight="bold"
+              textAlign="center"
+            >
               R-Value: {selectedSlabType.r_value}
-            </Typography>
+            </Box>
+            {uaValue && !calculationError && (
+              <Box
+                p={2}
+                mt={2}
+                bgcolor="lightgreen"
+                borderRadius={2}
+                fontWeight="bold"
+                textAlign="center"
+              >
+                UA: {uaValue}
+                 {/* [{(parseFloat(totalFloorArea) * 0.092903).toFixed(2)} m²] */}
+              </Box>
+            )}
+            <Box
+              p={2}
+              mt={2}
+              bgcolor="lightyellow"
+              borderRadius={2}
+              fontWeight="bold"
+              textAlign="center"
+            >
+              Floor Area: {(parseFloat(totalFloorArea) * 0.092903).toFixed(2) || 'N/A'} m²
+            </Box>
           </>
         ) : (
-          <Typography variant="subtitle1" fontWeight="bold">
+          <Box
+            p={2}
+            mt={2}
+            bgcolor="lightgrey"
+            borderRadius={2}
+            fontWeight="bold"
+            textAlign="center"
+          >
             Select a slab type
-          </Typography>
+          </Box>
         )}
       </Box>
     </Box>
