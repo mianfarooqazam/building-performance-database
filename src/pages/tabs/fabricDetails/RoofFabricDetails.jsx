@@ -50,8 +50,8 @@ function RoofFabricDetails() {
     setInnerLayerThickness,
     uValue,
     setUValue,
-    uaValue,         // Get uaValue from the store
-    setUAValue,      // Get setUAValue from the store
+    uaValue,         
+    setUAValue,      
   } = useRoofFabricDetailsStore();
 
   const { totalFloorArea } = useFloorPlanStore();
@@ -125,18 +125,18 @@ function RoofFabricDetails() {
 
         // Calculate UA
         const ua = (calculatedUValue * areaInM2).toFixed(3);
-        setUAValue(ua); // Set uaValue in the store
+        setUAValue(ua); 
       } catch (error) {
         setCalculationError(error.message);
         setRTotal(null);
-        setUValue(null); // Clear uValue in the store on error
-        setUAValue(null); // Clear uaValue in the store on error
+        setUValue(null); 
+        setUAValue(null); 
       }
     } else {
       setRTotal(null);
       setCalculationError(null);
-      setUValue(null); // Clear uValue in the store when no layers
-      setUAValue(null); // Clear uaValue in the store when no layers
+      setUValue(null); 
+      setUAValue(null); 
     }
   }, [
     layers,

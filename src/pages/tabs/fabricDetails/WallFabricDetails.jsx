@@ -1,4 +1,4 @@
-import  { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from "react";
 import {
   Box,
   MenuItem,
@@ -12,23 +12,23 @@ import {
   TableRow,
   TableCell,
   Divider,
-} from '@mui/material';
+} from "@mui/material";
 
 import {
   OuterLayer,
   CoreLayer,
   InsulationLayer,
   InnerLayer,
-} from '../../../utils/WallLayerData.js';
+} from "../../../utils/WallLayerData.js";
 
 import {
   calculateRValue,
   calculateRTotal,
   calculateUValue,
-} from '../../../calculations/FabricDetailCal/WallCalculation.js';
+} from "../../../calculations/FabricDetailCal/WallCalculation.js";
 
-import useWallFabricDetailsStore from '../../../store/useWallFabricDetailsStore.js';
-import useFloorPlanStore from '../../../store/useFloorPlanStore.js';
+import useWallFabricDetailsStore from "../../../store/useWallFabricDetailsStore.js";
+import useFloorPlanStore from "../../../store/useFloorPlanStore.js";
 
 function WallFabricDetails() {
   const {
@@ -50,6 +50,8 @@ function WallFabricDetails() {
     setInnerLayerThickness,
     uValue,
     setUValue,
+    uaValue,
+    setUAValue,
   } = useWallFabricDetailsStore();
 
   const { netWallArea } = useFloorPlanStore();
@@ -65,7 +67,7 @@ function WallFabricDetails() {
 
     // Helper function to process each layer
     const processLayer = (layerMaterial, layerThickness, layerType) => {
-      if (layerMaterial && layerThickness !== '') {
+      if (layerMaterial && layerThickness !== "") {
         const thickness = parseFloat(layerThickness);
         const kValue = layerMaterial.k_value;
         const rValue = calculateRValue(thickness, kValue);
@@ -80,14 +82,14 @@ function WallFabricDetails() {
     };
 
     // Process each layer
-    processLayer(outerLayerMaterial, outerLayerThickness, 'Outer Layer');
-    processLayer(coreLayerMaterial, coreLayerThickness, 'Core Layer');
+    processLayer(outerLayerMaterial, outerLayerThickness, "Outer Layer");
+    processLayer(coreLayerMaterial, coreLayerThickness, "Core Layer");
     processLayer(
       insulationLayerMaterial,
       insulationLayerThickness,
-      'Insulation Layer'
+      "Insulation Layer"
     );
-    processLayer(innerLayerMaterial, innerLayerThickness, 'Inner Layer');
+    processLayer(innerLayerMaterial, innerLayerThickness, "Inner Layer");
 
     return { layers: layersArray, rValues: rValuesArray };
   }, [
@@ -104,7 +106,6 @@ function WallFabricDetails() {
   // State variables for rTotal, calculationError, and UA
   const [rTotal, setRTotal] = useState(null);
   const [calculationError, setCalculationError] = useState(null);
-  const [uaValue, setUaValue] = useState(null);
 
   // useEffect to calculate rTotal and uValue when layers change
   useEffect(() => {
@@ -124,20 +125,29 @@ function WallFabricDetails() {
 
         // Calculate UA
         const ua = (calculatedUValue * areaInM2).toFixed(3);
-        setUaValue(ua);
+        setUAValue(ua);
       } catch (error) {
         setCalculationError(error.message);
         setRTotal(null);
-        setUValue(null); // Clear uValue in the store on error
-        setUaValue(null);
+        setUValue(null);
+        setUAValue(null);
       }
     } else {
       setRTotal(null);
       setCalculationError(null);
-      setUValue(null); // Clear uValue in the store when no layers
-      setUaValue(null);
+      setUValue(null);
+      setUAValue(null);
     }
-  }, [layers, rValues, hi, ho, setUValue, netWallArea]);
+  }, [
+    layers,
+    rValues,
+    hi,
+    ho,
+    setUValue,
+    setUAValue,
+    netWallArea,
+  ]);
+
 
   return (
     <Box p={3} display="flex" flexDirection="row" gap={2}>
@@ -149,16 +159,16 @@ function WallFabricDetails() {
             <InputLabel>Outer Layer</InputLabel>
             <Select
               label="Outer Layer"
-              value={outerLayerMaterial ? outerLayerMaterial.name : ''}
+              value={outerLayerMaterial ? outerLayerMaterial.name : ""}
               onChange={(e) => {
                 const selectedMaterial = OuterLayer.find(
                   (material) => material.name === e.target.value
                 );
                 setOuterLayerMaterial(selectedMaterial);
-                if (selectedMaterial && selectedMaterial.name === 'None') {
-                  setOuterLayerThickness('0');
+                if (selectedMaterial && selectedMaterial.name === "None") {
+                  setOuterLayerThickness("0");
                 } else {
-                  setOuterLayerThickness('');
+                  setOuterLayerThickness("");
                 }
               }}
             >
@@ -175,7 +185,7 @@ function WallFabricDetails() {
             fullWidth
             value={outerLayerThickness}
             onChange={(e) => setOuterLayerThickness(e.target.value)}
-            disabled={outerLayerMaterial && outerLayerMaterial.name === 'None'}
+            disabled={outerLayerMaterial && outerLayerMaterial.name === "None"}
           />
         </Box>
 
@@ -185,16 +195,16 @@ function WallFabricDetails() {
             <InputLabel>Core Layer</InputLabel>
             <Select
               label="Core Layer"
-              value={coreLayerMaterial ? coreLayerMaterial.name : ''}
+              value={coreLayerMaterial ? coreLayerMaterial.name : ""}
               onChange={(e) => {
                 const selectedMaterial = CoreLayer.find(
                   (material) => material.name === e.target.value
                 );
                 setCoreLayerMaterial(selectedMaterial);
-                if (selectedMaterial && selectedMaterial.name === 'None') {
-                  setCoreLayerThickness('0');
+                if (selectedMaterial && selectedMaterial.name === "None") {
+                  setCoreLayerThickness("0");
                 } else {
-                  setCoreLayerThickness('');
+                  setCoreLayerThickness("");
                 }
               }}
             >
@@ -211,7 +221,7 @@ function WallFabricDetails() {
             fullWidth
             value={coreLayerThickness}
             onChange={(e) => setCoreLayerThickness(e.target.value)}
-            disabled={coreLayerMaterial && coreLayerMaterial.name === 'None'}
+            disabled={coreLayerMaterial && coreLayerMaterial.name === "None"}
           />
         </Box>
 
@@ -222,17 +232,17 @@ function WallFabricDetails() {
             <Select
               label="Insulation Layer"
               value={
-                insulationLayerMaterial ? insulationLayerMaterial.name : ''
+                insulationLayerMaterial ? insulationLayerMaterial.name : ""
               }
               onChange={(e) => {
                 const selectedMaterial = InsulationLayer.find(
                   (material) => material.name === e.target.value
                 );
                 setInsulationLayerMaterial(selectedMaterial);
-                if (selectedMaterial && selectedMaterial.name === 'None') {
-                  setInsulationLayerThickness('0');
+                if (selectedMaterial && selectedMaterial.name === "None") {
+                  setInsulationLayerThickness("0");
                 } else {
-                  setInsulationLayerThickness('');
+                  setInsulationLayerThickness("");
                 }
               }}
             >
@@ -250,8 +260,7 @@ function WallFabricDetails() {
             value={insulationLayerThickness}
             onChange={(e) => setInsulationLayerThickness(e.target.value)}
             disabled={
-              insulationLayerMaterial &&
-              insulationLayerMaterial.name === 'None'
+              insulationLayerMaterial && insulationLayerMaterial.name === "None"
             }
           />
         </Box>
@@ -262,16 +271,16 @@ function WallFabricDetails() {
             <InputLabel>Inner Layer</InputLabel>
             <Select
               label="Inner Layer"
-              value={innerLayerMaterial ? innerLayerMaterial.name : ''}
+              value={innerLayerMaterial ? innerLayerMaterial.name : ""}
               onChange={(e) => {
                 const selectedMaterial = InnerLayer.find(
                   (material) => material.name === e.target.value
                 );
                 setInnerLayerMaterial(selectedMaterial);
-                if (selectedMaterial && selectedMaterial.name === 'None') {
-                  setInnerLayerThickness('0');
+                if (selectedMaterial && selectedMaterial.name === "None") {
+                  setInnerLayerThickness("0");
                 } else {
-                  setInnerLayerThickness('');
+                  setInnerLayerThickness("");
                 }
               }}
             >
@@ -288,7 +297,7 @@ function WallFabricDetails() {
             fullWidth
             value={innerLayerThickness}
             onChange={(e) => setInnerLayerThickness(e.target.value)}
-            disabled={innerLayerMaterial && innerLayerMaterial.name === 'None'}
+            disabled={innerLayerMaterial && innerLayerMaterial.name === "None"}
           />
         </Box>
 
@@ -313,45 +322,45 @@ function WallFabricDetails() {
               <TableRow>
                 <TableCell
                   sx={{
-                    backgroundColor: 'lightblue',
-                    textAlign: 'center',
-                    fontWeight: 'bold',
+                    backgroundColor: "lightblue",
+                    textAlign: "center",
+                    fontWeight: "bold",
                   }}
                 >
                   Serial Number
                 </TableCell>
                 <TableCell
                   sx={{
-                    backgroundColor: 'lightblue',
-                    textAlign: 'center',
-                    fontWeight: 'bold',
+                    backgroundColor: "lightblue",
+                    textAlign: "center",
+                    fontWeight: "bold",
                   }}
                 >
                   Layer Type
                 </TableCell>
                 <TableCell
                   sx={{
-                    backgroundColor: 'lightblue',
-                    textAlign: 'center',
-                    fontWeight: 'bold',
+                    backgroundColor: "lightblue",
+                    textAlign: "center",
+                    fontWeight: "bold",
                   }}
                 >
                   Material Selected
                 </TableCell>
                 <TableCell
                   sx={{
-                    backgroundColor: 'lightblue',
-                    textAlign: 'center',
-                    fontWeight: 'bold',
+                    backgroundColor: "lightblue",
+                    textAlign: "center",
+                    fontWeight: "bold",
                   }}
                 >
                   Thickness (inches)
                 </TableCell>
                 <TableCell
                   sx={{
-                    backgroundColor: 'lightblue',
-                    textAlign: 'center',
-                    fontWeight: 'bold',
+                    backgroundColor: "lightblue",
+                    textAlign: "center",
+                    fontWeight: "bold",
                   }}
                 >
                   R-Value
@@ -361,15 +370,19 @@ function WallFabricDetails() {
             <TableBody>
               {layers.map((layer, index) => (
                 <TableRow key={index}>
-                  <TableCell sx={{ textAlign: 'center' }}>{index + 1}</TableCell>
-                  <TableCell sx={{ textAlign: 'center' }}>{layer.type}</TableCell>
-                  <TableCell sx={{ textAlign: 'center' }}>
+                  <TableCell sx={{ textAlign: "center" }}>
+                    {index + 1}
+                  </TableCell>
+                  <TableCell sx={{ textAlign: "center" }}>
+                    {layer.type}
+                  </TableCell>
+                  <TableCell sx={{ textAlign: "center" }}>
                     {layer.material}
                   </TableCell>
-                  <TableCell sx={{ textAlign: 'center' }}>
+                  <TableCell sx={{ textAlign: "center" }}>
                     {layer.thickness}
                   </TableCell>
-                  <TableCell sx={{ textAlign: 'center' }}>
+                  <TableCell sx={{ textAlign: "center" }}>
                     {layer.rValue}
                   </TableCell>
                 </TableRow>
@@ -394,7 +407,7 @@ function WallFabricDetails() {
             fontWeight="bold"
             textAlign="center"
           >
-           R-Value: {rTotal}
+            R-Value: {rTotal}
           </Box>
         )}
 
@@ -422,7 +435,7 @@ function WallFabricDetails() {
             fontWeight="bold"
             textAlign="center"
           >
-            UA: {uaValue} 
+            UA: {uaValue}
             {/* below code is for displaying in m² also */}
             {/* [{(parseFloat(netWallArea) * 0.092903).toFixed(2)} m²] */}
           </Box>
@@ -437,7 +450,7 @@ function WallFabricDetails() {
           fontWeight="bold"
           textAlign="center"
         >
-          Wall Area: {(parseFloat(netWallArea) * 0.092903).toFixed(2) || 'N/A'} 
+          Wall Area: {(parseFloat(netWallArea) * 0.092903).toFixed(2) || "N/A"}
         </Box>
       </Box>
     </Box>

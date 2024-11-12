@@ -1,5 +1,3 @@
-// File: useWallFabricDetailsStore.js
-
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -16,6 +14,7 @@ const useWallFabricDetailsStore = create(
       innerLayerMaterial: null,
       innerLayerThickness: '',
       uValue: null,
+      uaValue: null,
 
       // Actions
       setOuterLayerMaterial: (outerLayerMaterial) => set({ outerLayerMaterial }),
@@ -27,6 +26,8 @@ const useWallFabricDetailsStore = create(
       setInnerLayerMaterial: (innerLayerMaterial) => set({ innerLayerMaterial }),
       setInnerLayerThickness: (innerLayerThickness) => set({ innerLayerThickness }),
       setUValue: (uValue) => set({ uValue }),
+      setUAValue: (uaValue) => set({ uaValue }),
+
     }),
     {
       name: 'wall-fabric-details-storage', // Unique name for storage key

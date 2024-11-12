@@ -14,11 +14,11 @@ import useSlabFabricDetailsStore from '../../../store/useSlabFabricDetailsStore.
 import useFloorPlanStore from '../../../store/useFloorPlanStore.js';
 
 function SlabFabricDetails() {
-  const { selectedSlabType, setSelectedSlabType, uValue, setUValue } = useSlabFabricDetailsStore();
-  const { totalFloorArea } = useFloorPlanStore();
+  const { selectedSlabType, setSelectedSlabType, uValue, setUValue,uaValue,         
+    setUAValue,  } = useSlabFabricDetailsStore();
 
+  const { totalFloorArea } = useFloorPlanStore();
   const [calculationError, setCalculationError] = useState(null);
-  const [uaValue, setUaValue] = useState(null);
 
   useEffect(() => {
     if (selectedSlabType) {
@@ -31,18 +31,19 @@ function SlabFabricDetails() {
         const areaInM2 = areaInFt2 * 0.092903;
 
         const ua = (calculatedUValue * areaInM2).toFixed(3);
-        setUaValue(ua);
+        setUAValue(ua); 
         setCalculationError(null);
       } catch (error) {
         setCalculationError(error.message);
         setUValue(null);
-        setUaValue(null);
+        setUAValue(null); 
       }
     } else {
-      setUValue(null);
-      setUaValue(null);
+      setUValue(null); 
+      setUAValue(null); 
     }
-  }, [selectedSlabType, totalFloorArea, setUValue]);
+  }, [selectedSlabType, totalFloorArea,  setUValue,
+    setUAValue,]);
 
   return (
     <Box p={3} display="flex" flexDirection="row" gap={2}>
