@@ -12,7 +12,7 @@ const useFloorPlanStore = create(
       windowOrientation: '',
       wallLengths: {},
       wallHeight: '',
-      totalFloorArea: '',
+      totalFloorArea: 0,
       windowArea: '',
       dwellingVolume: 0,
       sidesConnected: 0,

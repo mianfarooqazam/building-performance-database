@@ -1,5 +1,3 @@
-// File: RoofFabricDetails.jsx
-
 import{ useState, useEffect, useMemo } from 'react';
 import {
   Box,

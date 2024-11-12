@@ -54,13 +54,13 @@ function FloorPlan() {
     setNetWallArea,
     totalArea,
     setTotalArea,
-    windows,        
-    setWindows,     
-    doors,      
-    setDoors,     
+    windows,
+    setWindows,
+    doors,
+    setDoors,
+    totalFloorArea,
+    setTotalFloorArea,
   } = useFloorPlanStore();
-
-  const [calculatedArea, setCalculatedArea] = useState(0);
 
   const [newWindowOrientation, setNewWindowOrientation] = useState("");
   const [newWindowArea, setNewWindowArea] = useState("");
@@ -100,7 +100,7 @@ function FloorPlan() {
     );
 
     const area = calculateArea(wallLengths, wallLabels) || 0;
-    setCalculatedArea(area);
+    setTotalFloorArea(area);
 
     const volume =
       calculateDwellingVolume(area, wallHeight, numberOfFloors) || 0;
@@ -137,9 +137,10 @@ function FloorPlan() {
     buildingOrientation,
     wallHeight,
     numberOfFloors,
-    setDwellingVolume,
     windows,
     doors,
+    setTotalFloorArea,
+    setDwellingVolume,
     setTotalWallArea,
     setTotalWindowArea,
     setTotalDoorArea,
@@ -241,7 +242,6 @@ function FloorPlan() {
     );
   }
 
-  // Add propTypes for DisplayArea and DisplayVolume to fix ESLint errors
   DisplayArea.propTypes = {
     label: PropTypes.string.isRequired,
     areaInSqFt: PropTypes.number.isRequired,
@@ -499,7 +499,7 @@ function FloorPlan() {
       <Box
         display="flex"
         flexDirection="column"
-        gap={2} 
+        gap={2}
         width="30%"
         borderLeft="1px solid grey"
         pl={2}
@@ -513,8 +513,8 @@ function FloorPlan() {
         >
           Calculated Values
         </h1>
-        <DisplayArea label="Roof Area" areaInSqFt={calculatedArea} />
-        <DisplayArea label="Floor Area" areaInSqFt={calculatedArea} />
+        <DisplayArea label="Roof Area" areaInSqFt={totalFloorArea} />
+        <DisplayArea label="Floor Area" areaInSqFt={totalFloorArea} />
         <DisplayArea label="Wall Area" areaInSqFt={totalWallArea} />
         <DisplayArea label="Door Area" areaInSqFt={totalDoorArea} />
         <DisplayArea label="Window Area" areaInSqFt={totalWindowArea} />
