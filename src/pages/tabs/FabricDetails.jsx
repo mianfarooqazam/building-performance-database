@@ -19,16 +19,16 @@ function FabricDetails() {
       <Tabs value={selectedTab} onChange={handleTabChange}>
         <Tab label="Roof Details" />
         <Tab label="Wall Details" />
+        <Tab label="Slab Floor on Grade Details" />
         <Tab label="Window Details" />
         <Tab label="Door Details" />
-        <Tab label="Slab Floor on Grade Details" />
 
       </Tabs>
       {selectedTab === 0 && <RoofFabricDetails />}
       {selectedTab === 1 && <WallFarbricDetails />}
-      {selectedTab === 2 && <WindowFarbricDetails />}
-      {selectedTab === 3 && <DoorFarbricDetails />}
-      {selectedTab === 4 && <SlabFabricDetails />}
+      {selectedTab === 2 && <SlabFabricDetails />}
+      {selectedTab === 3 && <WindowFarbricDetails />}
+      {selectedTab === 4 && <DoorFarbricDetails />}
     </Box>
   );
 }

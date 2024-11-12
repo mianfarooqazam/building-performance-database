@@ -1,6 +1,5 @@
-// File: SlabFabricDetails.jsx
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box,
   MenuItem,
@@ -24,13 +23,14 @@ function SlabFabricDetails() {
   useEffect(() => {
     if (selectedSlabType) {
       try {
-        const uValue = parseFloat(selectedSlabType.u_value);
-        setUValue(uValue);
+        // Rename the local variable to avoid shadowing 'uValue' from the store
+        const calculatedUValue = parseFloat(selectedSlabType.u_value);
+        setUValue(calculatedUValue);
 
         const areaInFt2 = parseFloat(totalFloorArea) || 0;
         const areaInM2 = areaInFt2 * 0.092903;
 
-        const ua = (uValue * areaInM2).toFixed(3);
+        const ua = (calculatedUValue * areaInM2).toFixed(3);
         setUaValue(ua);
         setCalculationError(null);
       } catch (error) {
@@ -47,7 +47,7 @@ function SlabFabricDetails() {
   return (
     <Box p={3} display="flex" flexDirection="row" gap={2}>
       {/* Inputs Section */}
-      <Box width="70%" display="flex" flexDirection="column" gap={2}>
+      <Box width="80%" display="flex" flexDirection="column" gap={2}>
         <FormControl fullWidth variant="outlined">
           <InputLabel>Slab Type</InputLabel>
           <Select
@@ -84,7 +84,7 @@ function SlabFabricDetails() {
       <Divider orientation="vertical" flexItem />
 
       {/* Calculations Section */}
-      <Box width="30%" display="flex" flexDirection="column" gap={2}>
+      <Box width="20%" display="flex" flexDirection="column" gap={2}>
         {selectedSlabType ? (
           <>
             <Box
@@ -95,7 +95,7 @@ function SlabFabricDetails() {
               fontWeight="bold"
               textAlign="center"
             >
-              U-Value: {selectedSlabType.u_value}
+              U-Value: {uValue}
             </Box>
             <Box
               p={2}
@@ -117,13 +117,13 @@ function SlabFabricDetails() {
                 textAlign="center"
               >
                 UA: {uaValue}
-                 {/* [{(parseFloat(totalFloorArea) * 0.092903).toFixed(2)} m²] */}
+                {/* [{(parseFloat(totalFloorArea) * 0.092903).toFixed(2)} m²] */}
               </Box>
             )}
             <Box
               p={2}
               mt={2}
-              bgcolor="lightyellow"
+              bgcolor="lightblue"
               borderRadius={2}
               fontWeight="bold"
               textAlign="center"

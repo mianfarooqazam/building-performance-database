@@ -54,10 +54,10 @@ function FloorPlan() {
     setNetWallArea,
     totalArea,
     setTotalArea,
-    windows,        // Added this line
-    setWindows,     // Added this line
-    doors,          // Added this line
-    setDoors,       // Added this line
+    windows,        
+    setWindows,     
+    doors,      
+    setDoors,     
   } = useFloorPlanStore();
 
   const [calculatedArea, setCalculatedArea] = useState(0);
