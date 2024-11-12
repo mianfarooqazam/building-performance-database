@@ -10,11 +10,13 @@ const useDoorFabricDetailsStore = create(
       doorMaterial: null,
       doorThickness: '',
       uValue: null,
+      uaValue: null, 
 
       // Actions
       setDoorMaterial: (doorMaterial) => set({ doorMaterial }),
       setDoorThickness: (doorThickness) => set({ doorThickness }),
       setUValue: (uValue) => set({ uValue }),
+      setUAValue: (uaValue) => set({ uaValue }),
     }),
     {
       name: 'door-fabric-details-storage', // Unique name for storage key

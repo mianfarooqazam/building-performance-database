@@ -1,5 +1,4 @@
-
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from "react";
 import {
   Box,
   MenuItem,
@@ -13,18 +12,18 @@ import {
   TableRow,
   TableCell,
   Divider,
-} from '@mui/material';
+} from "@mui/material";
 
-import { DoorType } from '../../../utils/DoorLayerData.js';
+import { DoorType } from "../../../utils/DoorLayerData.js";
 
 import {
   calculateRValue,
   calculateRTotal,
   calculateUValue,
-} from '../../../calculations/FabricDetailCal/DoorCalculation.js';
+} from "../../../calculations/FabricDetailCal/DoorCalculation.js";
 
-import useDoorFabricDetailsStore from '../../../store/useDoorFabricDetailsStore.js';
-import useFloorPlanStore from '../../../store/useFloorPlanStore.js';
+import useDoorFabricDetailsStore from "../../../store/useDoorFabricDetailsStore.js";
+import useFloorPlanStore from "../../../store/useFloorPlanStore.js";
 
 function DoorFabricDetails() {
   const {
@@ -34,6 +33,8 @@ function DoorFabricDetails() {
     setDoorThickness,
     uValue,
     setUValue,
+    uaValue,
+    setUAValue,
   } = useDoorFabricDetailsStore();
 
   const { totalDoorArea } = useFloorPlanStore();
@@ -49,7 +50,7 @@ function DoorFabricDetails() {
 
     // Helper function to process the door layer
     const processDoorLayer = (material, thickness) => {
-      if (material && thickness !== '') {
+      if (material && thickness !== "") {
         const thicknessValue = parseFloat(thickness);
         const kValue = material.k_value;
         const rValue = calculateRValue(thicknessValue, kValue);
@@ -72,7 +73,6 @@ function DoorFabricDetails() {
   // State variables for rTotal, calculationError, and UA
   const [rTotal, setRTotal] = useState(null);
   const [calculationError, setCalculationError] = useState(null);
-  const [uaValue, setUaValue] = useState(null);
 
   // Calculate rTotal and U-value if there are layers
   useEffect(() => {
@@ -92,20 +92,20 @@ function DoorFabricDetails() {
 
         // Calculate UA
         const ua = (calculatedUValue * areaInM2).toFixed(3);
-        setUaValue(ua);
+        setUAValue(ua);
       } catch (error) {
         setCalculationError(error.message);
         setRTotal(null);
         setUValue(null); // Clear uValue in the store on error
-        setUaValue(null);
+        setUAValue(null);
       }
     } else {
       setRTotal(null);
       setCalculationError(null);
-      setUValue(null); // Clear uValue in the store when no layers
-      setUaValue(null);
+      setUValue(null);
+      setUAValue(null);
     }
-  }, [layers, rValues, hi, ho, setUValue, totalDoorArea]);
+  }, [layers, rValues, hi, ho, setUValue, setUAValue, totalDoorArea]);
 
   return (
     <Box p={3} display="flex" flexDirection="row" gap={2}>
@@ -117,16 +117,16 @@ function DoorFabricDetails() {
             <InputLabel>Door Type</InputLabel>
             <Select
               label="Door Type"
-              value={doorMaterial ? doorMaterial.name : ''}
+              value={doorMaterial ? doorMaterial.name : ""}
               onChange={(e) => {
                 const selectedMaterial = DoorType.find(
                   (material) => material.name === e.target.value
                 );
                 setDoorMaterial(selectedMaterial);
-                if (selectedMaterial && selectedMaterial.name === 'None') {
-                  setDoorThickness('0');
+                if (selectedMaterial && selectedMaterial.name === "None") {
+                  setDoorThickness("0");
                 } else {
-                  setDoorThickness('');
+                  setDoorThickness("");
                 }
               }}
             >
@@ -143,7 +143,7 @@ function DoorFabricDetails() {
             fullWidth
             value={doorThickness}
             onChange={(e) => setDoorThickness(e.target.value)}
-            disabled={doorMaterial && doorMaterial.name === 'None'}
+            disabled={doorMaterial && doorMaterial.name === "None"}
           />
         </Box>
 
@@ -168,45 +168,45 @@ function DoorFabricDetails() {
               <TableRow>
                 <TableCell
                   sx={{
-                    backgroundColor: 'lightblue',
-                    textAlign: 'center',
-                    fontWeight: 'bold',
+                    backgroundColor: "lightblue",
+                    textAlign: "center",
+                    fontWeight: "bold",
                   }}
                 >
                   Serial Number
                 </TableCell>
                 <TableCell
                   sx={{
-                    backgroundColor: 'lightblue',
-                    textAlign: 'center',
-                    fontWeight: 'bold',
+                    backgroundColor: "lightblue",
+                    textAlign: "center",
+                    fontWeight: "bold",
                   }}
                 >
                   Material Selected
                 </TableCell>
                 <TableCell
                   sx={{
-                    backgroundColor: 'lightblue',
-                    textAlign: 'center',
-                    fontWeight: 'bold',
+                    backgroundColor: "lightblue",
+                    textAlign: "center",
+                    fontWeight: "bold",
                   }}
                 >
                   Thickness (inches)
                 </TableCell>
                 <TableCell
                   sx={{
-                    backgroundColor: 'lightblue',
-                    textAlign: 'center',
-                    fontWeight: 'bold',
+                    backgroundColor: "lightblue",
+                    textAlign: "center",
+                    fontWeight: "bold",
                   }}
                 >
                   K-Value
                 </TableCell>
                 <TableCell
                   sx={{
-                    backgroundColor: 'lightblue',
-                    textAlign: 'center',
-                    fontWeight: 'bold',
+                    backgroundColor: "lightblue",
+                    textAlign: "center",
+                    fontWeight: "bold",
                   }}
                 >
                   R-Value
@@ -216,17 +216,19 @@ function DoorFabricDetails() {
             <TableBody>
               {layers.map((layer, index) => (
                 <TableRow key={index}>
-                  <TableCell sx={{ textAlign: 'center' }}>{index + 1}</TableCell>
-                  <TableCell sx={{ textAlign: 'center' }}>
+                  <TableCell sx={{ textAlign: "center" }}>
+                    {index + 1}
+                  </TableCell>
+                  <TableCell sx={{ textAlign: "center" }}>
                     {layer.material}
                   </TableCell>
-                  <TableCell sx={{ textAlign: 'center' }}>
+                  <TableCell sx={{ textAlign: "center" }}>
                     {layer.thickness}
                   </TableCell>
-                  <TableCell sx={{ textAlign: 'center' }}>
+                  <TableCell sx={{ textAlign: "center" }}>
                     {layer.kValue}
                   </TableCell>
-                  <TableCell sx={{ textAlign: 'center' }}>
+                  <TableCell sx={{ textAlign: "center" }}>
                     {layer.rValue}
                   </TableCell>
                 </TableRow>
@@ -251,7 +253,7 @@ function DoorFabricDetails() {
             fontWeight="bold"
             textAlign="center"
           >
-           R-Value: {rTotal}
+            R-Value: {rTotal}
           </Box>
         )}
 
@@ -279,7 +281,7 @@ function DoorFabricDetails() {
             fontWeight="bold"
             textAlign="center"
           >
-            UA: {uaValue} 
+            UA: {uaValue}
             {/* [{(parseFloat(totalDoorArea) * 0.092903).toFixed(2)} m²] */}
           </Box>
         )}
@@ -293,7 +295,8 @@ function DoorFabricDetails() {
           fontWeight="bold"
           textAlign="center"
         >
-       Door Area: {(parseFloat(totalDoorArea) * 0.092903).toFixed(2) || 'N/A'}
+          Door Area:{" "}
+          {(parseFloat(totalDoorArea) * 0.092903).toFixed(2) || "N/A"}
         </Box>
       </Box>
     </Box>

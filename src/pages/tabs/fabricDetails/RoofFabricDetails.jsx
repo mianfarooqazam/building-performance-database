@@ -28,6 +28,10 @@ import {
 } from '../../../calculations/FabricDetailCal/RoofCalculation.js';
 
 import useRoofFabricDetailsStore from '../../../store/useRoofFabricDetailsStore.js';
+import useWallFabricDetailsStore from '../../../store/useWallFabricDetailsStore.js'; 
+import useSlabFabricDetailsStore from '../../../store/useSlabFabricDetailsStore.js';
+import useDoorFabricDetailsStore from '../../../store/useDoorFabricDetailsStore.js'; 
+import useWindowFabricDetailsStore from '../../../store/useWindowFabricDetailsStore.js';
 import useFloorPlanStore from '../../../store/useFloorPlanStore.js';
 
 function RoofFabricDetails() {
@@ -53,6 +57,11 @@ function RoofFabricDetails() {
     uaValue,         
     setUAValue,      
   } = useRoofFabricDetailsStore();
+
+  const { uaValue: wallUaValue } = useWallFabricDetailsStore(); 
+  const { uaValue: slabUaValue } = useSlabFabricDetailsStore(); 
+  const { uaValue: windowUaValue } = useWindowFabricDetailsStore();
+  const { uaValue: doorUaValue } = useDoorFabricDetailsStore(); 
 
   const { totalFloorArea } = useFloorPlanStore();
 
@@ -147,6 +156,17 @@ function RoofFabricDetails() {
     setUAValue,
     totalFloorArea,
   ]);
+
+  // Calculate Total Fabric Heat Loss
+  const totalFabricHeatLoss = useMemo(() => {
+    const roofUa = parseFloat(uaValue) || 0;
+    const wallUa = parseFloat(wallUaValue) || 0;
+    const slabUa = parseFloat(slabUaValue) || 0;
+    const windowUa = parseFloat(windowUaValue) || 0;
+    const doorUa = parseFloat(doorUaValue) || 0;
+    const totalUa = roofUa + wallUa + slabUa + windowUa + doorUa;
+    return totalUa.toFixed(3);
+  }, [uaValue, wallUaValue, slabUaValue, windowUaValue, doorUaValue]);
 
   return (
     <Box p={3} display="flex" flexDirection="row" gap={2}>
@@ -451,6 +471,21 @@ function RoofFabricDetails() {
           Roof Area:{' '}
           {(parseFloat(totalFloorArea) * 0.092903).toFixed(2) || 'N/A'}
         </Box>
+
+         {/* Fabric Heat Loss Display */}
+         {!calculationError && (
+          <Box
+            p={2}
+            mt={2}
+            bgcolor="lightgreen"
+            borderRadius={2}
+            fontWeight="bold"
+            textAlign="center"
+          >
+            Fabric Heat Loss: {totalFabricHeatLoss}
+          </Box>
+        )}
+
       </Box>
     </Box>
   );
