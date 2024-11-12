@@ -1,3 +1,5 @@
+// File: FloorPlan.jsx
+
 import {
   Box,
   MenuItem,
@@ -127,7 +129,7 @@ function FloorPlan() {
     const totalAreaValue =
       calculateTotalArea(
         area,
-        totalWallAreaValue,
+        netWallAreaValue, // Updated to use netWallAreaValue
         totalWindowAreaValue,
         totalDoorAreaValue
       ) || 0;
@@ -339,7 +341,9 @@ function FloorPlan() {
                 <Select
                   label="No. of Sides Connected to Other Building"
                   value={sidesConnected}
-                  onChange={(e) => setSidesConnected(parseInt(e.target.value))}
+                  onChange={(e) =>
+                    setSidesConnected(parseInt(e.target.value))
+                  }
                 >
                   {[0, 1, 2, 3].map((side) => (
                     <MenuItem key={side} value={side}>
@@ -519,7 +523,7 @@ function FloorPlan() {
         <DisplayArea label="Door Area" areaInSqFt={totalDoorArea} />
         <DisplayArea label="Window Area" areaInSqFt={totalWindowArea} />
         <DisplayArea label="Net Wall Area" areaInSqFt={netWallArea} />
-        <DisplayArea label="Total Area" areaInSqFt={totalArea} />
+        <DisplayArea label="Total Area (Σ)" areaInSqFt={totalArea} />
         <DisplayVolume
           label="Dwelling Volume"
           volumeInCubicFt={dwellingVolume}
