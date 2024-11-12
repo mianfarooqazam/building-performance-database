@@ -293,7 +293,7 @@ function DoorFabricDetails() {
           fontWeight="bold"
           textAlign="center"
         >
-       Door Area: {(parseFloat(totalDoorArea) * 0.092903).toFixed(2) || 'N/A'} m²
+       Door Area: {(parseFloat(totalDoorArea) * 0.092903).toFixed(2) || 'N/A'}
         </Box>
       </Box>
     </Box>

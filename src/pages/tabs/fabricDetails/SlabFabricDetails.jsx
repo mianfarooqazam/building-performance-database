@@ -128,7 +128,7 @@ function SlabFabricDetails() {
               fontWeight="bold"
               textAlign="center"
             >
-              Floor Area: {(parseFloat(totalFloorArea) * 0.092903).toFixed(2) || 'N/A'} m²
+              Floor Area: {(parseFloat(totalFloorArea) * 0.092903).toFixed(2) || 'N/A'} 
             </Box>
           </>
         ) : (

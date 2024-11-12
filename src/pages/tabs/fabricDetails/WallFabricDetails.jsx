@@ -437,7 +437,7 @@ function WallFabricDetails() {
           fontWeight="bold"
           textAlign="center"
         >
-          Wall Area: {(parseFloat(netWallArea) * 0.092903).toFixed(2) || 'N/A'} m²
+          Wall Area: {(parseFloat(netWallArea) * 0.092903).toFixed(2) || 'N/A'} 
         </Box>
       </Box>
     </Box>

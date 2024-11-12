@@ -436,7 +436,7 @@ function RoofFabricDetails() {
           fontWeight="bold"
           textAlign="center"
         >
-          Roof Area: {(parseFloat(totalFloorArea) * 0.092903).toFixed(2) || 'N/A'} m²
+          Roof Area: {(parseFloat(totalFloorArea) * 0.092903).toFixed(2) || 'N/A'}
         </Box>
       </Box>
     </Box>
