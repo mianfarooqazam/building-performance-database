@@ -87,7 +87,7 @@ function SlabFabricDetails() {
       <Box width="20%" display="flex" flexDirection="column" gap={2}>
         {selectedSlabType ? (
           <>
-            <Box
+           <Box
               p={2}
               mt={2}
               bgcolor="lightblue"
@@ -95,7 +95,7 @@ function SlabFabricDetails() {
               fontWeight="bold"
               textAlign="center"
             >
-              U-Value: {uValue}
+              R-Value: {selectedSlabType.r_value}
             </Box>
             <Box
               p={2}
@@ -105,7 +105,7 @@ function SlabFabricDetails() {
               fontWeight="bold"
               textAlign="center"
             >
-              R-Value: {selectedSlabType.r_value}
+              U-Value: {uValue}
             </Box>
             {uaValue && !calculationError && (
               <Box

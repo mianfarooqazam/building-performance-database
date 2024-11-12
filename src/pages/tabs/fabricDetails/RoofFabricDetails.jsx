@@ -1,4 +1,4 @@
-import{ useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   Box,
   MenuItem,
@@ -50,6 +50,8 @@ function RoofFabricDetails() {
     setInnerLayerThickness,
     uValue,
     setUValue,
+    uaValue,         // Get uaValue from the store
+    setUAValue,      // Get setUAValue from the store
   } = useRoofFabricDetailsStore();
 
   const { totalFloorArea } = useFloorPlanStore();
@@ -101,12 +103,11 @@ function RoofFabricDetails() {
     innerLayerThickness,
   ]);
 
-  // State variables for rTotal, calculationError, and UA
+  // State variables for rTotal and calculationError
   const [rTotal, setRTotal] = useState(null);
   const [calculationError, setCalculationError] = useState(null);
-  const [uaValue, setUaValue] = useState(null);
 
-  // useEffect to calculate rTotal and uValue when layers change
+  // useEffect to calculate rTotal, uValue, and uaValue when layers change
   useEffect(() => {
     if (layers.length > 0) {
       try {
@@ -115,7 +116,7 @@ function RoofFabricDetails() {
         setRTotal(totalRValue);
         setCalculationError(null);
 
-        // Set uValue in the store
+        // Set uValue and uaValue in the store
         setUValue(calculatedUValue);
 
         // Convert totalFloorArea from ft² to m²
@@ -124,20 +125,28 @@ function RoofFabricDetails() {
 
         // Calculate UA
         const ua = (calculatedUValue * areaInM2).toFixed(3);
-        setUaValue(ua);
+        setUAValue(ua); // Set uaValue in the store
       } catch (error) {
         setCalculationError(error.message);
         setRTotal(null);
         setUValue(null); // Clear uValue in the store on error
-        setUaValue(null);
+        setUAValue(null); // Clear uaValue in the store on error
       }
     } else {
       setRTotal(null);
       setCalculationError(null);
       setUValue(null); // Clear uValue in the store when no layers
-      setUaValue(null);
+      setUAValue(null); // Clear uaValue in the store when no layers
     }
-  }, [layers, rValues, hi, ho, setUValue, totalFloorArea]);
+  }, [
+    layers,
+    rValues,
+    hi,
+    ho,
+    setUValue,
+    setUAValue,
+    totalFloorArea,
+  ]);
 
   return (
     <Box p={3} display="flex" flexDirection="row" gap={2}>
@@ -361,8 +370,12 @@ function RoofFabricDetails() {
             <TableBody>
               {layers.map((layer, index) => (
                 <TableRow key={index}>
-                  <TableCell sx={{ textAlign: 'center' }}>{index + 1}</TableCell>
-                  <TableCell sx={{ textAlign: 'center' }}>{layer.type}</TableCell>
+                  <TableCell sx={{ textAlign: 'center' }}>
+                    {index + 1}
+                  </TableCell>
+                  <TableCell sx={{ textAlign: 'center' }}>
+                    {layer.type}
+                  </TableCell>
                   <TableCell sx={{ textAlign: 'center' }}>
                     {layer.material}
                   </TableCell>
@@ -394,7 +407,7 @@ function RoofFabricDetails() {
             fontWeight="bold"
             textAlign="center"
           >
-          R-Value: {rTotal}
+            R-Value: {rTotal}
           </Box>
         )}
 
@@ -408,7 +421,7 @@ function RoofFabricDetails() {
             fontWeight="bold"
             textAlign="center"
           >
-          U-Value: {uValue}
+            U-Value: {uValue}
           </Box>
         )}
 
@@ -422,8 +435,7 @@ function RoofFabricDetails() {
             fontWeight="bold"
             textAlign="center"
           >
-            UA: {uaValue} 
-            
+            UA: {uaValue}
           </Box>
         )}
 
@@ -436,7 +448,8 @@ function RoofFabricDetails() {
           fontWeight="bold"
           textAlign="center"
         >
-          Roof Area: {(parseFloat(totalFloorArea) * 0.092903).toFixed(2) || 'N/A'}
+          Roof Area:{' '}
+          {(parseFloat(totalFloorArea) * 0.092903).toFixed(2) || 'N/A'}
         </Box>
       </Box>
     </Box>
