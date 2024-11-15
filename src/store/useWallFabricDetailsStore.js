@@ -15,6 +15,7 @@ const useWallFabricDetailsStore = create(
       innerLayerThickness: '',
       uValue: null,
       uaValue: null,
+      kappaValue: null,
 
       // Actions
       setOuterLayerMaterial: (outerLayerMaterial) => set({ outerLayerMaterial }),
@@ -27,6 +28,7 @@ const useWallFabricDetailsStore = create(
       setInnerLayerThickness: (innerLayerThickness) => set({ innerLayerThickness }),
       setUValue: (uValue) => set({ uValue }),
       setUAValue: (uaValue) => set({ uaValue }),
+      setKappaValue: (kappaValue) => set({ kappaValue }),
 
     }),
     {

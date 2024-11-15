@@ -1,5 +1,3 @@
-// RoofFabricDetails.jsx
-
 import { useState, useEffect, useMemo } from 'react';
 import {
   Box,
@@ -75,7 +73,7 @@ function RoofFabricDetails() {
   const hi = 2.5;
   const ho = 11.54;
 
-  // Memoized layers, rValues, and kappaValues
+  // Memoized layers, rValues and kappaValues
   const { layers, rValues, kappaValues } = useMemo(() => {
     const layersArray = [];
     const rValuesArray = [];
@@ -508,7 +506,7 @@ function RoofFabricDetails() {
             fontWeight="bold"
             textAlign="center"
           >
-            Total Kappa Value: {totalKappa}
+            Kappa Value: {totalKappa}
           </Box>
         )}
 

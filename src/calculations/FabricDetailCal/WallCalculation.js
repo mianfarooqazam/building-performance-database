@@ -1,5 +1,3 @@
-// RoofCalculation.js
-
 export function calculateRValue(thicknessInches, kValue) {
     // Convert thickness from inches to meters
     const thicknessMeters = thicknessInches * 0.0254;
@@ -42,3 +40,17 @@ export function calculateRValue(thicknessInches, kValue) {
     return uValue;
   }
   
+  export function calculateKappaValue(thicknessInches, sh_value, d_value) {
+    // Convert thickness from inches to meters
+    const thicknessMeters = thicknessInches * 0.0254;
+  
+    // Calculate Kappa value for the layer
+    const kappa = (thicknessMeters * sh_value * d_value) / 1000;
+  
+    return kappa;
+  }
+  
+  export function calculateTotalKappa(kappaValues) {
+    const totalKappa = kappaValues.reduce((sum, kappa) => sum + kappa, 0);
+    return totalKappa;
+  }

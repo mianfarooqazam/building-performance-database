@@ -25,6 +25,8 @@ import {
   calculateRValue,
   calculateRTotal,
   calculateUValue,
+  calculateKappaValue,
+  calculateTotalKappa,
 } from "../../../calculations/FabricDetailCal/WallCalculation.js";
 
 import useWallFabricDetailsStore from "../../../store/useWallFabricDetailsStore.js";
@@ -52,6 +54,8 @@ function WallFabricDetails() {
     setUValue,
     uaValue,
     setUAValue,
+    kappaValue,
+    setKappaValue,
   } = useWallFabricDetailsStore();
 
   const { netWallArea } = useFloorPlanStore();
@@ -60,10 +64,11 @@ function WallFabricDetails() {
   const hi = 2.5;
   const ho = 11.54;
 
-  // Memoized layers and rValues
-  const { layers, rValues } = useMemo(() => {
+  // Memoized layers, rValues and kappaValues
+  const { layers, rValues, kappaValues } = useMemo(() => {
     const layersArray = [];
     const rValuesArray = [];
+    const kappaValuesArray = [];
 
     // Helper function to process each layer
     const processLayer = (layerMaterial, layerThickness, layerType) => {
@@ -71,13 +76,18 @@ function WallFabricDetails() {
         const thickness = parseFloat(layerThickness);
         const kValue = layerMaterial.k_value;
         const rValue = calculateRValue(thickness, kValue);
+        const shValue = layerMaterial.sh_value;
+        const dValue = layerMaterial.d_value;
+        const kappaVal = calculateKappaValue(thickness, shValue, dValue);
         layersArray.push({
           type: layerType,
           material: layerMaterial.name,
           thickness: thickness,
           rValue: rValue.toFixed(4),
+          kappaValue: kappaVal.toFixed(4),
         });
         rValuesArray.push(parseFloat(rValue.toFixed(4)));
+        kappaValuesArray.push(parseFloat(kappaVal.toFixed(4)));
       }
     };
 
@@ -91,7 +101,11 @@ function WallFabricDetails() {
     );
     processLayer(innerLayerMaterial, innerLayerThickness, "Inner Layer");
 
-    return { layers: layersArray, rValues: rValuesArray };
+    return {
+      layers: layersArray,
+      rValues: rValuesArray,
+      kappaValues: kappaValuesArray,
+    };
   }, [
     outerLayerMaterial,
     outerLayerThickness,
@@ -103,11 +117,11 @@ function WallFabricDetails() {
     innerLayerThickness,
   ]);
 
-  // State variables for rTotal, calculationError, and UA
+  // State variables for rTotal and calculationError
   const [rTotal, setRTotal] = useState(null);
   const [calculationError, setCalculationError] = useState(null);
 
-  // useEffect to calculate rTotal and uValue when layers change
+  // useEffect to calculate rTotal, uValue, uaValue, and kappaValue when layers change
   useEffect(() => {
     if (layers.length > 0) {
       try {
@@ -126,28 +140,35 @@ function WallFabricDetails() {
         // Calculate UA
         const ua = (calculatedUValue * areaInM2).toFixed(3);
         setUAValue(ua);
+
+        // Calculate total Kappa value
+        const calculatedTotalKappa = calculateTotalKappa(kappaValues).toFixed(4);
+        setKappaValue(calculatedTotalKappa);
       } catch (error) {
         setCalculationError(error.message);
         setRTotal(null);
         setUValue(null);
         setUAValue(null);
+        setKappaValue(null);
       }
     } else {
       setRTotal(null);
       setCalculationError(null);
       setUValue(null);
       setUAValue(null);
+      setKappaValue(null);
     }
   }, [
     layers,
     rValues,
+    kappaValues,
     hi,
     ho,
     setUValue,
     setUAValue,
+    setKappaValue,
     netWallArea,
   ]);
-
 
   return (
     <Box p={3} display="flex" flexDirection="row" gap={2}>
@@ -365,6 +386,15 @@ function WallFabricDetails() {
                 >
                   R-Value
                 </TableCell>
+                <TableCell
+                  sx={{
+                    backgroundColor: "lightblue",
+                    textAlign: "center",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Kappa Value
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -384,6 +414,9 @@ function WallFabricDetails() {
                   </TableCell>
                   <TableCell sx={{ textAlign: "center" }}>
                     {layer.rValue}
+                  </TableCell>
+                  <TableCell sx={{ textAlign: "center" }}>
+                    {layer.kappaValue}
                   </TableCell>
                 </TableRow>
               ))}
@@ -436,8 +469,20 @@ function WallFabricDetails() {
             textAlign="center"
           >
             UA: {uaValue}
-            {/* below code is for displaying in m² also */}
-            {/* [{(parseFloat(netWallArea) * 0.092903).toFixed(2)} m²] */}
+          </Box>
+        )}
+
+        {/* Kappa Value Display */}
+        {kappaValue && !calculationError && (
+          <Box
+            p={2}
+            mt={2}
+            bgcolor="lightgreen"
+            borderRadius={2}
+            fontWeight="bold"
+            textAlign="center"
+          >
+            Kappa Value: {kappaValue}
           </Box>
         )}
 
