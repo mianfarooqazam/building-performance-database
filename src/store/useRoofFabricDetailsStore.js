@@ -1,3 +1,5 @@
+// useRoofFabricDetailsStore.js
+
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -15,6 +17,7 @@ const useRoofFabricDetailsStore = create(
       innerLayerThickness: '',
       uValue: null,
       uaValue: null,
+      kappaValue: null,
 
       // Actions
       setOuterLayerMaterial: (outerLayerMaterial) => set({ outerLayerMaterial }),
@@ -31,6 +34,7 @@ const useRoofFabricDetailsStore = create(
         set({ innerLayerThickness }),
       setUValue: (uValue) => set({ uValue }),
       setUAValue: (uaValue) => set({ uaValue }),
+      setKappaValue: (kappaValue) => set({ kappaValue }),
     }),
     {
       name: 'roof-fabric-details-storage', // Unique name for storage key

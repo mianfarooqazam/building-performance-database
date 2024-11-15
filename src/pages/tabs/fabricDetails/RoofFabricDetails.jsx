@@ -1,3 +1,5 @@
+// RoofFabricDetails.jsx
+
 import { useState, useEffect, useMemo } from 'react';
 import {
   Box,
@@ -25,6 +27,8 @@ import {
   calculateRValue,
   calculateRTotal,
   calculateUValue,
+  calculateKappaValue,
+  calculateTotalKappa,
 } from '../../../calculations/FabricDetailCal/RoofCalculation.js';
 
 import useRoofFabricDetailsStore from '../../../store/useRoofFabricDetailsStore.js';
@@ -56,6 +60,8 @@ function RoofFabricDetails() {
     setUValue,
     uaValue,         
     setUAValue,      
+    kappaValue,
+    setKappaValue,
   } = useRoofFabricDetailsStore();
 
   const { uaValue: wallUaValue } = useWallFabricDetailsStore(); 
@@ -69,10 +75,11 @@ function RoofFabricDetails() {
   const hi = 2.5;
   const ho = 11.54;
 
-  // Memoized layers and rValues
-  const { layers, rValues } = useMemo(() => {
+  // Memoized layers, rValues, and kappaValues
+  const { layers, rValues, kappaValues } = useMemo(() => {
     const layersArray = [];
     const rValuesArray = [];
+    const kappaValuesArray = [];
 
     // Helper function to process each layer
     const processLayer = (layerMaterial, layerThickness, layerType) => {
@@ -80,13 +87,18 @@ function RoofFabricDetails() {
         const thickness = parseFloat(layerThickness);
         const kValue = layerMaterial.k_value;
         const rValue = calculateRValue(thickness, kValue);
+        const shValue = layerMaterial.sh_value;
+        const dValue = layerMaterial.d_value;
+        const kappaValue = calculateKappaValue(thickness, shValue, dValue);
         layersArray.push({
           type: layerType,
           material: layerMaterial.name,
           thickness: thickness,
           rValue: rValue.toFixed(4),
+          kappaValue: kappaValue.toFixed(4),
         });
         rValuesArray.push(parseFloat(rValue.toFixed(4)));
+        kappaValuesArray.push(parseFloat(kappaValue.toFixed(4)));
       }
     };
 
@@ -100,7 +112,7 @@ function RoofFabricDetails() {
     );
     processLayer(innerLayerMaterial, innerLayerThickness, 'Inner Layer');
 
-    return { layers: layersArray, rValues: rValuesArray };
+    return { layers: layersArray, rValues: rValuesArray, kappaValues: kappaValuesArray };
   }, [
     outerLayerMaterial,
     outerLayerThickness,
@@ -112,11 +124,12 @@ function RoofFabricDetails() {
     innerLayerThickness,
   ]);
 
-  // State variables for rTotal and calculationError
+  // State variables for rTotal, totalKappa, and calculationError
   const [rTotal, setRTotal] = useState(null);
+  const [totalKappa, setTotalKappa] = useState(null);
   const [calculationError, setCalculationError] = useState(null);
 
-  // useEffect to calculate rTotal, uValue, and uaValue when layers change
+  // useEffect to calculate rTotal, uValue, uaValue, and totalKappa when layers change
   useEffect(() => {
     if (layers.length > 0) {
       try {
@@ -135,25 +148,39 @@ function RoofFabricDetails() {
         // Calculate UA
         const ua = (calculatedUValue * areaInM2).toFixed(3);
         setUAValue(ua); 
+
+        // Calculate total Kappa value
+        const calculatedTotalKappa = calculateTotalKappa(kappaValues).toFixed(4);
+        setTotalKappa(calculatedTotalKappa);
+
+        // Set Kappa value in the store
+        setKappaValue(calculatedTotalKappa);
+
       } catch (error) {
         setCalculationError(error.message);
         setRTotal(null);
         setUValue(null); 
         setUAValue(null); 
+        setTotalKappa(null);
+        setKappaValue(null);
       }
     } else {
       setRTotal(null);
       setCalculationError(null);
       setUValue(null); 
       setUAValue(null); 
+      setTotalKappa(null);
+      setKappaValue(null);
     }
   }, [
     layers,
     rValues,
+    kappaValues,
     hi,
     ho,
     setUValue,
     setUAValue,
+    setKappaValue,
     totalFloorArea,
   ]);
 
@@ -385,6 +412,15 @@ function RoofFabricDetails() {
                 >
                   R-Value
                 </TableCell>
+                <TableCell
+                  sx={{
+                    backgroundColor: 'lightblue',
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  Kappa Value
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -404,6 +440,9 @@ function RoofFabricDetails() {
                   </TableCell>
                   <TableCell sx={{ textAlign: 'center' }}>
                     {layer.rValue}
+                  </TableCell>
+                  <TableCell sx={{ textAlign: 'center' }}>
+                    {layer.kappaValue}
                   </TableCell>
                 </TableRow>
               ))}
@@ -456,6 +495,20 @@ function RoofFabricDetails() {
             textAlign="center"
           >
             UA: {uaValue}
+          </Box>
+        )}
+
+        {/* Total Kappa Value Display */}
+        {totalKappa && !calculationError && (
+          <Box
+            p={2}
+            mt={2}
+            bgcolor="lightgreen"
+            borderRadius={2}
+            fontWeight="bold"
+            textAlign="center"
+          >
+            Total Kappa Value: {totalKappa}
           </Box>
         )}
 
