@@ -15,7 +15,7 @@ const Orientation_k_values = {
         "k1": 0.165,
         "k2": -3.68,
         "k3": 3,
-        "k4": -6.38,
+        "k4": 6.38,
         "k5": -1.53,
         "k6": -0.405,
         "k7": -1.38,
@@ -26,7 +26,7 @@ const Orientation_k_values = {
         "k1": 1.44,
         "k2": -2.36,
         "k3": 1.07,
-        "k4": 0.514,
+        "k4": -0.514,
         "k5": 1.89,
         "k6": -1.64,
         "k7": -0.542,
@@ -150,7 +150,7 @@ const Solar_declination = {
 };
 
 // city wise longitude
-const City_longitude = {
+const City_latitude = {
     "Peshawar": 34.02,
     "Islamabad": 33.69,
     "Multan": 30.18,
@@ -164,7 +164,7 @@ export {
     Orientation_k_values,
     City_solar_irradiance,
     Solar_declination,
-    City_longitude
+    City_latitude
 };
 
 
