@@ -1,7 +1,11 @@
 // SolarGainCalculation.js
 
-// Import the Orientation_k_values and other constants from CitiesValues.js
-import { Orientation_k_values } from '../../utils/solargain/CitiesValues.js'; // Ensure the correct relative path
+// Import constants from CitiesValues.js
+import { 
+    Orientation_k_values, 
+    Solar_declination, 
+    City_latitude 
+} from '../../utils/solargain/CitiesValues.js'; // Ensure the correct relative path
 
 // Define the angle pbytwo in radians
 const pbytwo = 0.785;
@@ -28,3 +32,42 @@ for (const orientation in Orientation_k_values) {
     console.log(`  B = ${B.toFixed(2)}`);
     console.log(`  C = ${C.toFixed(2)}\n`);
 }
+
+// Function to convert degrees to radians
+const degreesToRadians = (degrees) => {
+    return degrees * (Math.PI / 180);
+};
+
+// Function to calculate phi for each city and each month
+const calculatePhi = () => {
+    const City_phi = {}; 
+
+    for (const city in City_latitude) {
+        const latitude = City_latitude[city];
+        City_phi[city] = {};
+
+        for (const month in Solar_declination) {
+            const declination = Solar_declination[month];
+            const phi_degrees = latitude - declination;
+            const phi_radians = degreesToRadians(phi_degrees);
+            City_phi[city][month] = phi_radians.toFixed(2); 
+        }
+    }
+
+    return City_phi;
+};
+
+// Calculate phi values
+const phiValues = calculatePhi();
+
+// Log phi values
+console.log("Phi Values (in radians):\n");
+
+for (const city in phiValues) {
+    console.log(`${city}:`);
+    for (const month in phiValues[city]) {
+        console.log(`  ${month}: ${phiValues[city][month]} `);
+    }
+    console.log(""); 
+}
+
