@@ -149,13 +149,13 @@ const Solar_declination = {
     "December": -23.26
 };
 
-// city wise longitude
+// city wise latitude
 const City_latitude = {
-    "Peshawar": 34.02,
-    "Islamabad": 33.69,
-    "Multan": 30.18,
-    "Lahore": 31.52,
-    "Karachi": 24.80
+    "Peshawar": 34.01510,
+    "Islamabad": 33.6995,
+    "Multan": 30.1864,
+    "Lahore": 31.5204,
+    "Karachi": 24.8607
 };
 
 
