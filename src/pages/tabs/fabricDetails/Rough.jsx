@@ -1,12 +1,9 @@
-// File: useFloorPlanStore.js
-
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 const useFloorPlanStore = create(
   persist(
     (set) => ({
-      // Existing state variables
       buildingOrientation: '',
       numberOfFloors: '',
       showWindowInputs: false,
@@ -24,24 +21,20 @@ const useFloorPlanStore = create(
       totalArea: 0,
       windows: [],
       doors: [],
+      // Lighting variables
+      numberOfOccupants: '',
+      numberOfLights: '',
+      lights: [],
+      totalWattage: 0,
+      // Indoor Conditions variables
+      setTemperature: '',
+      hoursOfOperation: [],
 
-      // Indoor Conditions state variables
-      temperature: '',
-      hoursOfOperation: '',
-
-      // Lighting state variables
-      noOfOccupants: '',
-      noOfLighting: '',
-      hoursUsedDaily: '',
-      totalLightingWattage: '', // Changed from lightingWattages array to a single value
-
-      // Existing actions
-      setBuildingOrientation: (buildingOrientation) =>
-        set({ buildingOrientation }),
+      // Actions
+      setBuildingOrientation: (buildingOrientation) => set({ buildingOrientation }),
       setNumberOfFloors: (numberOfFloors) => set({ numberOfFloors }),
       setShowWindowInputs: (showWindowInputs) => set({ showWindowInputs }),
-      setWindowOrientation: (windowOrientation) =>
-        set({ windowOrientation }),
+      setWindowOrientation: (windowOrientation) => set({ windowOrientation }),
       setWallLengths: (wallLengths) => set({ wallLengths }),
       setWallHeight: (wallHeight) => set({ wallHeight }),
       setTotalFloorArea: (totalFloorArea) => set({ totalFloorArea }),
@@ -56,17 +49,18 @@ const useFloorPlanStore = create(
       setWindows: (windows) => set({ windows }),
       setDoors: (doors) => set({ doors }),
 
-      // Actions for Indoor Conditions
-      setTemperature: (temperature) => set({ temperature }),
-      setHoursOfOperation: (hoursOfOperation) =>
-        set({ hoursOfOperation }),
+      // Actions for Lighting section
+      setNumberOfOccupants: (numberOfOccupants) => set({ numberOfOccupants }),
+      setNumberOfLights: (numberOfLights) => set({ numberOfLights }),
+      setLights: (lights) => set({ lights }),
+      setTotalWattage: (totalWattage) => set({ totalWattage }),
 
-      // Actions for Lighting
-      setNoOfOccupants: (noOfOccupants) => set({ noOfOccupants }),
-      setNoOfLighting: (noOfLighting) => set({ noOfLighting }),
-      setHoursUsedDaily: (hoursUsedDaily) => set({ hoursUsedDaily }),
-      setTotalLightingWattage: (totalLightingWattage) =>
-        set({ totalLightingWattage }),
+      // Actions for Indoor Conditions section
+      setSetTemperature: (setTemperature) => set({ setTemperature }),
+      setHoursOfOperation: (hoursOfOperation) =>
+        set({
+          hoursOfOperation: Array.isArray(hoursOfOperation) ? hoursOfOperation : [],
+        }),
     }),
     {
       name: 'floorplan-storage', // Unique name for the storage key

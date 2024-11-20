@@ -8,6 +8,9 @@ import {
   FormControl,
   Typography,
   Modal,
+  Checkbox,
+  FormGroup,
+  FormControlLabel,
 } from "@mui/material";
 import {
   Orientation,
@@ -71,6 +74,12 @@ function FloorPlan() {
     setLights,
     totalWattage,
     setTotalWattage,
+
+    // Indoor Conditions variables
+    setTemperature,
+    setSetTemperature,
+    hoursOfOperation,
+    setHoursOfOperation,
   } = useFloorPlanStore();
 
   const [newWindowOrientation, setNewWindowOrientation] = useState("");
@@ -81,6 +90,37 @@ function FloorPlan() {
 
   const [openLightModal, setOpenLightModal] = useState(false);
   const [lightWattages, setLightWattages] = useState([]);
+
+  // Indoor Conditions state
+  const [openHourModal, setOpenHourModal] = useState(false);
+  const [selectedHours, setSelectedHours] = useState([]);
+
+  const timeSlots = [
+    "12am - 1am",
+    "1am - 2am",
+    "2am - 3am",
+    "3am - 4am",
+    "4am - 5am",
+    "5am - 6am",
+    "6am - 7am",
+    "7am - 8am",
+    "8am - 9am",
+    "9am - 10am",
+    "10am - 11am",
+    "11am - 12pm",
+    "12pm - 1pm",
+    "1pm - 2pm",
+    "2pm - 3pm",
+    "3pm - 4pm",
+    "4pm - 5pm",
+    "5pm - 6pm",
+    "6pm - 7pm",
+    "7pm - 8pm",
+    "8pm - 9pm",
+    "9pm - 10pm",
+    "10pm - 11pm",
+    "11pm - 12am",
+  ];
 
   function getWindowOrientations() {
     if (OrientationSingleWindow.includes(buildingOrientation)) {
@@ -290,6 +330,31 @@ function FloorPlan() {
     );
   }
 
+  function DisplayHours({ label, hours }) {
+    return (
+      <Box mb={2}>
+        <Typography
+          variant="h6"
+          sx={{
+            backgroundColor: "lightblue",
+            padding: "8px",
+            borderRadius: "4px",
+            textAlign: "center",
+          }}
+        >
+          {label}
+        </Typography>
+        <Typography
+          sx={{
+            textAlign: "center",
+          }}
+        >
+          {hours} hour(s)
+        </Typography>
+      </Box>
+    );
+  }
+
   DisplayArea.propTypes = {
     label: PropTypes.string.isRequired,
     areaInSqFt: PropTypes.number.isRequired,
@@ -303,6 +368,11 @@ function FloorPlan() {
   DisplayTotalWattage.propTypes = {
     label: PropTypes.string.isRequired,
     wattage: PropTypes.number.isRequired,
+  };
+
+  DisplayHours.propTypes = {
+    label: PropTypes.string.isRequired,
+    hours: PropTypes.number.isRequired,
   };
 
   return (
@@ -557,7 +627,7 @@ function FloorPlan() {
           </Box>
         )}
 
-        {/* New Lighting Section */}
+        {/* Lighting Section */}
         <h1 className="font-semibold text-2xl">Lighting</h1>
 
         <Box display="flex" flexWrap="wrap" gap={2} alignItems="center">
@@ -662,6 +732,103 @@ function FloorPlan() {
             </Button>
           </Box>
         </Modal>
+
+        {/* Indoor Conditions Section */}
+        <h1 className="font-semibold text-2xl">Indoor Conditions</h1>
+
+        <Box display="flex" flexWrap="wrap" gap={2} alignItems="center">
+          <TextField
+            label="Set Temperature (°C)"
+            variant="outlined"
+            fullWidth
+            sx={{ flex: 1 }}
+            value={setTemperature !== null ? setTemperature : ""}
+            onChange={(e) => {
+              const value = e.target.value;
+              setSetTemperature(value === "" ? "" : parseFloat(value));
+            }}
+            type="number"
+          />
+          <Button
+            variant="contained"
+            onClick={() => {
+              setSelectedHours(
+                Array.isArray(hoursOfOperation) ? hoursOfOperation : []
+              );
+              setOpenHourModal(true);
+            }}
+          >
+            Hours of Operation
+          </Button>
+        </Box>
+
+      
+
+        <Modal open={openHourModal} onClose={() => setOpenHourModal(false)}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "80%",
+              maxWidth: 500,
+              bgcolor: "background.paper",
+              border: "2px solid #000",
+              boxShadow: 24,
+              p: 4,
+              maxHeight: "80vh",
+              overflowY: "auto",
+            }}
+          >
+            <Typography variant="h6" component="h2">
+              Select Hours of Operation
+            </Typography>
+            <FormGroup>
+              {timeSlots.map((slot, index) => (
+                <FormControlLabel
+                  key={index}
+                  control={
+                    <Checkbox
+                      checked={
+                        Array.isArray(selectedHours)
+                          ? selectedHours.includes(slot)
+                          : false
+                      }
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedHours(
+                            Array.isArray(selectedHours)
+                              ? [...selectedHours, slot]
+                              : [slot]
+                          );
+                        } else {
+                          setSelectedHours(
+                            Array.isArray(selectedHours)
+                              ? selectedHours.filter((s) => s !== slot)
+                              : []
+                          );
+                        }
+                      }}
+                    />
+                  }
+                  label={slot}
+                />
+              ))}
+            </FormGroup>
+            <Button
+              variant="contained"
+              onClick={() => {
+                // Update the hoursOfOperation in the store
+                setHoursOfOperation(selectedHours);
+                setOpenHourModal(false);
+              }}
+              sx={{ mt: 2 }}
+            >
+              Save
+            </Button>
+          </Box>
+        </Modal>
       </Box>
 
       {/* Right side - 30% width */}
@@ -694,6 +861,10 @@ function FloorPlan() {
           volumeInCubicFt={dwellingVolume}
         />
         <DisplayTotalWattage label="Total Wattage" wattage={totalWattage} />
+        <DisplayHours
+          label="Hours of Operation"
+          hours={hoursOfOperation ? hoursOfOperation.length : 0}
+        />
       </Box>
     </Box>
   );

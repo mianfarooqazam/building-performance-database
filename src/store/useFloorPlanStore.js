@@ -1,5 +1,3 @@
-// File: useFloorPlanStore.js
-
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -24,10 +22,13 @@ const useFloorPlanStore = create(
       windows: [],
       doors: [],
       // Lighting variables
-      numberOfOccupants: 0,
-      numberOfLights: 0,
+      numberOfOccupants: '',
+      numberOfLights: '',
       lights: [],
       totalWattage: 0,
+      // Indoor Conditions variables
+      setTemperature: '',
+      hoursOfOperation: [],
 
       // Actions
       setBuildingOrientation: (buildingOrientation) => set({ buildingOrientation }),
@@ -48,11 +49,18 @@ const useFloorPlanStore = create(
       setWindows: (windows) => set({ windows }),
       setDoors: (doors) => set({ doors }),
 
-      // Actions Lighting section
+      // Actions for Lighting section
       setNumberOfOccupants: (numberOfOccupants) => set({ numberOfOccupants }),
       setNumberOfLights: (numberOfLights) => set({ numberOfLights }),
       setLights: (lights) => set({ lights }),
       setTotalWattage: (totalWattage) => set({ totalWattage }),
+
+      // Actions for Indoor Conditions section
+      setSetTemperature: (setTemperature) => set({ setTemperature }),
+      setHoursOfOperation: (hoursOfOperation) =>
+        set({
+          hoursOfOperation: Array.isArray(hoursOfOperation) ? hoursOfOperation : [],
+        }),
     }),
     {
       name: 'floorplan-storage', // Unique name for the storage key
