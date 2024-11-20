@@ -166,7 +166,7 @@ function FloorPlan() {
   useEffect(() => {
     setTotalWattage(0);
     setLights([]);
-    setLightWattages(new Array(numberOfLights).fill(""));
+    setLightWattages(new Array(numberOfLights || 0).fill(""));
   }, [numberOfLights, setTotalWattage, setLights]);
 
   const handleAddWindow = () => {
@@ -316,7 +316,7 @@ function FloorPlan() {
             <InputLabel>Building Orientation</InputLabel>
             <Select
               label="Building Orientation"
-              value={buildingOrientation}
+              value={buildingOrientation || ""}
               onChange={(e) => {
                 setBuildingOrientation(e.target.value);
                 setWallLengths({});
@@ -335,8 +335,11 @@ function FloorPlan() {
             <InputLabel>No. of Floors</InputLabel>
             <Select
               label="No. of Floors"
-              value={numberOfFloors}
-              onChange={(e) => setNumberOfFloors(parseInt(e.target.value))}
+              value={numberOfFloors !== null ? numberOfFloors : ""}
+              onChange={(e) => {
+                const value = e.target.value;
+                setNumberOfFloors(value === "" ? "" : parseInt(value));
+              }}
             >
               {Floors.map((floor) => (
                 <MenuItem key={floor} value={floor}>
@@ -361,13 +364,16 @@ function FloorPlan() {
                   variant="outlined"
                   fullWidth
                   sx={{ flex: 1 }}
-                  value={wallLengths[label] || ""}
-                  onChange={(e) =>
+                  value={
+                    wallLengths[label] !== undefined ? wallLengths[label] : ""
+                  }
+                  onChange={(e) => {
+                    const value = e.target.value;
                     setWallLengths({
                       ...wallLengths,
-                      [label]: parseFloat(e.target.value) || "",
-                    })
-                  }
+                      [label]: value === "" ? "" : parseFloat(value),
+                    });
+                  }}
                   type="number"
                 />
               ))}
@@ -379,10 +385,11 @@ function FloorPlan() {
                 variant="outlined"
                 fullWidth
                 sx={{ flex: 1 }}
-                value={wallHeight}
-                onChange={(e) =>
-                  setWallHeight(parseFloat(e.target.value) || "")
-                }
+                value={wallHeight !== null ? wallHeight : ""}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setWallHeight(value === "" ? "" : parseFloat(value));
+                }}
                 type="number"
               />
               <FormControl fullWidth variant="outlined" sx={{ flex: 1 }}>
@@ -391,10 +398,11 @@ function FloorPlan() {
                 </InputLabel>
                 <Select
                   label="No. of Sides Connected to Other Building"
-                  value={sidesConnected}
-                  onChange={(e) =>
-                    setSidesConnected(parseInt(e.target.value))
-                  }
+                  value={sidesConnected !== null ? sidesConnected : ""}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setSidesConnected(value === "" ? "" : parseInt(value));
+                  }}
                 >
                   {[0, 1, 2, 3].map((side) => (
                     <MenuItem key={side} value={side}>
@@ -415,7 +423,7 @@ function FloorPlan() {
               <InputLabel>Orientation</InputLabel>
               <Select
                 label="Orientation"
-                value={newWindowOrientation}
+                value={newWindowOrientation || ""}
                 onChange={(e) => setNewWindowOrientation(e.target.value)}
                 displayEmpty
               >
@@ -431,7 +439,7 @@ function FloorPlan() {
               variant="outlined"
               fullWidth
               sx={{ flex: 1 }}
-              value={newWindowArea}
+              value={newWindowArea || ""}
               onChange={(e) => setNewWindowArea(e.target.value)}
               type="number"
             />
@@ -486,7 +494,7 @@ function FloorPlan() {
               <InputLabel>Orientation</InputLabel>
               <Select
                 label="Orientation"
-                value={newDoorOrientation}
+                value={newDoorOrientation || ""}
                 onChange={(e) => setNewDoorOrientation(e.target.value)}
                 displayEmpty
               >
@@ -502,7 +510,7 @@ function FloorPlan() {
               variant="outlined"
               fullWidth
               sx={{ flex: 1 }}
-              value={newDoorArea}
+              value={newDoorArea || ""}
               onChange={(e) => setNewDoorArea(e.target.value)}
               type="number"
             />
@@ -558,10 +566,11 @@ function FloorPlan() {
             variant="outlined"
             fullWidth
             sx={{ flex: 1 }}
-            value={numberOfOccupants}
-            onChange={(e) =>
-              setNumberOfOccupants(parseInt(e.target.value) )
-            }
+            value={numberOfOccupants !== null ? numberOfOccupants : ""}
+            onChange={(e) => {
+              const value = e.target.value;
+              setNumberOfOccupants(value === "" ? "" : parseInt(value));
+            }}
             type="number"
           />
           <TextField
@@ -569,9 +578,10 @@ function FloorPlan() {
             variant="outlined"
             fullWidth
             sx={{ flex: 1 }}
-            value={numberOfLights}
+            value={numberOfLights !== null ? numberOfLights : ""}
             onChange={(e) => {
-              const newNumberOfLights = parseInt(e.target.value) ;
+              const value = e.target.value;
+              const newNumberOfLights = value === "" ? "" : parseInt(value);
               setNumberOfLights(newNumberOfLights);
               // Reset total wattage and lights array
               setTotalWattage(0);
@@ -583,9 +593,10 @@ function FloorPlan() {
             variant="contained"
             onClick={() => {
               // Initialize lightWattages array
-              setLightWattages(new Array(numberOfLights).fill(""));
+              setLightWattages(new Array(numberOfLights || 0).fill(""));
               setOpenLightModal(true);
             }}
+            disabled={!numberOfLights || numberOfLights <= 0}
           >
             Add
           </Button>
@@ -618,7 +629,7 @@ function FloorPlan() {
                   label={`Light ${index + 1} Wattage (W)`}
                   variant="outlined"
                   fullWidth
-                  value={wattage}
+                  value={wattage || ""}
                   onChange={(e) => {
                     const newWattages = [...lightWattages];
                     newWattages[index] = e.target.value;
