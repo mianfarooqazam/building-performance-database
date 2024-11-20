@@ -1,5 +1,3 @@
-// File: FloorPlan.jsx
-
 import {
   Box,
   MenuItem,
@@ -9,6 +7,7 @@ import {
   InputLabel,
   FormControl,
   Typography,
+  Modal,
 } from "@mui/material";
 import {
   Orientation,
@@ -62,6 +61,16 @@ function FloorPlan() {
     setDoors,
     totalFloorArea,
     setTotalFloorArea,
+
+    // Lighting variables
+    numberOfOccupants,
+    setNumberOfOccupants,
+    numberOfLights,
+    setNumberOfLights,
+    lights,
+    setLights,
+    totalWattage,
+    setTotalWattage,
   } = useFloorPlanStore();
 
   const [newWindowOrientation, setNewWindowOrientation] = useState("");
@@ -69,6 +78,9 @@ function FloorPlan() {
 
   const [newDoorOrientation, setNewDoorOrientation] = useState("");
   const [newDoorArea, setNewDoorArea] = useState("");
+
+  const [openLightModal, setOpenLightModal] = useState(false);
+  const [lightWattages, setLightWattages] = useState([]);
 
   function getWindowOrientations() {
     if (OrientationSingleWindow.includes(buildingOrientation)) {
@@ -129,7 +141,7 @@ function FloorPlan() {
     const totalAreaValue =
       calculateTotalArea(
         area,
-        netWallAreaValue, // Updated to use netWallAreaValue
+        netWallAreaValue,
         totalWindowAreaValue,
         totalDoorAreaValue
       ) || 0;
@@ -149,6 +161,13 @@ function FloorPlan() {
     setNetWallArea,
     setTotalArea,
   ]);
+
+  // Reset total wattage when number of lights changes
+  useEffect(() => {
+    setTotalWattage(0);
+    setLights([]);
+    setLightWattages(new Array(numberOfLights).fill(""));
+  }, [numberOfLights, setTotalWattage, setLights]);
 
   const handleAddWindow = () => {
     if (windows.length < 4 && newWindowOrientation && newWindowArea) {
@@ -244,6 +263,33 @@ function FloorPlan() {
     );
   }
 
+  function DisplayTotalWattage({ label, wattage }) {
+    return (
+      <Box mb={2}>
+        <Typography
+          variant="h6"
+          sx={{
+            backgroundColor: "lightblue",
+            padding: "8px",
+            borderRadius: "4px",
+            textAlign: "center",
+          }}
+        >
+          {label}
+        </Typography>
+        <Typography
+          sx={{
+            textAlign: "center",
+          }}
+        >
+          {typeof wattage === "number" && !isNaN(wattage) && wattage > 0
+            ? `${wattage.toFixed(2)} W`
+            : "N/A"}
+        </Typography>
+      </Box>
+    );
+  }
+
   DisplayArea.propTypes = {
     label: PropTypes.string.isRequired,
     areaInSqFt: PropTypes.number.isRequired,
@@ -252,6 +298,11 @@ function FloorPlan() {
   DisplayVolume.propTypes = {
     label: PropTypes.string.isRequired,
     volumeInCubicFt: PropTypes.number.isRequired,
+  };
+
+  DisplayTotalWattage.propTypes = {
+    label: PropTypes.string.isRequired,
+    wattage: PropTypes.number.isRequired,
   };
 
   return (
@@ -497,6 +548,109 @@ function FloorPlan() {
             ))}
           </Box>
         )}
+
+        {/* New Lighting Section */}
+        <h1 className="font-semibold text-2xl">Lighting</h1>
+
+        <Box display="flex" flexWrap="wrap" gap={2} alignItems="center">
+          <TextField
+            label="Number of Occupants"
+            variant="outlined"
+            fullWidth
+            sx={{ flex: 1 }}
+            value={numberOfOccupants}
+            onChange={(e) =>
+              setNumberOfOccupants(parseInt(e.target.value) )
+            }
+            type="number"
+          />
+          <TextField
+            label="Number of Lights"
+            variant="outlined"
+            fullWidth
+            sx={{ flex: 1 }}
+            value={numberOfLights}
+            onChange={(e) => {
+              const newNumberOfLights = parseInt(e.target.value) ;
+              setNumberOfLights(newNumberOfLights);
+              // Reset total wattage and lights array
+              setTotalWattage(0);
+              setLights([]);
+            }}
+            type="number"
+          />
+          <Button
+            variant="contained"
+            onClick={() => {
+              // Initialize lightWattages array
+              setLightWattages(new Array(numberOfLights).fill(""));
+              setOpenLightModal(true);
+            }}
+          >
+            Add
+          </Button>
+        </Box>
+
+        <Modal open={openLightModal} onClose={() => setOpenLightModal(false)}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "80%",
+              maxWidth: 500,
+              bgcolor: "background.paper",
+              border: "2px solid #000",
+              boxShadow: 24,
+              p: 4,
+              maxHeight: "80vh",
+              overflowY: "auto",
+            }}
+          >
+            <Typography variant="h6" component="h2">
+              Enter Wattage for Each Light
+            </Typography>
+            <Box mt={2} display="flex" flexDirection="column" gap={2}>
+              {lightWattages.map((wattage, index) => (
+                <TextField
+                  key={index}
+                  label={`Light ${index + 1} Wattage (W)`}
+                  variant="outlined"
+                  fullWidth
+                  value={wattage}
+                  onChange={(e) => {
+                    const newWattages = [...lightWattages];
+                    newWattages[index] = e.target.value;
+                    setLightWattages(newWattages);
+                  }}
+                  type="number"
+                />
+              ))}
+            </Box>
+
+            <Button
+              variant="contained"
+              onClick={() => {
+                // Update the lights array in the store
+                const newLights = lightWattages.map((wattage) => ({
+                  wattage: parseFloat(wattage) || 0,
+                }));
+                setLights(newLights);
+                // Calculate total wattage
+                const totalWattageValue = newLights.reduce(
+                  (total, light) => total + light.wattage,
+                  0
+                );
+                setTotalWattage(totalWattageValue);
+                setOpenLightModal(false);
+              }}
+              sx={{ mt: 2 }}
+            >
+              Save
+            </Button>
+          </Box>
+        </Modal>
       </Box>
 
       {/* Right side - 30% width */}
@@ -528,6 +682,7 @@ function FloorPlan() {
           label="Dwelling Volume"
           volumeInCubicFt={dwellingVolume}
         />
+        <DisplayTotalWattage label="Total Wattage" wattage={totalWattage} />
       </Box>
     </Box>
   );

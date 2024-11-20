@@ -23,6 +23,11 @@ const useFloorPlanStore = create(
       totalArea: 0,
       windows: [],
       doors: [],
+      // Lighting variables
+      numberOfOccupants: 0,
+      numberOfLights: 0,
+      lights: [],
+      totalWattage: 0,
 
       // Actions
       setBuildingOrientation: (buildingOrientation) => set({ buildingOrientation }),
@@ -42,6 +47,12 @@ const useFloorPlanStore = create(
       setTotalArea: (totalArea) => set({ totalArea }),
       setWindows: (windows) => set({ windows }),
       setDoors: (doors) => set({ doors }),
+
+      // Actions Lighting section
+      setNumberOfOccupants: (numberOfOccupants) => set({ numberOfOccupants }),
+      setNumberOfLights: (numberOfLights) => set({ numberOfLights }),
+      setLights: (lights) => set({ lights }),
+      setTotalWattage: (totalWattage) => set({ totalWattage }),
     }),
     {
       name: 'floorplan-storage', // Unique name for the storage key

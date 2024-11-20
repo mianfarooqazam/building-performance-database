@@ -1,66 +1,77 @@
-// RoofCalculation.js
+// File: useFloorPlanStore.js
 
-export function calculateRValue(thicknessInches, kValue) {
-    // Convert thickness from inches to meters
-    const thicknessMeters = thicknessInches * 0.0254;
-  
-    // Calculate R-value
-    const rValue = thicknessMeters / kValue;
-  
-    return rValue;
-  }
-  
-  export function calculateRTotal(rValues, hi = 2.5, ho = 11.54) {
-    // Ensure hi and ho are valid numbers greater than zero
-    const hiValue = parseFloat(hi);
-    const hoValue = parseFloat(ho);
-  
-    if (hiValue <= 0 || isNaN(hiValue)) {
-      throw new Error("Invalid value for hi. It must be a number greater than zero.");
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+
+const useFloorPlanStore = create(
+  persist(
+    (set) => ({
+      // Existing state variables
+      buildingOrientation: '',
+      numberOfFloors: '',
+      showWindowInputs: false,
+      windowOrientation: '',
+      wallLengths: {},
+      wallHeight: '',
+      totalFloorArea: 0,
+      windowArea: '',
+      dwellingVolume: 0,
+      sidesConnected: 0,
+      totalWallArea: 0,
+      totalWindowArea: 0,
+      totalDoorArea: 0,
+      netWallArea: 0,
+      totalArea: 0,
+      windows: [],
+      doors: [],
+
+      // Indoor Conditions state variables
+      temperature: '',
+      hoursOfOperation: '',
+
+      // Lighting state variables
+      noOfOccupants: '',
+      noOfLighting: '',
+      hoursUsedDaily: '',
+      totalLightingWattage: '', // Changed from lightingWattages array to a single value
+
+      // Existing actions
+      setBuildingOrientation: (buildingOrientation) =>
+        set({ buildingOrientation }),
+      setNumberOfFloors: (numberOfFloors) => set({ numberOfFloors }),
+      setShowWindowInputs: (showWindowInputs) => set({ showWindowInputs }),
+      setWindowOrientation: (windowOrientation) =>
+        set({ windowOrientation }),
+      setWallLengths: (wallLengths) => set({ wallLengths }),
+      setWallHeight: (wallHeight) => set({ wallHeight }),
+      setTotalFloorArea: (totalFloorArea) => set({ totalFloorArea }),
+      setWindowArea: (windowArea) => set({ windowArea }),
+      setDwellingVolume: (dwellingVolume) => set({ dwellingVolume }),
+      setSidesConnected: (sidesConnected) => set({ sidesConnected }),
+      setTotalWallArea: (totalWallArea) => set({ totalWallArea }),
+      setTotalWindowArea: (totalWindowArea) => set({ totalWindowArea }),
+      setTotalDoorArea: (totalDoorArea) => set({ totalDoorArea }),
+      setNetWallArea: (netWallArea) => set({ netWallArea }),
+      setTotalArea: (totalArea) => set({ totalArea }),
+      setWindows: (windows) => set({ windows }),
+      setDoors: (doors) => set({ doors }),
+
+      // Actions for Indoor Conditions
+      setTemperature: (temperature) => set({ temperature }),
+      setHoursOfOperation: (hoursOfOperation) =>
+        set({ hoursOfOperation }),
+
+      // Actions for Lighting
+      setNoOfOccupants: (noOfOccupants) => set({ noOfOccupants }),
+      setNoOfLighting: (noOfLighting) => set({ noOfLighting }),
+      setHoursUsedDaily: (hoursUsedDaily) => set({ hoursUsedDaily }),
+      setTotalLightingWattage: (totalLightingWattage) =>
+        set({ totalLightingWattage }),
+    }),
+    {
+      name: 'floorplan-storage', // Unique name for the storage key
     }
-  
-    if (hoValue <= 0 || isNaN(hoValue)) {
-      throw new Error("Invalid value for ho. It must be a number greater than zero.");
-    }
-  
-    // Calculate surface resistances
-    const rHi = 1 / hiValue;
-    const rHo = 1 / hoValue;
-  
-    // Sum the R-values
-    const sumRValues = rValues.reduce((sum, rValue) => sum + rValue, 0);
-  
-    // Add inverses of hi and ho
-    const rTotal = sumRValues + rHi + rHo;
-  
-    return rTotal;
-  }
-  
-  export function calculateUValue(rTotal) {
-    // Calculate U-value
-    const uValue = 1 / rTotal;
-    return uValue;
-  }
-  
-  export function calculateKappaValue(layers) {
-    if (layers.length > 0) {
-      const sum = layers.reduce((accumulator, layer) => {
-        const { thicknessInches, shValue, dValue } = layer;
-        if (
-          thicknessInches != null &&
-          !isNaN(thicknessInches) &&
-          shValue != null &&
-          !isNaN(shValue) &&
-          dValue != null &&
-          !isNaN(dValue)
-        ) {
-          return accumulator + thicknessInches * shValue * dValue;
-        }
-        return accumulator;
-      }, 0);
-      return (sum / 1000).toFixed(3);
-    } else {
-      return null;
-    }
-  }
-  
+  )
+);
+
+export default useFloorPlanStore;
