@@ -70,7 +70,6 @@ function FloorPlan() {
     setNumberOfOccupants,
     numberOfLights,
     setNumberOfLights,
-    lights,
     setLights,
     totalWattage,
     setTotalWattage,
