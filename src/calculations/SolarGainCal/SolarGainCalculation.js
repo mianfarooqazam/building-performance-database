@@ -21,18 +21,21 @@ const calculateABC = (k) => {
     return { A, B, C };
 };
 
-// Iterate over each orientation and log the calculated A, B, C values
-const ABC_values = {}; // Store A, B, C for each orientation
-
-for (const orientation in Orientation_k_values) {
+// Convert ABC_values to an array of objects for console.table
+const ABC_table = Object.keys(Orientation_k_values).map(orientation => {
     const kValues = Orientation_k_values[orientation];
     const { A, B, C } = calculateABC(kValues);
-    ABC_values[orientation] = { A, B, C };
-    console.log(`${orientation}:`);
-    console.log(`  A = ${A.toFixed(5)}`);
-    console.log(`  B = ${B.toFixed(5)}`);
-    console.log(`  C = ${C.toFixed(5)}\n`);
-}
+    return {
+        Orientation: orientation,
+        A: A.toFixed(5),
+        B: B.toFixed(5),
+        C: C.toFixed(5)
+    };
+});
+
+// Log ABC_values as a table
+console.log("ABC Values:");
+console.table(ABC_table);
 
 // Function to convert degrees to radians
 const degreesToRadians = (degrees) => {
@@ -61,16 +64,18 @@ const calculatePhi = () => {
 // Calculate phi values
 const phiValues = calculatePhi();
 
-// Log phi values
-console.log("Phi Values (in radians):\n");
-
-for (const city in phiValues) {
-    console.log(`${city}:`);
+// Convert phiValues to array format suitable for console.table
+const phiTable = Object.keys(phiValues).map(city => {
+    const row = { City: city };
     for (const month in phiValues[city]) {
-        console.log(`  ${month}: ${phiValues[city][month].toFixed(5)} `);
+        row[month] = phiValues[city][month].toFixed(5);
     }
-    console.log(""); 
-}
+    return row;
+});
+
+// Log phi values as a table
+console.log("Phi Values (in radians):");
+console.table(phiTable);
 
 // Function to calculate rhnic values
 const calculateRhnic = () => {
@@ -79,12 +84,15 @@ const calculateRhnic = () => {
     for (const city in phiValues) {
         rhnicValues[city] = {};
 
-        for (const orientation in ABC_values) {
+        for (const orientationObj of ABC_table) {
+            const orientation = orientationObj.Orientation;
+            const A = parseFloat(orientationObj.A);
+            const B = parseFloat(orientationObj.B);
+            const C = parseFloat(orientationObj.C);
             rhnicValues[city][orientation] = {};
 
             for (const month in phiValues[city]) {
                 const phi = phiValues[city][month];
-                const { A, B, C } = ABC_values[orientation];
                 const cos_phi = Math.cos(phi);
                 const rhnic = (A * Math.pow(cos_phi, 2)) + (B * cos_phi) + C;
                 rhnicValues[city][orientation][month] = rhnic.toFixed(8);
@@ -98,18 +106,19 @@ const calculateRhnic = () => {
 // Calculate rhnic values
 const rhnic = calculateRhnic();
 
-// Log rhnic values
+// Log rhnic values as tables per city
 console.log("Rhnic Values:\n");
 
 for (const city in rhnic) {
-    console.log(`${city}:`);
-    for (const orientation in rhnic[city]) {
-        console.log(`  ${orientation}:`);
+    const cityTable = Object.keys(rhnic[city]).map(orientation => {
+        const row = { Orientation: orientation };
         for (const month in rhnic[city][orientation]) {
-            console.log(`    ${month}: ${rhnic[city][orientation][month]}`);
+            row[month] = rhnic[city][orientation][month];
         }
-    }
-    console.log("");
+        return row;
+    });
+    console.log(`Rhnic Values for ${city}:`);
+    console.table(cityTable);
 }
 
 // --- New Section: Calculation of Sorient ---
@@ -139,16 +148,17 @@ const calculateSorient = () => {
 // Calculate sorient values
 const sorient = calculateSorient();
 
-// Log sorient values
+// Log sorient values as tables per city
 console.log("Sorient Values:\n");
 
 for (const city in sorient) {
-    console.log(`${city}:`);
-    for (const orientation in sorient[city]) {
-        console.log(`  ${orientation}:`);
+    const cityTable = Object.keys(sorient[city]).map(orientation => {
+        const row = { Orientation: orientation };
         for (const month in sorient[city][orientation]) {
-            console.log(`    ${month}: ${sorient[city][orientation][month]}`);
+            row[month] = sorient[city][orientation][month];
         }
-    }
-    console.log("");
+        return row;
+    });
+    console.log(`Sorient Values for ${city}:`);
+    console.table(cityTable);
 }
