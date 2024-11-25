@@ -625,9 +625,8 @@ function FloorPlan() {
             ))}
           </Box>
         )}
-
-        {/* Lighting Section */}
-        <h1 className="font-semibold text-2xl">Lighting</h1>
+        {/* Occuancy Section */}
+        <h1 className="font-semibold text-2xl">Occupancy</h1>
 
         <Box display="flex" flexWrap="wrap" gap={2} alignItems="center">
           <TextField
@@ -642,6 +641,12 @@ function FloorPlan() {
             }}
             type="number"
           />
+        </Box>
+        {/* Lighting Section */}
+        <h1 className="font-semibold text-2xl">Lighting</h1>
+
+        <Box display="flex" flexWrap="wrap" gap={2} alignItems="center">
+         
           <TextField
             label="Number of Lights"
             variant="outlined"
@@ -760,8 +765,6 @@ function FloorPlan() {
             Hours of Operation
           </Button>
         </Box>
-
-      
 
         <Modal open={openHourModal} onClose={() => setOpenHourModal(false)}>
           <Box
