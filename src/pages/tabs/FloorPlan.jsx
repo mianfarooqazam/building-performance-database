@@ -71,6 +71,7 @@ function FloorPlan() {
     numberOfLights,
     setNumberOfLights,
     setLights,
+    lights,
     totalWattage,
     setTotalWattage,
 
@@ -625,7 +626,8 @@ function FloorPlan() {
             ))}
           </Box>
         )}
-        {/* Occuancy Section */}
+
+        {/* Occupancy Section */}
         <h1 className="font-semibold text-2xl">Occupancy</h1>
 
         <Box display="flex" flexWrap="wrap" gap={2} alignItems="center">
@@ -642,11 +644,11 @@ function FloorPlan() {
             type="number"
           />
         </Box>
+
         {/* Lighting Section */}
         <h1 className="font-semibold text-2xl">Lighting</h1>
 
         <Box display="flex" flexWrap="wrap" gap={2} alignItems="center">
-         
           <TextField
             label="Number of Lights"
             variant="outlined"
@@ -660,6 +662,7 @@ function FloorPlan() {
               // Reset total wattage and lights array
               setTotalWattage(0);
               setLights([]);
+              setLightWattages(new Array(newNumberOfLights || 0).fill(""));
             }}
             type="number"
           />
@@ -676,6 +679,46 @@ function FloorPlan() {
           </Button>
         </Box>
 
+        {/* Display the added lights */}
+        {lights.length > 0 && (
+          <Box mt={2} display="flex" flexDirection="column" gap={2}>
+            {lights.map((light, index) => (
+              <Box
+                key={index}
+                p={2}
+                width="100%"
+                textAlign="center"
+                bgcolor="lightblue"
+                borderRadius={2}
+                fontWeight="bold"
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+              >
+                <Box>
+                  Light {index + 1}: {light.wattage} W
+                </Box>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={() => {
+                    const updatedLights = lights.filter((_, i) => i !== index);
+                    setLights(updatedLights);
+                    const updatedTotalWattage = updatedLights.reduce(
+                      (total, light) => total + light.wattage,
+                      0
+                    );
+                    setTotalWattage(updatedTotalWattage);
+                  }}
+                >
+                  Remove
+                </Button>
+              </Box>
+            ))}
+          </Box>
+        )}
+
+        {/* Lighting Modal */}
         <Modal open={openLightModal} onClose={() => setOpenLightModal(false)}>
           <Box
             sx={{
