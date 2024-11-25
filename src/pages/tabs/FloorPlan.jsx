@@ -380,7 +380,7 @@ function FloorPlan() {
       {/* Left side - 70% width */}
       <Box display="flex" flexDirection="column" gap={2} width="70%">
         {/* Input Fields */}
-        <h1 className="font-semibold text-2xl">Wall Dimensions</h1>
+        <h1 className="font-semibold text-2xl text-center">Wall Dimensions</h1>
         <Box display="flex" flexWrap="wrap" gap={2}>
           <FormControl fullWidth variant="outlined" sx={{ flex: 1 }}>
             <InputLabel>Building Orientation</InputLabel>
@@ -485,7 +485,7 @@ function FloorPlan() {
           </>
         )}
 
-        <h1 className="font-semibold text-2xl">Window Dimensions</h1>
+        <h1 className="font-semibold text-2xl text-center">Window Dimensions</h1>
 
         {windows.length < 4 && (
           <Box display="flex" flexWrap="wrap" gap={2} alignItems="center">
@@ -556,7 +556,7 @@ function FloorPlan() {
           </Box>
         )}
 
-        <h1 className="font-semibold text-2xl">Door Dimensions</h1>
+        <h1 className="font-semibold text-2xl text-center">Door Dimensions</h1>
 
         {doors.length < 4 && (
           <Box display="flex" flexWrap="wrap" gap={2} alignItems="center">
@@ -628,7 +628,7 @@ function FloorPlan() {
         )}
 
         {/* Occupancy Section */}
-        <h1 className="font-semibold text-2xl">Occupancy</h1>
+        <h1 className="font-semibold text-2xl text-center">Occupancy</h1>
 
         <Box display="flex" flexWrap="wrap" gap={2} alignItems="center">
           <TextField
@@ -646,7 +646,7 @@ function FloorPlan() {
         </Box>
 
         {/* Lighting Section */}
-        <h1 className="font-semibold text-2xl">Lighting</h1>
+        <h1 className="font-semibold text-2xl text-center">Lighting</h1>
 
         <Box display="flex" flexWrap="wrap" gap={2} alignItems="center">
           <TextField
@@ -781,7 +781,7 @@ function FloorPlan() {
         </Modal>
 
         {/* Indoor Conditions Section */}
-        <h1 className="font-semibold text-2xl">Indoor Conditions</h1>
+        <h1 className="font-semibold text-2xl text-center">Indoor Conditions</h1>
 
         <Box display="flex" flexWrap="wrap" gap={2} alignItems="center">
           <TextField
