@@ -8,6 +8,7 @@ import {
   faFileAlt,
   faUser,
   faSignOutAlt,
+  faCircleInfo,
 } from "@fortawesome/free-solid-svg-icons";
 import logo from "../assets/berc-logo.webp";
 
@@ -18,7 +19,7 @@ function Sidebar({ onLogout }) {
   const handleLogoutClick = (e) => {
     e.preventDefault();
     onLogout(); // Call the logout function passed from App
-    navigate('/'); // Redirect to login page
+    navigate("/"); // Redirect to login page
   };
 
   return (
@@ -54,7 +55,10 @@ function Sidebar({ onLogout }) {
               : "text-gray-500 hover:bg-blue-200 hover:shadow-inner"
           }`}
         >
-          <Link to="/building-details" className="flex items-center px-6 py-4 w-full h-full">
+          <Link
+            to="/building-details"
+            className="flex items-center px-6 py-4 w-full h-full"
+          >
             <FontAwesomeIcon icon={faBuilding} className="mr-3 text-lg" />
             <span className="font-medium text-lg">Building Details</span>
           </Link>
@@ -68,7 +72,10 @@ function Sidebar({ onLogout }) {
               : "text-gray-500 hover:bg-blue-200 hover:shadow-inner"
           }`}
         >
-          <Link to="/report" className="flex items-center px-6 py-4 w-full h-full">
+          <Link
+            to="/report"
+            className="flex items-center px-6 py-4 w-full h-full"
+          >
             <FontAwesomeIcon icon={faFileAlt} className="mr-3 text-lg" />
             <span className="font-medium text-lg">Reports</span>
           </Link>
@@ -86,12 +93,30 @@ function Sidebar({ onLogout }) {
               : "text-gray-500 hover:bg-gray-100 hover:shadow-inner"
           }`}
         >
-          <Link to="/profile" className="flex items-center px-6 py-4 w-full h-full">
+          <Link
+            to="/profile"
+            className="flex items-center px-6 py-4 w-full h-full"
+          >
             <FontAwesomeIcon icon={faUser} className="mr-3 text-lg" />
             <span className="font-medium text-lg">Profile</span>
           </Link>
         </li>
-
+        {/* Tool Tutoiral Link */}
+        <li
+          className={`mb-2 transition-all duration-300 ease-in-out ${
+            location.pathname === "/profile"
+              ? "bg-blue-500 text-white rounded-l-full shadow-md"
+              : "text-gray-500 hover:bg-gray-100 hover:shadow-inner"
+          }`}
+        >
+          <Link
+            to="/profile"
+            className="flex items-center px-6 py-4 w-full h-full"
+          >
+            <FontAwesomeIcon icon={faCircleInfo} className="mr-3 text-lg" />
+            <span className="font-medium text-lg">Tool Tutorial</span>
+          </Link>
+        </li>
         {/* Logout Link */}
         <li
           className={`mb-2 transition-all duration-300 ease-in-out text-red-500 hover:bg-red-100 hover:shadow-inner`}
