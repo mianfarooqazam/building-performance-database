@@ -75,8 +75,8 @@ const aValues = {
 const calculateAndLog = (cityData, cityName) => {
     const result = cityData.map(entry => {
         const factor = monthFactors[entry.MO];
-        const gammaCool = gammaCoolValues[entry.MO] ; 
-        const gammaHeat = gammaHeatValues[entry.MO] ; 
+        const gammaCool = gammaCoolValues[entry.MO]; 
+        const gammaHeat = gammaHeatValues[entry.MO]; 
         const a = aValues[entry.MO]; // Retrieve 'a' value for the month
         const calculation = (24 - entry.T2M) * factor;
 
@@ -87,9 +87,7 @@ const calculateAndLog = (cityData, cityName) => {
         // Calculate n-cooling
         let nCooling;
         if (yCooling > 0 && yCooling !== 1) {
-            
-            nCooling =   [1 -  ( yCooling  ** (-a) ) ]  / [ 1 - (yCooling ** -(a+1 )) ] ;
-
+            nCooling = (1 - (yCooling ** (-a))) / (1 - (yCooling ** -(a + 1)));
         } else if (yCooling === 1) {
             nCooling = a / (a + 1);
         } else {
@@ -99,13 +97,16 @@ const calculateAndLog = (cityData, cityName) => {
         // Calculate n-heating
         let nHeating;
         if (yHeating > 0 && yHeating !== 1) {
-            
-            nHeating =  [ 1 - ( yHeating ** (a)  ) ] / [ 1 -  ( yHeating ** (a+1) )];
+            nHeating = (1 - (yHeating ** a)) / (1 - (yHeating ** (a + 1)));
         } else if (yHeating === 1) {
             nHeating = a / (a + 1);
         } else {
             nHeating = 1;
         }
+
+        // Calculate cooling nxlm 
+        const coolingNxlm = nCooling * calculation;
+      
 
         return {
             MO: entry.MO,
@@ -116,7 +117,9 @@ const calculateAndLog = (cityData, cityName) => {
             "Gamma-cool": parseFloat(yCooling.toFixed(5)),
             "Gamma-heat": parseFloat(yHeating.toFixed(5)),
             "n-cooling": parseFloat(nCooling.toFixed(5)),
-            "n-heating": parseFloat(nHeating.toFixed(5))
+            "n-heating": parseFloat(nHeating.toFixed(5)),
+            "cooling nxlm": parseFloat(coolingNxlm.toFixed(5)),
+            
         };
     });
 
@@ -127,6 +130,7 @@ const calculateAndLog = (cityData, cityName) => {
     console.table(last2);
 };
 
+// Process all cities as per original script
 calculateAndLog(IslamabadTemperature, 'Islamabad');
 calculateAndLog(MultanTemperature, 'Multan');
 calculateAndLog(LahoreTemperature, 'Lahore');
