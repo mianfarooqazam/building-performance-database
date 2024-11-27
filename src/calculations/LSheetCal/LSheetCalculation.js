@@ -88,7 +88,8 @@ const calculateAndLog = (cityData, cityName) => {
         let nCooling;
         if (yCooling > 0 && yCooling !== 1) {
             
-            nCooling =  (1 - yCooling ) ** (-a)  / (1 - yCooling) ** -(a+1) ;
+            nCooling =   [1 -  ( yCooling  ** (-a) ) ]  / [ 1 - (yCooling ** -(a+1 )) ] ;
+
         } else if (yCooling === 1) {
             nCooling = a / (a + 1);
         } else {
@@ -99,7 +100,7 @@ const calculateAndLog = (cityData, cityName) => {
         let nHeating;
         if (yHeating > 0 && yHeating !== 1) {
             
-            nHeating =  [ (1 - yHeating ) ** (a) ] / [ (1 - yHeating) ** (a+1) ];
+            nHeating =  [ 1 - ( yHeating ** (a)  ) ] / [ 1 -  ( yHeating ** (a+1) )];
         } else if (yHeating === 1) {
             nHeating = a / (a + 1);
         } else {
