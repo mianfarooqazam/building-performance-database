@@ -1,12 +1,12 @@
 import { Box } from '@mui/material';
 
-function LightingLoad() {
+function AnnualEnergyDemand() {
   return (
     <Box p={3}>
-      <p>Lighting details and fields...</p>
+      <p>AnnualEnergyDemand.</p>
       {/* Add inputs related to fabric details */}
     </Box>
   );
 }
 
-export default LightingLoad;
+export default AnnualEnergyDemand;

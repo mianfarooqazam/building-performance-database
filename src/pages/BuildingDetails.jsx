@@ -3,20 +3,15 @@ import { useState } from "react";
 import HomeIcon from "@mui/icons-material/Home";
 import FloorPlanIcon from "@mui/icons-material/Map";
 import FabricIcon from "@mui/icons-material/Category";
-import LightingIcon from "@mui/icons-material/Lightbulb";
 import AppliancesIcon from "@mui/icons-material/Kitchen";
 import HeatingCoolingIcon from "@mui/icons-material/AcUnit";
 import EnergyIcon from "@mui/icons-material/Speed";
-import CostIcon from "@mui/icons-material/AttachMoney";
 import BuildingInformation from "./tabs/BuildingInformation";
 import FloorPlan from "./tabs/FloorPlan";
 import FabricDetails from "./tabs/FabricDetails";
 import Ventilation from "./tabs/Ventilation";
-import LightingLoad from "./tabs/LightingLoad";
 import AppliancesLoad from "./tabs/AppliancesLoad";
-import HeatingCoolingEnergy from "./tabs/HeatingCooling";
-import Eui from "./tabs/Eui";
-import CostAndCO from "./tabs/CostAndCo";
+import AnnualEnergyDemand from "./tabs/AnnualEnergyDemand";
 
 function BuildingDetails() {
   const [value, setValue] = useState(0);
@@ -63,30 +58,17 @@ function BuildingDetails() {
             label="Ventilation"
             className={`${value === 3 ? "bg-blue-100 rounded-lg" : ""}`}
           />
-          <Tab
-            icon={<LightingIcon />}
-            label="Lighting Load"
-            className={`${value === 4 ? "bg-blue-100 rounded-lg" : ""}`}
-          />
+
           <Tab
             icon={<AppliancesIcon />}
             label="Appliances Load"
-            className={`${value === 5 ? "bg-blue-100 rounded-lg" : ""}`}
+            className={`${value === 4 ? "bg-blue-100 rounded-lg" : ""}`}
           />
-          <Tab
-            icon={<HeatingCoolingIcon />}
-            label="Heating/Cooling Energy"
-            className={`${value === 6 ? "bg-blue-100 rounded-lg" : ""}`}
-          />
+
           <Tab
             icon={<EnergyIcon />}
-            label="EUI"
+            label="Annual Energy Demand"
             className={`${value === 7 ? "bg-blue-100 rounded-lg" : ""}`}
-          />
-          <Tab
-            icon={<CostIcon />}
-            label="Cost and CO"
-            className={`${value === 8 ? "bg-blue-100 rounded-lg" : ""}`}
           />
         </Tabs>
       </div>
@@ -114,20 +96,12 @@ function BuildingDetails() {
         <Box role="tabpanel" hidden={value !== 3}>
           <Ventilation />
         </Box>
+
         <Box role="tabpanel" hidden={value !== 4}>
-          <LightingLoad />
-        </Box>
-        <Box role="tabpanel" hidden={value !== 5}>
           <AppliancesLoad />
         </Box>
-        <Box role="tabpanel" hidden={value !== 6}>
-          <HeatingCoolingEnergy />
-        </Box>
-        <Box role="tabpanel" hidden={value !== 7}>
-          <Eui />
-        </Box>
-        <Box role="tabpanel" hidden={value !== 8}>
-          <CostAndCO />
+        <Box role="tabpanel" hidden={value !== 5}>
+          <AnnualEnergyDemand />
         </Box>
       </Box>
     </div>
