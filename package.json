@@ -21,6 +21,7 @@
     "@mui/material": "^6.1.2",
     "antd": "^5.21.2",
     "axios": "^1.7.7",
+    "babel-plugin-transform-remove-console": "^6.9.4",
     "bcryptjs": "^2.4.3",
     "chart.js": "^4.4.6",
     "cors": "^2.8.5",
