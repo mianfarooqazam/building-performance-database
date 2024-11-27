@@ -75,8 +75,8 @@ const aValues = {
 const calculateAndLog = (cityData, cityName) => {
     const result = cityData.map(entry => {
         const factor = monthFactors[entry.MO];
-        const gammaCool = gammaCoolValues[entry.MO] || 0; // Fallback to 0 if undefined
-        const gammaHeat = gammaHeatValues[entry.MO] || 0; // Fallback to 0 if undefined
+        const gammaCool = gammaCoolValues[entry.MO] ; 
+        const gammaHeat = gammaHeatValues[entry.MO] ; 
         const a = aValues[entry.MO]; // Retrieve 'a' value for the month
         const calculation = (24 - entry.T2M) * factor;
 
@@ -88,7 +88,7 @@ const calculateAndLog = (cityData, cityName) => {
         let nCooling;
         if (yCooling > 0 && yCooling !== 1) {
             
-            nCooling = [ (1 - yCooling ) ** (-a) ] / [ (1 - yCooling) ** -(a+1) ];
+            nCooling =  (1 - yCooling ) ** (-a)  / (1 - yCooling) ** -(a+1) ;
         } else if (yCooling === 1) {
             nCooling = a / (a + 1);
         } else {
