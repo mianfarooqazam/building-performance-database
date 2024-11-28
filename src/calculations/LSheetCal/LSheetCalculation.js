@@ -107,8 +107,11 @@ const calculateAndLog = (cityData, cityName) => {
         // Calculate cooling nxlm 
         const coolingNxlm = nCooling * calculation;
 
-        // **New Calculation: heatingnxgm**
+        // Calculate heatingnxgm
         const heatingnxgm = gammaHeat * nHeating;
+
+        // **New Calculation: heatingLoad**
+        const heatingLoad = calculation - heatingnxgm;
 
         return {
             MO: entry.MO,
@@ -121,7 +124,8 @@ const calculateAndLog = (cityData, cityName) => {
             "n-cooling": parseFloat(nCooling.toFixed(5)),
             "n-heating": parseFloat(nHeating.toFixed(5)),
             "cooling nxlm": parseFloat(coolingNxlm.toFixed(5)),
-            "heatingnxgm": parseFloat(heatingnxgm.toFixed(5)) // **Added Field**
+            "heating nxgm": parseFloat(heatingnxgm.toFixed(5)),
+            "heating load": parseFloat(heatingLoad.toFixed(5)) // **Added Field**
         };
     });
 
