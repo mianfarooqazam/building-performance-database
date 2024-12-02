@@ -1,4 +1,4 @@
-import { useState } from "react";
+// AppliancesLoad.jsx
 import {
   Box,
   TextField,
@@ -15,7 +15,10 @@ import {
   Paper,
   Divider,
   Button,
+  Typography,
+  IconButton,
 } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
   FanManufacturer,
   OvenManufacturer,
@@ -27,6 +30,7 @@ import {
   TVManufacturer,
   WaterPumpManufacturer,
 } from "../../utils/appliances/AppliancesData.js";
+import useAppliancesLoadStore from "../../store/useAppliancesLoadStore.js";
 
 const applianceOptions = [
   "Fan",
@@ -53,15 +57,32 @@ const manufacturerMap = {
 };
 
 function AppliancesLoad() {
-  const [appliance, setAppliance] = useState("");
-  const [manufacturer, setManufacturer] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [dailyHourUsage, setDailyHourUsage] = useState("");
-  const [wattage, setWattage] = useState("");
-  const [appliances, setAppliances] = useState([]);
+  const {
+    appliance,
+    setAppliance,
+    manufacturer,
+    setManufacturer,
+    quantity,
+    setQuantity,
+    dailyHourUsage,
+    setDailyHourUsage,
+    wattage,
+    setWattage,
+    appliances,
+    addAppliance,
+    removeAppliance,
+  } = useAppliancesLoadStore();
 
   const handleAddAppliance = () => {
-    if (appliance && manufacturer && quantity && dailyHourUsage && wattage) {
+    if (
+      appliance &&
+      manufacturer &&
+      quantity &&
+      dailyHourUsage &&
+      wattage &&
+      dailyHourUsage >= 1 &&
+      dailyHourUsage <= 24
+    ) {
       const annualEnergy = (
         (parseFloat(quantity) *
           parseFloat(wattage) *
@@ -74,7 +95,9 @@ function AppliancesLoad() {
         quantity: parseInt(quantity),
         annualEnergy: parseFloat(annualEnergy),
       };
-      setAppliances([...appliances, newAppliance]);
+      addAppliance(newAppliance);
+
+      // Reset input fields
       setAppliance("");
       setManufacturer("");
       setQuantity("");
@@ -83,6 +106,7 @@ function AppliancesLoad() {
     }
   };
 
+  // Calculate total annual energy
   const totalAnnualEnergy = appliances
     .reduce((total, item) => total + item.annualEnergy, 0)
     .toFixed(2);
@@ -142,7 +166,7 @@ function AppliancesLoad() {
                 variant="outlined"
                 fullWidth
                 type="number"
-                slotProps={{ htmlInput: { min: 1 } }}
+                slotProps={{ input: { min: 1 } }}
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
               />
@@ -153,7 +177,7 @@ function AppliancesLoad() {
                 variant="outlined"
                 fullWidth
                 type="number"
-                slotProps={{ htmlInput: { min: 1, max: 24 } }}
+                slotProps={{ input: { min: 1, max: 24 } }}
                 value={dailyHourUsage}
                 onChange={(e) => {
                   const value = parseInt(e.target.value);
@@ -172,7 +196,7 @@ function AppliancesLoad() {
               variant="outlined"
               fullWidth
               type="number"
-              slotProps={{ htmlInput: { min: 1 } }}
+              slotProps={{ input: { min: 1 } }}
               value={wattage}
               onChange={(e) => setWattage(e.target.value)}
             />
@@ -200,7 +224,11 @@ function AppliancesLoad() {
 
         {/* Table Section */}
         <Box width="40%">
-          <Table sx={{ mt: 2 }}>
+          <Typography variant="h6" gutterBottom>
+            Annual Energy Consumption
+          </Typography>
+          <TableContainer component={Paper}>
+            <Table>
               <TableHead>
                 <TableRow>
                   <TableCell
@@ -230,18 +258,46 @@ function AppliancesLoad() {
                   >
                     Annual Energy (kWh)
                   </TableCell>
+                  <TableCell
+                    sx={{
+                      backgroundColor: "lightblue",
+                      textAlign: "center",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Action
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {appliances.map((item, index) => (
                   <TableRow key={index}>
-                    <TableCell sx={{ textAlign: "center" }}>{item.appliance}</TableCell>
-                    <TableCell sx={{ textAlign: "center" }} align="right">{item.quantity}</TableCell>
-                    <TableCell sx={{ textAlign: "center" }} align="right">{item.annualEnergy}</TableCell>
+                    <TableCell
+                      sx={{ textAlign: "center" }}
+                      component="th"
+                      scope="row"
+                    >
+                      {item.appliance}
+                    </TableCell>
+                    <TableCell sx={{ textAlign: "center" }}>
+                      {item.quantity}
+                    </TableCell>
+                    <TableCell sx={{ textAlign: "center" }}>
+                      {item.annualEnergy}
+                    </TableCell>
+                    <TableCell sx={{ textAlign: "center" }}>
+                      <IconButton
+                        color="error"
+                        onClick={() => removeAppliance(index)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
+          </TableContainer>
           <Box
             p={2}
             mt={2}
