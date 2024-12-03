@@ -79,20 +79,23 @@ function AppliancesLoad() {
   const handleAddAppliance = () => {
     if (appliance === "Refrigerator") {
       if (manufacturer && refrigeratorType && quantity) {
-        const annualEnergy = parseInt(quantity) * parseInt(refrigeratorType);
-        const newAppliance = {
-          appliance,
-          manufacturer,
-          quantity: parseInt(quantity),
-          annualEnergy: parseFloat(annualEnergy),
-        };
-        addAppliance(newAppliance);
+        const qty = parseInt(quantity);
+        if (qty > 0) {
+          const annualEnergy = qty * parseInt(refrigeratorType);
+          const newAppliance = {
+            appliance,
+            manufacturer,
+            quantity: qty,
+            annualEnergy: parseFloat(annualEnergy),
+          };
+          addAppliance(newAppliance);
 
-        // Reset input fields
-        setAppliance("");
-        setManufacturer("");
-        setQuantity("");
-        setRefrigeratorType("");
+          // Reset input fields
+          setAppliance("");
+          setManufacturer("");
+          setQuantity("");
+          setRefrigeratorType("");
+        }
       }
     } else {
       if (
@@ -104,27 +107,31 @@ function AppliancesLoad() {
         dailyHourUsage >= 1 &&
         dailyHourUsage <= 24
       ) {
-        const annualEnergy = (
-          (parseFloat(quantity) *
-            parseFloat(wattage) *
-            parseFloat(dailyHourUsage) *
-            365) /
-          1000
-        ).toFixed(2);
-        const newAppliance = {
-          appliance,
-          manufacturer,
-          quantity: parseInt(quantity),
-          annualEnergy: parseFloat(annualEnergy),
-        };
-        addAppliance(newAppliance);
+        const qty = parseInt(quantity);
+        const watt = parseFloat(wattage);
+        if (qty > 0 && watt > 0) {
+          const annualEnergy = (
+            (qty *
+              watt *
+              parseFloat(dailyHourUsage) *
+              365) /
+            1000
+          ).toFixed(2);
+          const newAppliance = {
+            appliance,
+            manufacturer,
+            quantity: qty,
+            annualEnergy: parseFloat(annualEnergy),
+          };
+          addAppliance(newAppliance);
 
-        // Reset input fields
-        setAppliance("");
-        setManufacturer("");
-        setQuantity("");
-        setDailyHourUsage("");
-        setWattage("");
+          // Reset input fields
+          setAppliance("");
+          setManufacturer("");
+          setQuantity("");
+          setDailyHourUsage("");
+          setWattage("");
+        }
       }
     }
   };
@@ -208,7 +215,12 @@ function AppliancesLoad() {
                   type="number"
                   slotProps={{ input: { min: 1 } }}
                   value={quantity}
-                  onChange={(e) => setQuantity(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "" || parseInt(value) >= 0) {
+                      setQuantity(value);
+                    }
+                  }}
                 />
 
                 {/* Info Icon with Text */}
@@ -250,7 +262,12 @@ function AppliancesLoad() {
                     type="number"
                     slotProps={{ input: { min: 1 } }}
                     value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value === "" || parseInt(value) >= 0) {
+                        setQuantity(value);
+                      }
+                    }}
                   />
 
                   {/* Daily Hour Usage Input */}
@@ -280,7 +297,12 @@ function AppliancesLoad() {
                   type="number"
                   slotProps={{ input: { min: 1 } }}
                   value={wattage}
-                  onChange={(e) => setWattage(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "" || parseFloat(value) >= 0) {
+                      setWattage(value);
+                    }
+                  }}
                 />
               </>
             )}
@@ -314,6 +336,15 @@ function AppliancesLoad() {
             <Table>
               <TableHead>
                 <TableRow>
+                  <TableCell
+                    sx={{
+                      backgroundColor: "lightblue",
+                      textAlign: "center",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    S.No
+                  </TableCell>
                   <TableCell
                     sx={{
                       backgroundColor: "lightblue",
@@ -355,6 +386,9 @@ function AppliancesLoad() {
               <TableBody>
                 {appliances.map((item, index) => (
                   <TableRow key={index}>
+                    <TableCell sx={{ textAlign: "center" }}>
+                      {index + 1}
+                    </TableCell>
                     <TableCell
                       sx={{ textAlign: "center" }}
                       component="th"
