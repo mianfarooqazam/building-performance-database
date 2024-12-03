@@ -16,8 +16,10 @@ import {
   Divider,
   Button,
   IconButton,
+  Tooltip,
 } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
+import InfoIcon from '@mui/icons-material/Info';
 import {
   FanManufacturer,
   OvenManufacturer,
@@ -67,41 +69,63 @@ function AppliancesLoad() {
     setDailyHourUsage,
     wattage,
     setWattage,
+    refrigeratorType,
+    setRefrigeratorType,
     appliances,
     addAppliance,
     removeAppliance,
   } = useAppliancesLoadStore();
 
   const handleAddAppliance = () => {
-    if (
-      appliance &&
-      manufacturer &&
-      quantity &&
-      dailyHourUsage &&
-      wattage &&
-      dailyHourUsage >= 1 &&
-      dailyHourUsage <= 24
-    ) {
-      const annualEnergy = (
-        (parseFloat(quantity) *
-          parseFloat(wattage) *
-          parseFloat(dailyHourUsage) *
-          365) /
-        1000
-      ).toFixed(2);
-      const newAppliance = {
-        appliance,
-        quantity: parseInt(quantity),
-        annualEnergy: parseFloat(annualEnergy),
-      };
-      addAppliance(newAppliance);
+    if (appliance === "Refrigerator") {
+      if (manufacturer && refrigeratorType && quantity) {
+        const annualEnergy = parseInt(quantity) * parseInt(refrigeratorType);
+        const newAppliance = {
+          appliance,
+          manufacturer,
+          quantity: parseInt(quantity),
+          annualEnergy: parseFloat(annualEnergy),
+        };
+        addAppliance(newAppliance);
 
-      // Reset input fields
-      setAppliance("");
-      setManufacturer("");
-      setQuantity("");
-      setDailyHourUsage("");
-      setWattage("");
+        // Reset input fields
+        setAppliance("");
+        setManufacturer("");
+        setQuantity("");
+        setRefrigeratorType("");
+      }
+    } else {
+      if (
+        appliance &&
+        manufacturer &&
+        quantity &&
+        dailyHourUsage &&
+        wattage &&
+        dailyHourUsage >= 1 &&
+        dailyHourUsage <= 24
+      ) {
+        const annualEnergy = (
+          (parseFloat(quantity) *
+            parseFloat(wattage) *
+            parseFloat(dailyHourUsage) *
+            365) /
+          1000
+        ).toFixed(2);
+        const newAppliance = {
+          appliance,
+          manufacturer,
+          quantity: parseInt(quantity),
+          annualEnergy: parseFloat(annualEnergy),
+        };
+        addAppliance(newAppliance);
+
+        // Reset input fields
+        setAppliance("");
+        setManufacturer("");
+        setQuantity("");
+        setDailyHourUsage("");
+        setWattage("");
+      }
     }
   };
 
@@ -126,6 +150,10 @@ function AppliancesLoad() {
                 onChange={(e) => {
                   setAppliance(e.target.value);
                   setManufacturer("");
+                  setQuantity("");
+                  setDailyHourUsage("");
+                  setWattage("");
+                  setRefrigeratorType("");
                 }}
               >
                 {applianceOptions.map((item, index) => (
@@ -136,69 +164,126 @@ function AppliancesLoad() {
               </Select>
             </FormControl>
 
-            {/* Manufacturer Input */}
-            <FormControl fullWidth disabled={!appliance}>
-              <InputLabel id="manufacturer-label">Manufacturer</InputLabel>
-              <Select
-                labelId="manufacturer-label"
-                value={manufacturer}
-                label="Manufacturer"
-                onChange={(e) => setManufacturer(e.target.value)}
-              >
-                {appliance &&
-                  manufacturerMap[appliance].map((manu, index) => (
-                    <MenuItem key={index} value={manu}>
-                      {manu}
-                    </MenuItem>
-                  ))}
-              </Select>
-            </FormControl>
+            {/* Conditional Inputs */}
+            {appliance === "Refrigerator" ? (
+              <>
+                {/* Manufacturer Input */}
+                <FormControl fullWidth>
+                  <InputLabel id="manufacturer-label">Manufacturer</InputLabel>
+                  <Select
+                    labelId="manufacturer-label"
+                    value={manufacturer}
+                    label="Manufacturer"
+                    onChange={(e) => setManufacturer(e.target.value)}
+                  >
+                    {manufacturerMap["Refrigerator"].map((manu, index) => (
+                      <MenuItem key={index} value={manu}>
+                        {manu}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
 
-            <Box
-              display="flex"
-              flexDirection={{ xs: "column", sm: "row" }}
-              gap={2}
-            >
-              {/* Quantity Input */}
-              <TextField
-                label="Quantity"
-                variant="outlined"
-                fullWidth
-                type="number"
-                slotProps={{ input: { min: 1 } }}
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-              />
+                {/* Refrigerator Type Input */}
+                <FormControl fullWidth>
+                  <InputLabel id="refrigerator-type-label">
+                    Refrigerator Type
+                  </InputLabel>
+                  <Select
+                    labelId="refrigerator-type-label"
+                    value={refrigeratorType || ""}
+                    label="Refrigerator Type"
+                    onChange={(e) => setRefrigeratorType(e.target.value)}
+                  >
+                    <MenuItem value="360">Star Rating (360 kWh)</MenuItem>
+                    <MenuItem value="420">Conventional (420 kWh)</MenuItem>
+                  </Select>
+                </FormControl>
 
-              {/* Daily Hour Usage Input */}
-              <TextField
-                label="Daily Hour Usage"
-                variant="outlined"
-                fullWidth
-                type="number"
-                slotProps={{ input: { min: 1, max: 24 } }}
-                value={dailyHourUsage}
-                onChange={(e) => {
-                  const value = parseInt(e.target.value);
-                  if (value >= 1 && value <= 24) {
-                    setDailyHourUsage(value);
-                  } else if (e.target.value === "") {
-                    setDailyHourUsage("");
-                  }
-                }}
-              />
-            </Box>
+                {/* Quantity Input */}
+                <TextField
+                  label="Quantity"
+                  variant="outlined"
+                  fullWidth
+                  type="number"
+                  slotProps={{ input: { min: 1 } }}
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                />
 
-            {/* Wattage Input */}
-            <TextField
-              label="Wattage (W)"
-              variant="outlined"
-              fullWidth
-              type="number"
-              slotProps={{ input: { min: 1 } }}
-              value={wattage}
-              onChange={(e) => setWattage(e.target.value)}
-            />
+                {/* Info Icon with Text */}
+                <Box display="flex" alignItems="center" gap={1}>
+                  <InfoIcon color="info" />
+                  <Box>Conventional and star rating for refrigerator only</Box>
+                </Box>
+              </>
+            ) : (
+              <>
+                {/* Manufacturer Input */}
+                <FormControl fullWidth>
+                  <InputLabel id="manufacturer-label">Manufacturer</InputLabel>
+                  <Select
+                    labelId="manufacturer-label"
+                    value={manufacturer}
+                    label="Manufacturer"
+                    onChange={(e) => setManufacturer(e.target.value)}
+                  >
+                    {appliance &&
+                      manufacturerMap[appliance].map((manu, index) => (
+                        <MenuItem key={index} value={manu}>
+                          {manu}
+                        </MenuItem>
+                      ))}
+                  </Select>
+                </FormControl>
+
+                <Box
+                  display="flex"
+                  flexDirection={{ xs: "column", sm: "row" }}
+                  gap={2}
+                >
+                  {/* Quantity Input */}
+                  <TextField
+                    label="Quantity"
+                    variant="outlined"
+                    fullWidth
+                    type="number"
+                    slotProps={{ input: { min: 1 } }}
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                  />
+
+                  {/* Daily Hour Usage Input */}
+                  <TextField
+                    label="Daily Hour Usage"
+                    variant="outlined"
+                    fullWidth
+                    type="number"
+                    slotProps={{ input: { min: 1, max: 24 } }}
+                    value={dailyHourUsage}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value);
+                      if (value >= 1 && value <= 24) {
+                        setDailyHourUsage(value);
+                      } else if (e.target.value === "") {
+                        setDailyHourUsage("");
+                      }
+                    }}
+                  />
+                </Box>
+
+                {/* Wattage Input */}
+                <TextField
+                  label="Wattage (W)"
+                  variant="outlined"
+                  fullWidth
+                  type="number"
+                  slotProps={{ input: { min: 1 } }}
+                  value={wattage}
+                  onChange={(e) => setWattage(e.target.value)}
+                />
+              </>
+            )}
 
             {/* Add Button */}
             <Button
@@ -206,11 +291,13 @@ function AppliancesLoad() {
               color="primary"
               onClick={handleAddAppliance}
               disabled={
-                !appliance ||
-                !manufacturer ||
-                !quantity ||
-                !dailyHourUsage ||
-                !wattage
+                appliance === "Refrigerator"
+                  ? !manufacturer || !quantity || !refrigeratorType
+                  : !appliance ||
+                    !manufacturer ||
+                    !quantity ||
+                    !dailyHourUsage ||
+                    !wattage
               }
             >
               Add Appliance
@@ -223,7 +310,6 @@ function AppliancesLoad() {
 
         {/* Table Section */}
         <Box width="45%">
-      
           <TableContainer component={Paper}>
             <Table>
               <TableHead>

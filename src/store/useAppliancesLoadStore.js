@@ -11,6 +11,7 @@ const useAppliancesLoadStore = create(
       quantity: '',
       dailyHourUsage: '',
       wattage: '',
+      refrigeratorType: '',
       appliances: [],
       
       // Actions
@@ -19,6 +20,7 @@ const useAppliancesLoadStore = create(
       setQuantity: (quantity) => set({ quantity }),
       setDailyHourUsage: (dailyHourUsage) => set({ dailyHourUsage }),
       setWattage: (wattage) => set({ wattage }),
+      setRefrigeratorType: (refrigeratorType) => set({ refrigeratorType }),
       addAppliance: (newAppliance) =>
         set((state) => ({
           appliances: [...state.appliances, newAppliance],
