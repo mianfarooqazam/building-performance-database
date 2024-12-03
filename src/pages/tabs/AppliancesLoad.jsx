@@ -15,7 +15,6 @@ import {
   Paper,
   Divider,
   Button,
-  Typography,
   IconButton,
 } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
