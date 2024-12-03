@@ -16,7 +16,6 @@ import {
   Divider,
   Button,
   IconButton,
-  Tooltip,
 } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import InfoIcon from '@mui/icons-material/Info';
@@ -145,7 +144,7 @@ function AppliancesLoad() {
     <Box p={3} maxWidth={1200} margin="0 auto">
       <Box display="flex" gap={2}>
         {/* Inputs Section */}
-        <Box width="55%">
+        <Box width="45%">
           <Box display="flex" flexDirection="column" gap={2}>
             {/* Appliance Input */}
             <FormControl fullWidth>
@@ -331,7 +330,7 @@ function AppliancesLoad() {
         <Divider orientation="vertical" flexItem />
 
         {/* Table Section */}
-        <Box width="45%">
+        <Box width="55%">
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
