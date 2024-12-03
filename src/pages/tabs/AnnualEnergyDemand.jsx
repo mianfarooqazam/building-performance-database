@@ -1,6 +1,5 @@
 import {
   Box,
-  Typography,
   Table,
   TableBody,
   TableCell,
@@ -32,9 +31,15 @@ function AnnualEnergyDemand() {
   return (
     <Box p={3}>
       {/* Table Heading */}
-      <Typography variant="h6" align="center" gutterBottom>
-        Appliances Annual Energy
-      </Typography>
+      <Box
+        p={2}
+        mt={2}
+        borderRadius={2}
+        fontWeight="bold"
+        textAlign="center"
+      >
+       Appliances Total Annual Energy: {totalAnnualEnergy.toFixed(2)} kWh
+      </Box>
       
       <TableContainer component={Paper}>
         <Table>
@@ -68,16 +73,7 @@ function AnnualEnergyDemand() {
           </TableBody>
         </Table>
       </TableContainer>
-      <Box
-        p={2}
-        mt={2}
-        bgcolor="lightblue"
-        borderRadius={2}
-        fontWeight="bold"
-        textAlign="center"
-      >
-       Appliances Total Annual Energy: {totalAnnualEnergy.toFixed(2)} kWh
-      </Box>
+    
     </Box>
   );
 }
