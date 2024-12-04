@@ -77,7 +77,7 @@ function AnnualEnergyDemand() {
         fontWeight="bold"
         textAlign="center"
       >
-        Total Annual Energy: {totalAnnualEnergy.toFixed(2)} kWh
+        Total Annual Energy Consumption: {totalAnnualEnergy.toFixed(2)} kWh
       </Box>
       {/* Display EUI */}
       <Box
