@@ -1,5 +1,7 @@
+
 import {
   Box,
+  Typography,
   Table,
   TableBody,
   TableCell,
@@ -11,7 +13,7 @@ import {
 import useAppliancesLoadStore from '../../store/useAppliancesLoadStore.js';
 
 function AnnualEnergyDemand() {
-  const { appliances } = useAppliancesLoadStore();
+  const { appliances, eui } = useAppliancesLoadStore();
 
   // Calculate total annual energy
   const totalAnnualEnergy = appliances.reduce(
@@ -31,15 +33,9 @@ function AnnualEnergyDemand() {
   return (
     <Box p={3}>
       {/* Table Heading */}
-      <Box
-        p={2}
-        mt={2}
-        borderRadius={2}
-        fontWeight="bold"
-        textAlign="center"
-      >
-       Appliances Total Annual Energy: {totalAnnualEnergy.toFixed(2)} kWh
-      </Box>
+      <Typography variant="h6" align="center" gutterBottom>
+        Appliances Annual Energy
+      </Typography>
       
       <TableContainer component={Paper}>
         <Table>
@@ -73,7 +69,27 @@ function AnnualEnergyDemand() {
           </TableBody>
         </Table>
       </TableContainer>
-    
+      <Box
+        p={2}
+        mt={2}
+        bgcolor="lightblue"
+        borderRadius={2}
+        fontWeight="bold"
+        textAlign="center"
+      >
+        Total Annual Energy: {totalAnnualEnergy.toFixed(2)} kWh
+      </Box>
+      {/* Display EUI */}
+      <Box
+        p={2}
+        mt={2}
+        bgcolor="lightgreen"
+        borderRadius={2}
+        fontWeight="bold"
+        textAlign="center"
+      >
+        Energy Utilization Index (EUI): {eui} kWh/m²
+      </Box>
     </Box>
   );
 }

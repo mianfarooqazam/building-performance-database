@@ -1,4 +1,4 @@
-// AppliancesLoad.jsx
+import { useEffect } from 'react';
 import {
   Box,
   TextField,
@@ -16,6 +16,7 @@ import {
   Divider,
   Button,
   IconButton,
+  Typography,
 } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import InfoIcon from '@mui/icons-material/Info';
@@ -31,6 +32,7 @@ import {
   WaterPumpManufacturer,
 } from "../../utils/appliances/AppliancesData.js";
 import useAppliancesLoadStore from "../../store/useAppliancesLoadStore.js";
+import useFloorPlanStore from '../../store/useFloorPlanStore.js';
 
 const applianceOptions = [
   "Fan",
@@ -73,14 +75,19 @@ function AppliancesLoad() {
     appliances,
     addAppliance,
     removeAppliance,
+    eui,
+    setEui,
   } = useAppliancesLoadStore();
+
+  const { totalFloorArea } = useFloorPlanStore();
 
   const handleAddAppliance = () => {
     if (appliance === "Refrigerator") {
       if (manufacturer && refrigeratorType && quantity) {
         const qty = parseInt(quantity);
+        const typeValue = parseInt(refrigeratorType);
         if (qty > 0) {
-          const annualEnergy = qty * parseInt(refrigeratorType);
+          const annualEnergy = qty * typeValue;
           const newAppliance = {
             appliance,
             manufacturer,
@@ -108,12 +115,10 @@ function AppliancesLoad() {
       ) {
         const qty = parseInt(quantity);
         const watt = parseFloat(wattage);
+        const usage = parseFloat(dailyHourUsage);
         if (qty > 0 && watt > 0) {
           const annualEnergy = (
-            (qty *
-              watt *
-              parseFloat(dailyHourUsage) *
-              365) /
+            (qty * watt * usage * 365) /
             1000
           ).toFixed(2);
           const newAppliance = {
@@ -140,11 +145,22 @@ function AppliancesLoad() {
     .reduce((total, item) => total + item.annualEnergy, 0)
     .toFixed(2);
 
+  // Calculate EUI whenever totalAnnualEnergy or totalFloorArea changes
+  useEffect(() => {
+    if (totalFloorArea > 0) {
+      const floorAreaInM2 = totalFloorArea * 0.092903;
+      const calculatedEui = (totalAnnualEnergy / floorAreaInM2).toFixed(2);
+      setEui(calculatedEui);
+    } else {
+      setEui(0);
+    }
+  }, [totalAnnualEnergy, totalFloorArea, setEui]);
+
   return (
     <Box p={3} maxWidth={1200} margin="0 auto">
       <Box display="flex" gap={2}>
         {/* Inputs Section */}
-        <Box width="45%">
+        <Box width="55%">
           <Box display="flex" flexDirection="column" gap={2}>
             {/* Appliance Input */}
             <FormControl fullWidth>
@@ -216,7 +232,7 @@ function AppliancesLoad() {
                   value={quantity}
                   onChange={(e) => {
                     const value = e.target.value;
-                    if (value === "" || parseInt(value) >= 0) {
+                    if (value === "" || parseInt(value) > 0) {
                       setQuantity(value);
                     }
                   }}
@@ -225,7 +241,9 @@ function AppliancesLoad() {
                 {/* Info Icon with Text */}
                 <Box display="flex" alignItems="center" gap={1}>
                   <InfoIcon color="info" />
-                  <Box>Conventional and star rating for refrigerator only</Box>
+                  <Typography variant="body2">
+                    Conventional and star rating for refrigerator only
+                  </Typography>
                 </Box>
               </>
             ) : (
@@ -263,7 +281,7 @@ function AppliancesLoad() {
                     value={quantity}
                     onChange={(e) => {
                       const value = e.target.value;
-                      if (value === "" || parseInt(value) >= 0) {
+                      if (value === "" || parseInt(value) > 0) {
                         setQuantity(value);
                       }
                     }}
@@ -298,7 +316,7 @@ function AppliancesLoad() {
                   value={wattage}
                   onChange={(e) => {
                     const value = e.target.value;
-                    if (value === "" || parseFloat(value) >= 0) {
+                    if (value === "" || parseFloat(value) > 0) {
                       setWattage(value);
                     }
                   }}
@@ -330,7 +348,7 @@ function AppliancesLoad() {
         <Divider orientation="vertical" flexItem />
 
         {/* Table Section */}
-        <Box width="55%">
+        <Box width="45%">
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
@@ -423,6 +441,17 @@ function AppliancesLoad() {
             textAlign="center"
           >
             Total Annual Energy: {totalAnnualEnergy} kWh
+          </Box>
+          {/* Display EUI */}
+          <Box
+            p={2}
+            mt={2}
+            bgcolor="lightgreen"
+            borderRadius={2}
+            fontWeight="bold"
+            textAlign="center"
+          >
+            Energy Utilization Index (EUI): {eui} kWh/m²
           </Box>
         </Box>
       </Box>
