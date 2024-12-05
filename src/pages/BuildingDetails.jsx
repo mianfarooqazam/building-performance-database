@@ -13,6 +13,7 @@ import Ventilation from "./tabs/Ventilation";
 import AppliancesLoad from "./tabs/AppliancesLoad";
 import AnnualEnergyDemand from "./tabs/AnnualEnergyDemand";
 import LSheetCalculation from "./tabs/LSheetCalculation";
+import SolarGainCalculation from "./tabs/SolarGainCalculation";
 
 function BuildingDetails() {
   const [value, setValue] = useState(0);
@@ -72,10 +73,16 @@ function BuildingDetails() {
             className={`${value === 5 ? "bg-blue-100 rounded-lg" : ""}`}
           />
 
-<Tab
+          <Tab
             icon={<EnergyIcon />}
             label="L Sheet Calculation"
             className={`${value === 6 ? "bg-blue-100 rounded-lg" : ""}`}
+          />
+
+          <Tab
+            icon={<EnergyIcon />}
+            label="Solar Gain Calculation"
+            className={`${value === 7 ? "bg-blue-100 rounded-lg" : ""}`}
           />
         </Tabs>
       </div>
@@ -113,6 +120,10 @@ function BuildingDetails() {
         <Box role="tabpanel" hidden={value !== 6}>
           <LSheetCalculation />
         </Box>
+        <Box role="tabpanel" hidden={value !== 7}>
+          <  SolarGainCalculation />
+        </Box>
+      
       </Box>
     </div>
   );

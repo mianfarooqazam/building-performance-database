@@ -1,5 +1,4 @@
-// SheetCalculation.jsx
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import {
   Box,
   Table,
@@ -10,15 +9,15 @@ import {
   TableRow,
   Paper,
   Typography,
-} from '@mui/material';
-import useBuildingInformationStore from '../../store/useBuildingInformationStore';
+} from "@mui/material";
+import useBuildingInformationStore from "../../store/useBuildingInformationStore";
 
 // Import temperature data
-import IslamabadTemperature from '../../utils/temperature/IslamabadTemperature.json';
-import MultanTemperature from '../../utils/temperature/MultanTemperature.json';
-import KarachiTemperature from '../../utils/temperature/KarachiTemperature.json';
-import LahoreTemperature from '../../utils/temperature/LahoreTemperature.json';
-import PeshawarTemperature from '../../utils/temperature/PeshawarTemperature.json';
+import IslamabadTemperature from "../../utils/temperature/IslamabadTemperature.json";
+import MultanTemperature from "../../utils/temperature/MultanTemperature.json";
+import KarachiTemperature from "../../utils/temperature/KarachiTemperature.json";
+import LahoreTemperature from "../../utils/temperature/LahoreTemperature.json";
+import PeshawarTemperature from "../../utils/temperature/PeshawarTemperature.json";
 
 const monthFactors = {
   1: 924.36,
@@ -36,18 +35,18 @@ const monthFactors = {
 };
 
 const gammaCoolValues = {
-  1: 285.9,
-  2: 316.83,
-  3: 375.0,
-  4: 518.23,
-  5: 532.45,
-  6: 558.94,
-  7: 500.2,
-  8: 463.4,
-  9: 422.24,
-  10: 331.67,
-  11: 297.33,
-  12: 268.6,
+  1: 424.4,
+  2: 470.24,
+  3: 556.5,
+  4: 658.07,
+  5: 676.12,
+  6: 709.76,
+  7: 635.17,
+  8: 588.43,
+  9: 536.17,
+  10: 492.28,
+  11: 441.31,
+  12: 398.67,
 };
 
 const gammaHeatValues = {
@@ -83,15 +82,15 @@ const aValues = {
 // Utility function to get temperature data based on city name
 const getTemperatureData = (city) => {
   switch (city) {
-    case 'Islamabad':
+    case "Islamabad":
       return IslamabadTemperature;
-    case 'Multan':
+    case "Multan":
       return MultanTemperature;
-    case 'Karachi':
+    case "Karachi":
       return KarachiTemperature;
-    case 'Lahore':
+    case "Lahore":
       return LahoreTemperature;
-    case 'Peshawar':
+    case "Peshawar":
       return PeshawarTemperature;
     default:
       return [];
@@ -99,7 +98,9 @@ const getTemperatureData = (city) => {
 };
 
 const SheetCalculation = () => {
-  const selectedCity = useBuildingInformationStore((state) => state.selectedCity);
+  const selectedCity = useBuildingInformationStore(
+    (state) => state.selectedCity
+  );
   const [calculationResults, setCalculationResults] = useState([]);
 
   useEffect(() => {
@@ -120,7 +121,8 @@ const SheetCalculation = () => {
         // Calculate n-cooling
         let nCooling;
         if (yCooling > 0 && yCooling !== 1) {
-          nCooling = (1 - Math.pow(yCooling, -a)) / (1 - Math.pow(yCooling, -(a + 1)));
+          nCooling =
+            (1 - Math.pow(yCooling, -a)) / (1 - Math.pow(yCooling, -(a + 1)));
         } else if (yCooling === 1) {
           nCooling = a / (a + 1);
         } else {
@@ -130,14 +132,15 @@ const SheetCalculation = () => {
         // Calculate n-heating
         let nHeating;
         if (yHeating > 0 && yHeating !== 1) {
-          nHeating = (1 - Math.pow(yHeating, a)) / (1 - Math.pow(yHeating, a + 1));
+          nHeating =
+            (1 - Math.pow(yHeating, a)) / (1 - Math.pow(yHeating, a + 1));
         } else if (yHeating === 1) {
           nHeating = a / (a + 1);
         } else {
           nHeating = 1;
         }
 
-        // Calculate cooling nxlm 
+        // Calculate cooling nxlm
         const coolingNxlm = nCooling * calculation;
 
         // Calculate heating nxgm
@@ -155,14 +158,14 @@ const SheetCalculation = () => {
           HR: entry.HR,
           T2M: entry.T2M,
           Calculation: parseFloat(calculation.toFixed(2)),
-          'Gamma-cool': parseFloat(yCooling.toFixed(5)),
-          'Gamma-heat': parseFloat(yHeating.toFixed(5)),
-          'n-cooling': parseFloat(nCooling.toFixed(5)),
-          'n-heating': parseFloat(nHeating.toFixed(5)),
-          'cooling nxlm': parseFloat(coolingNxlm.toFixed(5)),
-          'heating nxgm': parseFloat(heatingNxgm.toFixed(5)),
-          'heating load': parseFloat(heatingLoad.toFixed(5)),
-          'cooling load': parseFloat(coolingLoad.toFixed(5)),
+          "Gamma-cool": parseFloat(yCooling.toFixed(5)),
+          "Gamma-heat": parseFloat(yHeating.toFixed(5)),
+          "n-cooling": parseFloat(nCooling.toFixed(5)),
+          "n-heating": parseFloat(nHeating.toFixed(5)),
+          "cooling nxlm": parseFloat(coolingNxlm.toFixed(5)),
+          "heating nxgm": parseFloat(heatingNxgm.toFixed(5)),
+          "heating load": parseFloat(heatingLoad.toFixed(5)),
+          "cooling load": parseFloat(coolingLoad.toFixed(5)),
         };
       });
 
@@ -210,14 +213,14 @@ const SheetCalculation = () => {
                     <TableCell>{row.HR}</TableCell>
                     <TableCell>{row.T2M}</TableCell>
                     <TableCell>{row.Calculation}</TableCell>
-                    <TableCell>{row['Gamma-cool']}</TableCell>
-                    <TableCell>{row['Gamma-heat']}</TableCell>
-                    <TableCell>{row['n-cooling']}</TableCell>
-                    <TableCell>{row['n-heating']}</TableCell>
-                    <TableCell>{row['cooling nxlm']}</TableCell>
-                    <TableCell>{row['heating nxgm']}</TableCell>
-                    <TableCell>{row['heating load']}</TableCell>
-                    <TableCell>{row['cooling load']}</TableCell>
+                    <TableCell>{row["Gamma-cool"]}</TableCell>
+                    <TableCell>{row["Gamma-heat"]}</TableCell>
+                    <TableCell>{row["n-cooling"]}</TableCell>
+                    <TableCell>{row["n-heating"]}</TableCell>
+                    <TableCell>{row["cooling nxlm"]}</TableCell>
+                    <TableCell>{row["heating nxgm"]}</TableCell>
+                    <TableCell>{row["heating load"]}</TableCell>
+                    <TableCell>{row["cooling load"]}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -251,14 +254,14 @@ const SheetCalculation = () => {
                     <TableCell>{row.HR}</TableCell>
                     <TableCell>{row.T2M}</TableCell>
                     <TableCell>{row.Calculation}</TableCell>
-                    <TableCell>{row['Gamma-cool']}</TableCell>
-                    <TableCell>{row['Gamma-heat']}</TableCell>
-                    <TableCell>{row['n-cooling']}</TableCell>
-                    <TableCell>{row['n-heating']}</TableCell>
-                    <TableCell>{row['cooling nxlm']}</TableCell>
-                    <TableCell>{row['heating nxgm']}</TableCell>
-                    <TableCell>{row['heating load']}</TableCell>
-                    <TableCell>{row['cooling load']}</TableCell>
+                    <TableCell>{row["Gamma-cool"]}</TableCell>
+                    <TableCell>{row["Gamma-heat"]}</TableCell>
+                    <TableCell>{row["n-cooling"]}</TableCell>
+                    <TableCell>{row["n-heating"]}</TableCell>
+                    <TableCell>{row["cooling nxlm"]}</TableCell>
+                    <TableCell>{row["heating nxgm"]}</TableCell>
+                    <TableCell>{row["heating load"]}</TableCell>
+                    <TableCell>{row["cooling load"]}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -266,7 +269,9 @@ const SheetCalculation = () => {
           </TableContainer>
         </>
       ) : (
-        <Typography variant="h6">Please select a city to view calculations.</Typography>
+        <Typography variant="h6">
+          Please select a city to view calculations.
+        </Typography>
       )}
     </Box>
   );
