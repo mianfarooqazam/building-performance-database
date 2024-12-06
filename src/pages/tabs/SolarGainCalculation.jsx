@@ -1,3 +1,4 @@
+// SolarGainCalculation.js
 import { useMemo } from "react";
 import {
   Table,
@@ -69,11 +70,27 @@ const SolarGainCalculation = () => {
     return degreesToRadians(latitude);
   }, [selectedCity]);
 
+  // Calculate Solar Irradiance values for the selected city
+  const solarIrradianceValues = useMemo(() => {
+    const solarIrradiance = {};
+
+    if (!selectedCity || phiValue === null) return solarIrradiance;
+
+    solarIrradiance[selectedCity] = {};
+
+    for (const month in Solar_declination) {
+      solarIrradiance[selectedCity][month] =
+        phiValue - Solar_declination[month];
+    }
+
+    return solarIrradiance;
+  }, [selectedCity, phiValue]);
+
   // Calculate Rhnic values for the selected city
   const rhnicValues = useMemo(() => {
     const rhnic = {};
 
-    if (!selectedCity || phiValue === null) return rhnic;
+    if (!selectedCity || !solarIrradianceValues[selectedCity]) return rhnic;
 
     rhnic[selectedCity] = {};
 
@@ -81,14 +98,18 @@ const SolarGainCalculation = () => {
       rhnic[selectedCity][Orientation] = {};
 
       for (const month in Solar_declination) {
+        const solarIrradiance = solarIrradianceValues[selectedCity][month];
+        const cosSolarIrradiance = Math.cos(solarIrradiance);
         const rhnicCalc =
-          A * Math.pow(Math.cos(phiValue), 2) + B * Math.cos(phiValue) + C;
+          A * Math.pow(cosSolarIrradiance, 2) +
+          B * cosSolarIrradiance +
+          C;
         rhnic[selectedCity][Orientation][month] = rhnicCalc;
       }
     });
 
     return rhnic;
-  }, [ABC_table, selectedCity, phiValue]);
+  }, [ABC_table, solarIrradianceValues, selectedCity]);
 
   // Calculate Sorient values for the selected city
   const sorientValues = useMemo(() => {
@@ -111,22 +132,6 @@ const SolarGainCalculation = () => {
 
     return sorient;
   }, [ABC_table, rhnicValues, selectedCity]);
-
-  // Calculate Solar Irradiance values for the selected city
-  const solarIrradianceValues = useMemo(() => {
-    const solarIrradiance = {};
-
-    if (!selectedCity || phiValue === null) return solarIrradiance;
-
-    solarIrradiance[selectedCity] = {};
-
-    for (const month in Solar_declination) {
-      solarIrradiance[selectedCity][month] =
-        phiValue - Solar_declination[month];
-    }
-
-    return solarIrradiance;
-  }, [selectedCity, phiValue]);
 
   if (!selectedCity) {
     return (
@@ -264,7 +269,7 @@ const SolarGainCalculation = () => {
                   {month}
                 </TableCell>
                 <TableCell align="right">
-                  {solarIrradianceValues[selectedCity][month].toFixed(2)}
+                  {solarIrradianceValues[selectedCity][month].toFixed(5)}
                 </TableCell>
               </TableRow>
             ))}
@@ -310,7 +315,9 @@ const SolarGainCalculation = () => {
                 </TableCell>
                 {months.map((month) => (
                   <TableCell key={month} align="right">
-                    {rhnicValues[selectedCity][orientation][month].toFixed(8)}
+                    {rhnicValues[selectedCity][orientation][month].toFixed(
+                      8
+                    )}
                   </TableCell>
                 ))}
               </TableRow>
@@ -357,7 +364,9 @@ const SolarGainCalculation = () => {
                 </TableCell>
                 {months.map((month) => (
                   <TableCell key={month} align="right">
-                    {sorientValues[selectedCity][orientation][month].toFixed(5)}
+                    {sorientValues[selectedCity][orientation][month].toFixed(
+                      5
+                    )}
                   </TableCell>
                 ))}
               </TableRow>
