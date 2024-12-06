@@ -1,4 +1,3 @@
-// k values for orientation
 const Orientation_k_values = {
     "North": {
         "k1": 26.3,
@@ -135,23 +134,22 @@ const City_solar_irradiance = {
 
 // monthly wise solar declination 
 const Solar_declination = {
-    "January": -21.18,
-    "February": -12.78,
-    "March": -2.25,
-    "April": 9.67,
-    "May": 18.8,
-    "June": 23.29,
-    "July": 21.56,
-    "August": 14.12,
-    "September": 3.12,
-    "October": -8.42,
-    "November": -18.42,
-    "December": -23.26
+    "January": -0.369661,
+    "February": -0.223073,
+    "March": -0.039270,
+    "April": 0.168777,
+    "May": 0.328124,
+    "June": 0.406487,
+    "July": 0.376275,
+    "August": 0.246441,
+    "September": 0.054454,
+    "October": -0.146957,
+    "November": -0.321490,
+    "December": -0.405964
 };
-
 // city wise latitude
 const City_latitude = {
-    "Peshawar": 34.01510,
+    "Peshawar": 34.0151,
     "Islamabad": 33.6995,
     "Multan": 30.1864,
     "Lahore": 31.5204,

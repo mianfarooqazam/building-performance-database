@@ -18,16 +18,8 @@ import {
 } from "../../utils/solargain/CitiesValues.js";
 import useBuildingInformationStore from "../../store/useBuildingInformationStore";
 
-// Define the angle pbytwo in radians
-const pbytwo = 0.785;
-
-// Precompute sine values
-const sin_pbytwo = Math.sin(pbytwo);
-const sin_pbytwo_sq = Math.pow(sin_pbytwo, 2);
-const sin_pbytwo_cub = Math.pow(sin_pbytwo, 3);
-
 // Function to calculate A, B, C for a given set of k-values
-const calculateABC = (k) => {
+const calculateABC = (k, sin_pbytwo, sin_pbytwo_sq, sin_pbytwo_cub) => {
   const A = k.k1 * sin_pbytwo_cub + k.k2 * sin_pbytwo_sq + k.k3 * sin_pbytwo;
   const B = k.k4 * sin_pbytwo_cub + k.k5 * sin_pbytwo_sq + k.k6 * sin_pbytwo;
   const C =
@@ -45,11 +37,22 @@ const SolarGainCalculation = () => {
     (state) => state.selectedCity
   );
 
+  // Define the angle pbytwo in radians and precompute sine values
+  const pbytwo = 0.785398;
+  const sin_pbytwo = Math.sin(pbytwo);
+  const sin_pbytwo_sq = Math.pow(sin_pbytwo, 2);
+  const sin_pbytwo_cub = Math.pow(sin_pbytwo, 3);
+
   // Calculate ABC values
   const ABC_table = useMemo(() => {
     return Object.keys(Orientation_k_values).map((orientation) => {
       const kValues = Orientation_k_values[orientation];
-      const { A, B, C } = calculateABC(kValues);
+      const { A, B, C } = calculateABC(
+        kValues,
+        sin_pbytwo,
+        sin_pbytwo_sq,
+        sin_pbytwo_cub
+      );
       return {
         Orientation: orientation,
         A: A,
@@ -57,48 +60,35 @@ const SolarGainCalculation = () => {
         C: C,
       };
     });
-  }, []);
+  }, [sin_pbytwo, sin_pbytwo_sq, sin_pbytwo_cub]);
 
-  // Calculate Phi values for the selected city
-  const phiValues = useMemo(() => {
-    const City_phi = {};
-
-    if (!selectedCity) return City_phi;
-
+  // Calculate Phi value for the selected city (fixed)
+  const phiValue = useMemo(() => {
+    if (!selectedCity) return null;
     const latitude = City_latitude[selectedCity];
-    City_phi[selectedCity] = {};
-
-    for (const month in Solar_declination) {
-      const declination = Solar_declination[month];
-      const phi_degrees = latitude - declination;
-      const phi_radians = degreesToRadians(phi_degrees);
-      City_phi[selectedCity][month] = phi_radians;
-    }
-
-    return City_phi;
+    return degreesToRadians(latitude);
   }, [selectedCity]);
 
   // Calculate Rhnic values for the selected city
   const rhnicValues = useMemo(() => {
     const rhnic = {};
 
-    if (!selectedCity) return rhnic;
+    if (!selectedCity || phiValue === null) return rhnic;
 
     rhnic[selectedCity] = {};
 
     ABC_table.forEach(({ Orientation, A, B, C }) => {
       rhnic[selectedCity][Orientation] = {};
 
-      for (const month in phiValues[selectedCity]) {
-        const phi = phiValues[selectedCity][month];
-        const cos_phi = Math.cos(phi);
-        const rhnicCalc = A * Math.pow(cos_phi, 2) + B * cos_phi + C;
+      for (const month in Solar_declination) {
+        const rhnicCalc =
+          A * Math.pow(Math.cos(phiValue), 2) + B * Math.cos(phiValue) + C;
         rhnic[selectedCity][Orientation][month] = rhnicCalc;
       }
     });
 
     return rhnic;
-  }, [ABC_table, phiValues, selectedCity]);
+  }, [ABC_table, selectedCity, phiValue]);
 
   // Calculate Sorient values for the selected city
   const sorientValues = useMemo(() => {
@@ -121,6 +111,22 @@ const SolarGainCalculation = () => {
 
     return sorient;
   }, [ABC_table, rhnicValues, selectedCity]);
+
+  // Calculate Solar Irradiance values for the selected city
+  const solarIrradianceValues = useMemo(() => {
+    const solarIrradiance = {};
+
+    if (!selectedCity || phiValue === null) return solarIrradiance;
+
+    solarIrradiance[selectedCity] = {};
+
+    for (const month in Solar_declination) {
+      solarIrradiance[selectedCity][month] =
+        phiValue - Solar_declination[month];
+    }
+
+    return solarIrradiance;
+  }, [selectedCity, phiValue]);
 
   if (!selectedCity) {
     return (
@@ -194,10 +200,40 @@ const SolarGainCalculation = () => {
         </Table>
       </TableContainer>
 
-      {/* Phi Values Table */}
+      {/* Phi Value Table */}
       <TableContainer component={Paper} sx={{ marginBottom: 4 }}>
         <Typography variant="h6" align="center" gutterBottom>
-          Phi Values (in radians) for {selectedCity}
+          Phi Value (in radians) for {selectedCity}
+        </Typography>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell
+                sx={{
+                  backgroundColor: "lightblue",
+                  fontWeight: "bold",
+                }}
+              >
+                Phi (radians)
+              </TableCell>
+              <TableCell
+                align="right"
+                sx={{
+                  backgroundColor: "lightblue",
+                  fontWeight: "bold",
+                }}
+              >
+                {phiValue.toFixed(5)}
+              </TableCell>
+            </TableRow>
+          </TableHead>
+        </Table>
+      </TableContainer>
+
+      {/* Solar Irradiance Values Table */}
+      <TableContainer component={Paper} sx={{ marginBottom: 4 }}>
+        <Typography variant="h6" align="center" gutterBottom>
+          Solar Irradiance for {selectedCity}
         </Typography>
         <Table>
           <TableHead>
@@ -217,7 +253,7 @@ const SolarGainCalculation = () => {
                   fontWeight: "bold",
                 }}
               >
-                Phi (radians)
+                Solar Irradiance (radians)
               </TableCell>
             </TableRow>
           </TableHead>
@@ -228,7 +264,7 @@ const SolarGainCalculation = () => {
                   {month}
                 </TableCell>
                 <TableCell align="right">
-                  {phiValues[selectedCity][month].toFixed(5)}
+                  {solarIrradianceValues[selectedCity][month].toFixed(2)}
                 </TableCell>
               </TableRow>
             ))}
