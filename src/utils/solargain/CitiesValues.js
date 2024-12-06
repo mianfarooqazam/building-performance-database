@@ -133,6 +133,7 @@ const City_solar_irradiance = {
 };
 
 // monthly wise solar declination 
+// these are convert to radians ( in excel sheet these values are in degree)
 const Solar_declination = {
     "January": -0.369661,
     "February": -0.223073,
@@ -147,17 +148,18 @@ const Solar_declination = {
     "November": -0.321490,
     "December": -0.405964
 };
+
 // city wise latitude
+// these are convert to radians ( in excel sheet these values are in degree)
 const City_latitude = {
-    "Peshawar": 34.0151,
-    "Islamabad": 33.6995,
-    "Multan": 30.1864,
-    "Lahore": 31.5204,
-    "Karachi": 24.8607
+    "Peshawar": 0.593680,    // 34.0151 degrees
+    "Islamabad": 0.588145,   // 33.6995 degrees
+    "Multan": 0.526815,      // 30.1864 degrees
+    "Lahore": 0.550122,      // 31.5204 degrees
+    "Karachi": 0.433816       // 24.8607 degrees
 };
 
-
-
+//
 export {
     Orientation_k_values,
     City_solar_irradiance,

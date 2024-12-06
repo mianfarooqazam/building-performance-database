@@ -1,4 +1,4 @@
-// SolarGainCalculation.js
+// SolarGainCalculation.jsx
 import { useMemo } from "react";
 import {
   Table,
@@ -28,10 +28,10 @@ const calculateABC = (k, sin_pbytwo, sin_pbytwo_sq, sin_pbytwo_cub) => {
   return { A, B, C };
 };
 
-// Function to convert degrees to radians
-const degreesToRadians = (degrees) => {
-  return degrees * (Math.PI / 180);
-};
+// Removed the degreesToRadians function as it's no longer needed
+// const degreesToRadians = (degrees) => {
+//   return degrees * (Math.PI / 180);
+// };
 
 const SolarGainCalculation = () => {
   const selectedCity = useBuildingInformationStore(
@@ -39,7 +39,7 @@ const SolarGainCalculation = () => {
   );
 
   // Define the angle pbytwo in radians and precompute sine values
-  const pbytwo = 0.785398;
+  const pbytwo = 0.785398163; // 45 degrees in radians
   const sin_pbytwo = Math.sin(pbytwo);
   const sin_pbytwo_sq = Math.pow(sin_pbytwo, 2);
   const sin_pbytwo_cub = Math.pow(sin_pbytwo, 3);
@@ -63,11 +63,11 @@ const SolarGainCalculation = () => {
     });
   }, [sin_pbytwo, sin_pbytwo_sq, sin_pbytwo_cub]);
 
-  // Calculate Phi value for the selected city (fixed)
+  // Calculate Phi value for the selected city (already in radians)
   const phiValue = useMemo(() => {
     if (!selectedCity) return null;
     const latitude = City_latitude[selectedCity];
-    return degreesToRadians(latitude);
+    return latitude; // Removed degreesToRadians conversion
   }, [selectedCity]);
 
   // Calculate Solar Irradiance values for the selected city
@@ -196,9 +196,9 @@ const SolarGainCalculation = () => {
                 <TableCell component="th" scope="row">
                   {row.Orientation}
                 </TableCell>
-                <TableCell align="right">{row.A.toFixed(5)}</TableCell>
-                <TableCell align="right">{row.B.toFixed(5)}</TableCell>
-                <TableCell align="right">{row.C.toFixed(5)}</TableCell>
+                <TableCell align="right">{row.A.toFixed(2)}</TableCell>
+                <TableCell align="right">{row.B.toFixed(2)}</TableCell>
+                <TableCell align="right">{row.C.toFixed(2)}</TableCell>
               </TableRow>
             ))}
           </TableBody>
