@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
@@ -29,11 +28,11 @@ function App() {
     <>
       <ToastContainer position="top-right" autoClose={3000} />
       <Router>
-        <div className="flex">
+        <div className="flex overflow-x-hidden">
           {isLoggedIn ? (
             <>
-              <Sidebar onLogout={handleLogout} /> {/* Pass handleLogout to Sidebar */}
-              <div className="flex-1 bg-[#fafafa] ml-64 min-h-screen p-4">
+              <Sidebar onLogout={handleLogout} />
+              <div className="flex-1 bg-[#fafafa] ml-64 min-h-screen p-4 overflow-x-hidden">
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/building-details" element={<BuildingDetails />} />

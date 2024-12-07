@@ -18,17 +18,17 @@ import SolarGainCalculation from "./tabs/SolarGainCalculation";
 function BuildingDetails() {
   const [value, setValue] = useState(0);
 
-  const handleChange = (newValue) => {
+  const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
   return (
     <div className="p-4">
       {/* Red background wrapper for the entire tabs section */}
-      <div className=" p-2 rounded-lg" style={{ backgroundColor: "#fff" }}>
+      <div className="p-2 rounded-lg bg-white">
         <Tabs
           value={value}
-          onChange={(event, newValue) => handleChange(newValue)}
+          onChange={handleChange}
           aria-label="Building Details Tabs"
           indicatorColor="primary"
           textColor="primary"
@@ -60,28 +60,24 @@ function BuildingDetails() {
             label="Ventilation"
             className={`${value === 3 ? "bg-blue-100 rounded-lg" : ""}`}
           />
-
           <Tab
             icon={<AppliancesIcon />}
             label="Appliances Load"
             className={`${value === 4 ? "bg-blue-100 rounded-lg" : ""}`}
           />
-
           <Tab
             icon={<EnergyIcon />}
             label="Annual Energy Demand"
             className={`${value === 5 ? "bg-blue-100 rounded-lg" : ""}`}
           />
-
-          <Tab
-            icon={<EnergyIcon />}
-            label="L Sheet Calculation"
-            className={`${value === 6 ? "bg-blue-100 rounded-lg" : ""}`}
-          />
-
           <Tab
             icon={<EnergyIcon />}
             label="Solar Gain Calculation"
+            className={`${value === 6 ? "bg-blue-100 rounded-lg" : ""}`}
+          />
+          <Tab
+            icon={<EnergyIcon />}
+            label="L Sheet Calculation"
             className={`${value === 7 ? "bg-blue-100 rounded-lg" : ""}`}
           />
         </Tabs>
@@ -94,36 +90,67 @@ function BuildingDetails() {
           marginTop: 2,
           backgroundColor: "#f9f9f9",
           borderRadius: "8px",
-          flexGrow: 1, // Adjusted to allow the content to use available screen space
-          overflowY: "auto", // Keeps auto overflow only when absolutely necessary
+          flexGrow: 1,
+          overflowY: "auto",
+          overflowX: "hidden", // Prevent horizontal overflow on the panel
         }}
       >
         <Box role="tabpanel" hidden={value !== 0}>
-          <BuildingInformation />
+          {value === 0 && (
+            <div className="overflow-x-auto">
+              <BuildingInformation />
+            </div>
+          )}
         </Box>
         <Box role="tabpanel" hidden={value !== 1}>
-          <FloorPlan />
+          {value === 1 && (
+            <div className="overflow-x-auto">
+              <FloorPlan />
+            </div>
+          )}
         </Box>
         <Box role="tabpanel" hidden={value !== 2}>
-          <FabricDetails />
+          {value === 2 && (
+            <div className="overflow-x-auto">
+              <FabricDetails />
+            </div>
+          )}
         </Box>
         <Box role="tabpanel" hidden={value !== 3}>
-          <Ventilation />
+          {value === 3 && (
+            <div className="overflow-x-auto">
+              <Ventilation />
+            </div>
+          )}
         </Box>
-
         <Box role="tabpanel" hidden={value !== 4}>
-          <AppliancesLoad />
+          {value === 4 && (
+            <div className="overflow-x-auto">
+              <AppliancesLoad />
+            </div>
+          )}
         </Box>
         <Box role="tabpanel" hidden={value !== 5}>
-          <AnnualEnergyDemand />
+          {value === 5 && (
+            <div className="overflow-x-auto">
+              <AnnualEnergyDemand />
+            </div>
+          )}
         </Box>
         <Box role="tabpanel" hidden={value !== 6}>
-          <LSheetCalculation />
+          {value === 6 && (
+            <div className="overflow-x-auto">
+              <SolarGainCalculation />
+            </div>
+          )}
         </Box>
         <Box role="tabpanel" hidden={value !== 7}>
-          <  SolarGainCalculation />
+          {value === 7 && (
+            <div className="overflow-x-auto">
+              <LSheetCalculation />
+            </div>
+          )}
         </Box>
-      
       </Box>
     </div>
   );
