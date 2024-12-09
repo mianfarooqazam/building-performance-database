@@ -1,4 +1,3 @@
-// SolarGainCalculation.jsx
 import { useMemo } from "react";
 import {
   Table,
@@ -27,11 +26,6 @@ const calculateABC = (k, sin_pbytwo, sin_pbytwo_sq, sin_pbytwo_cub) => {
     k.k7 * sin_pbytwo_cub + k.k8 * sin_pbytwo_sq + k.k9 * sin_pbytwo + 1;
   return { A, B, C };
 };
-
-// Removed the degreesToRadians function as it's no longer needed
-// const degreesToRadians = (degrees) => {
-//   return degrees * (Math.PI / 180);
-// };
 
 const SolarGainCalculation = () => {
   const selectedCity = useBuildingInformationStore(
@@ -132,6 +126,27 @@ const SolarGainCalculation = () => {
 
     return sorient;
   }, [ABC_table, rhnicValues, selectedCity]);
+
+  // Calculate Solar Gain values for the selected city
+  const solarGainValues = useMemo(() => {
+    const factor = 1.67 * 1 * 0.75 * 0.80 * 0.9;
+    const solarGain = {};
+
+    if (!selectedCity || !sorientValues[selectedCity]) return solarGain;
+
+    solarGain[selectedCity] = {};
+
+    ABC_table.forEach(({ Orientation }) => {
+      solarGain[selectedCity][Orientation] = {};
+
+      for (const month in sorientValues[selectedCity][Orientation]) {
+        const sorient = sorientValues[selectedCity][Orientation][month];
+        solarGain[selectedCity][Orientation][month] = factor * sorient;
+      }
+    });
+
+    return solarGain;
+  }, [ABC_table, sorientValues, selectedCity]);
 
   if (!selectedCity) {
     return (
@@ -315,9 +330,7 @@ const SolarGainCalculation = () => {
                 </TableCell>
                 {months.map((month) => (
                   <TableCell key={month} align="right">
-                    {rhnicValues[selectedCity][orientation][month].toFixed(
-                      8
-                    )}
+                    {rhnicValues[selectedCity][orientation][month].toFixed(8)}
                   </TableCell>
                 ))}
               </TableRow>
@@ -371,6 +384,71 @@ const SolarGainCalculation = () => {
                 ))}
               </TableRow>
             ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      {/* Solar Gain Table with Individual Values and Total */}
+      <TableContainer component={Paper} sx={{ marginBottom: 4 }}>
+        <Typography variant="h6" align="center" gutterBottom>
+          Solar Gain (Watts) for {selectedCity}
+        </Typography>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell
+                sx={{
+                  backgroundColor: "lightblue",
+                  fontWeight: "bold",
+                }}
+              >
+                Orientation
+              </TableCell>
+              {months.map((month) => (
+                <TableCell
+                  key={month}
+                  align="right"
+                  sx={{
+                    backgroundColor: "lightblue",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {month}
+                </TableCell>
+              ))}
+              <TableCell
+                align="right"
+                sx={{
+                  backgroundColor: "lightblue",
+                  fontWeight: "bold",
+                }}
+              >
+                Total
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {selectedCity &&
+              Object.keys(solarGainValues[selectedCity]).map((orientation) => {
+                const solarGainData = solarGainValues[selectedCity][orientation];
+                const total = Object.values(solarGainData).reduce(
+                  (acc, curr) => acc + curr,
+                  0
+                );
+                return (
+                  <TableRow key={orientation}>
+                    <TableCell component="th" scope="row">
+                      {orientation}
+                    </TableCell>
+                    {months.map((month) => (
+                      <TableCell key={month} align="right">
+                        {solarGainData[month].toFixed(5)}
+                      </TableCell>
+                    ))}
+                    <TableCell align="right">{total.toFixed(5)}</TableCell>
+                  </TableRow>
+                );
+              })}
           </TableBody>
         </Table>
       </TableContainer>
