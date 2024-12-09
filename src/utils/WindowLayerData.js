@@ -1,5 +1,3 @@
-// WindowLayerData.js
-
 const WindowType = [
     { name: "Clear 1 Layer", u_value: 7.24, shgc: 0.75 },
     { name: "Clear 2 Layer", u_value: 4.62, shgc: 0.67 },

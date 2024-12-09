@@ -80,6 +80,9 @@ function FloorPlan() {
     setSetTemperature,
     hoursOfOperation,
     setHoursOfOperation,
+
+    // New action for storing individual window dimensions
+    setWindowDimension,
   } = useFloorPlanStore();
 
   const [newWindowOrientation, setNewWindowOrientation] = useState("");
@@ -211,13 +214,17 @@ function FloorPlan() {
 
   const handleAddWindow = () => {
     if (windows.length < 4 && newWindowOrientation && newWindowArea) {
+      const windowAreaValue = parseFloat(newWindowArea);
       setWindows([
         ...windows,
         {
           orientation: newWindowOrientation,
-          area: parseFloat(newWindowArea),
+          area: windowAreaValue,
         },
       ]);
+      // Store the individual window area by orientation
+      setWindowDimension(newWindowOrientation, windowAreaValue);
+
       setNewWindowOrientation("");
       setNewWindowArea("");
     }

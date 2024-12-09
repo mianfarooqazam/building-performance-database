@@ -21,11 +21,15 @@ const useFloorPlanStore = create(
       totalArea: 0,
       windows: [],
       doors: [],
+      // Store individual window dimensions keyed by orientation
+      windowDimensions: {},
+
       // Lighting variables
       numberOfOccupants: '',
       numberOfLights: '',
       lights: [],
       totalWattage: 0,
+
       // Indoor Conditions variables
       setTemperature: '',
       hoursOfOperation: [],
@@ -54,6 +58,15 @@ const useFloorPlanStore = create(
       setNumberOfLights: (numberOfLights) => set({ numberOfLights }),
       setLights: (lights) => set({ lights }),
       setTotalWattage: (totalWattage) => set({ totalWattage }),
+
+      // Action to set individual window dimension by orientation
+      setWindowDimension: (orientation, area) =>
+        set((state) => ({
+          windowDimensions: {
+            ...state.windowDimensions,
+            [orientation]: area,
+          },
+        })),
 
       // Actions for Indoor Conditions section
       setSetTemperature: (setTemperature) => set({ setTemperature }),
