@@ -17,6 +17,7 @@ import {
   City_solar_irradiance,
 } from "../../utils/solargain/CitiesValues.js";
 import useBuildingInformationStore from "../../store/useBuildingInformationStore";
+import useWindowFabricDetailsStore from "../../store/useWindowFabricDetailsStore"; // Import the window fabric details store
 
 // Function to calculate A, B, C for a given set of k-values
 const calculateABC = (k, sin_pbytwo, sin_pbytwo_sq, sin_pbytwo_cub) => {
@@ -31,6 +32,8 @@ const SolarGainCalculation = () => {
   const selectedCity = useBuildingInformationStore(
     (state) => state.selectedCity
   );
+
+  const { selectedWindowType } = useWindowFabricDetailsStore(); // Get the selected window type
 
   // Define the angle pbytwo in radians and precompute sine values
   const pbytwo = 0.785398163; // 45 degrees in radians
@@ -127,9 +130,14 @@ const SolarGainCalculation = () => {
     return sorient;
   }, [ABC_table, rhnicValues, selectedCity]);
 
+  // Calculate the factor using the SHGC value from the selected window type
+  const factor = useMemo(() => {
+    const shgc = selectedWindowType ? selectedWindowType.shgc : 0.75;
+    return 1.67 * 1 * shgc * 0.80 * 0.9;
+  }, [selectedWindowType]);
+
   // Calculate Solar Gain values for the selected city
   const solarGainValues = useMemo(() => {
-    const factor = 1.67 * 1 * 0.75 * 0.80 * 0.9;
     const solarGain = {};
 
     if (!selectedCity || !sorientValues[selectedCity]) return solarGain;
@@ -146,7 +154,7 @@ const SolarGainCalculation = () => {
     });
 
     return solarGain;
-  }, [ABC_table, sorientValues, selectedCity]);
+  }, [ABC_table, sorientValues, selectedCity, factor]);
 
   if (!selectedCity) {
     return (
