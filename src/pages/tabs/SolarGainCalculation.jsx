@@ -33,7 +33,7 @@ const SolarGainCalculation = () => {
     (state) => state.selectedCity
   );
 
-  const { selectedWindowType } = useWindowFabricDetailsStore(); // Get the selected window type
+  const { selectedWindowType, selectedFrameType } = useWindowFabricDetailsStore(); // Get the selected window and frame types
 
   // Define the angle pbytwo in radians and precompute sine values
   const pbytwo = 0.785398163; // 45 degrees in radians
@@ -130,11 +130,12 @@ const SolarGainCalculation = () => {
     return sorient;
   }, [ABC_table, rhnicValues, selectedCity]);
 
-  // Calculate the factor using the SHGC value from the selected window type
+  // Calculate the factor using the SHGC and frame factor from the selected types
   const factor = useMemo(() => {
     const shgc = selectedWindowType ? selectedWindowType.shgc : 0.75;
-    return 1.67 * 1 * shgc * 0.80 * 0.9;
-  }, [selectedWindowType]);
+    const frameFactor = selectedFrameType ? selectedFrameType.frame_factor : 0.80;
+    return 1.67 * 1 * shgc * frameFactor * 0.9;
+  }, [selectedWindowType, selectedFrameType]);
 
   // Calculate Solar Gain values for the selected city
   const solarGainValues = useMemo(() => {
