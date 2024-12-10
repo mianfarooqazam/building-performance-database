@@ -1,3 +1,5 @@
+// File: SolarGainCalculation.jsx
+
 import { useMemo } from "react";
 import {
   Table,
@@ -19,6 +21,9 @@ import {
 import useBuildingInformationStore from "../../store/useBuildingInformationStore";
 import useWindowFabricDetailsStore from "../../store/useWindowFabricDetailsStore"; // Import the window fabric details store
 
+// Define winter months outside the component to avoid unnecessary dependencies
+const winterMonths = ["January", "February", "March", "October", "November", "December"];
+
 // Function to calculate A, B, C for a given set of k-values
 const calculateABC = (k, sin_pbytwo, sin_pbytwo_sq, sin_pbytwo_cub) => {
   const A = k.k1 * sin_pbytwo_cub + k.k2 * sin_pbytwo_sq + k.k3 * sin_pbytwo;
@@ -33,7 +38,11 @@ const SolarGainCalculation = () => {
     (state) => state.selectedCity
   );
 
-  const { selectedWindowType, selectedFrameType } = useWindowFabricDetailsStore(); // Get the selected window and frame types
+  const {
+    selectedWindowType,
+    selectedFrameType,
+    selectedShadingCover,
+  } = useWindowFabricDetailsStore(); // Get the selected window, frame, and shading cover types
 
   // Define the angle pbytwo in radians and precompute sine values
   const pbytwo = 0.785398163; // 45 degrees in radians
@@ -130,14 +139,7 @@ const SolarGainCalculation = () => {
     return sorient;
   }, [ABC_table, rhnicValues, selectedCity]);
 
-  // Calculate the factor using the SHGC and frame factor from the selected types
-  const factor = useMemo(() => {
-    const shgc = selectedWindowType ? selectedWindowType.shgc : 0.75;
-    const frameFactor = selectedFrameType ? selectedFrameType.frame_factor : 0.80;
-    return 1.67 * 1 * shgc * frameFactor * 0.9;
-  }, [selectedWindowType, selectedFrameType]);
-
-  // Calculate Solar Gain values for the selected city
+  // Calculate Solar Gain values for the selected city with shading cover
   const solarGainValues = useMemo(() => {
     const solarGain = {};
 
@@ -150,12 +152,32 @@ const SolarGainCalculation = () => {
 
       for (const month in sorientValues[selectedCity][Orientation]) {
         const sorient = sorientValues[selectedCity][Orientation][month];
+
+        // Determine if the month is winter or summer
+        const isWinter = winterMonths.includes(month);
+        const shadingValue = selectedShadingCover
+          ? isWinter
+            ? selectedShadingCover.values.winter
+            : selectedShadingCover.values.summer
+          : 1.0; // Default shading cover value if none selected
+
+        const shgc = selectedWindowType ? selectedWindowType.shgc : 0.75;
+        const frameFactor = selectedFrameType ? selectedFrameType.frame_factor : 0.80;
+        const factor = 1.67 * shadingValue * shgc * frameFactor * 0.9;
+
         solarGain[selectedCity][Orientation][month] = factor * sorient;
       }
     });
 
     return solarGain;
-  }, [ABC_table, sorientValues, selectedCity, factor]);
+  }, [
+    ABC_table,
+    sorientValues,
+    selectedCity,
+    selectedWindowType,
+    selectedFrameType,
+    selectedShadingCover,
+  ]);
 
   if (!selectedCity) {
     return (
