@@ -24,8 +24,8 @@ function BuildingDetails() {
 
   return (
     <div className="p-4">
-      {/* Red background wrapper for the entire tabs section */}
-      <div className="p-2 rounded-lg bg-white">
+      {/* Sticky Tabs wrapper */}
+      <div className="p-2 rounded-lg bg-white sticky top-0 z-10 shadow-md">
         <Tabs
           value={value}
           onChange={handleChange}
@@ -36,7 +36,7 @@ function BuildingDetails() {
           scrollButtons="auto"
           TabIndicatorProps={{
             style: {
-              backgroundColor: "#fff",
+              backgroundColor: "#3f51b5", // Changed to a visible color
             },
           }}
         >
@@ -93,6 +93,7 @@ function BuildingDetails() {
           flexGrow: 1,
           overflowY: "auto",
           overflowX: "hidden", // Prevent horizontal overflow on the panel
+          maxHeight: "80vh", // Adjust as needed to fit the viewport
         }}
       >
         <Box role="tabpanel" hidden={value !== 0}>
