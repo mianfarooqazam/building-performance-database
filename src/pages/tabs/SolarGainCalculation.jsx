@@ -45,7 +45,7 @@ const SolarGainCalculation = () => {
   // 1. Wrap daysInMonth in useMemo to stabilize its reference
   const daysInMonth = useMemo(() => ({
     January: 31,
-    February: 28, // Adjust for leap years if necessary
+    February: 28, 
     March: 31,
     April: 30,
     May: 31,
@@ -222,6 +222,21 @@ const SolarGainCalculation = () => {
     });
     return E_kWh;
   }, [months, totalWattage, selectedCity, daysInMonth]);
+
+  // 3. Calculate Lighting Gains for each month
+  const lightingGains = useMemo(() => {
+    const lg = {};
+    if (!selectedCity) return lg;
+
+    lg[selectedCity] = {};
+    months.forEach((month) => {
+      const E_kWh = E_kWh_values[selectedCity][month] || 0;
+      const nm = daysInMonth[month] || 30;
+      const lightingGain = (E_kWh * 0.85 * 1000) / (24 * nm);
+      lg[selectedCity][month] = lightingGain;
+    });
+    return lg;
+  }, [months, E_kWh_values, selectedCity, daysInMonth]);
 
   if (!selectedCity) {
     return (
@@ -522,7 +537,7 @@ const SolarGainCalculation = () => {
         </TableContainer>
       )}
 
-      {/* New Table: Total Gains (Watt) */}
+      {/* New Table: Total Gains (Watt) with Lighting gains */}
       <TableContainer component={Paper} sx={{ marginBottom: 4 }}>
         <Typography variant="h6" align="center" gutterBottom>
           Total Gains (Watt) for {selectedCity}
@@ -547,6 +562,15 @@ const SolarGainCalculation = () => {
               >
                 E(kWh)
               </TableCell>
+              <TableCell
+                align="right"
+                sx={{
+                  backgroundColor: "lightblue",
+                  fontWeight: "bold",
+                }}
+              >
+                Lighting gains (W)
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -559,6 +583,11 @@ const SolarGainCalculation = () => {
                   {E_kWh_values[selectedCity][month]
                     ? E_kWh_values[selectedCity][month].toFixed(5)
                     : "0.00000"}
+                </TableCell>
+                <TableCell align="right">
+                  {lightingGains[selectedCity][month]
+                    ? lightingGains[selectedCity][month].toFixed(2)
+                    : "0.00"}
                 </TableCell>
               </TableRow>
             ))}
