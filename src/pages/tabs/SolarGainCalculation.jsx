@@ -222,6 +222,7 @@ const SolarGainCalculation = () => {
       const radian = (angle * ( 3.14/180)); 
       const divideby12 = (radian) / 12; 
       const cosValue = Math.cos(divideby12);
+
       const nm = daysInMonth[month] || 30;
       const E = (EL * (1 + 0.5 * cosValue) * nm) / 365;
       E_kWh[selectedCity][month] = E;
@@ -255,6 +256,17 @@ const SolarGainCalculation = () => {
     });
     return totals;
   }, [months, lightingGains, selectedCity, metabolicW, cookingW]);
+
+  // 5. Calculate Total Gain (Watt) for each month
+  const totalGainWatt = useMemo(() => {
+    const totals = {};
+    months.forEach((month) => {
+      const internalGain = totalInternalGains[month] || 0;
+      const solarGain = monthlyTotals[month] || 0;
+      totals[month] = internalGain + solarGain;
+    });
+    return totals;
+  }, [months, totalInternalGains, monthlyTotals]);
 
   if (!selectedCity) {
     return (
@@ -542,7 +554,7 @@ const SolarGainCalculation = () => {
               {/* Total Row */}
               <TableRow>
                 <TableCell component="th" scope="row" sx={{ fontWeight: "bold" }}>
-                  Total
+                  Solar Gain (Watt)
                 </TableCell>
                 {months.map((month) => (
                   <TableCell key={month} align="right" sx={{ fontWeight: "bold" }}>
@@ -555,7 +567,7 @@ const SolarGainCalculation = () => {
         </TableContainer>
       )}
 
-      {/* New Table: Total Gains (Watt) with Lighting gains, Metabolic, Cooking, and Total Internal Gain */}
+      {/* New Table: Total Gains (Watt) with Lighting gains, Metabolic, Cooking, Total Internal Gain, and Total Gain */}
       <TableContainer component={Paper} sx={{ marginBottom: 4 }}>
         <Typography variant="h6" align="center" gutterBottom>
           Total Gains (Watt) for {selectedCity}
@@ -616,6 +628,15 @@ const SolarGainCalculation = () => {
               >
                 Total Internal Gain (W)
               </TableCell>
+              <TableCell
+                align="right"
+                sx={{
+                  backgroundColor: "lightblue",
+                  fontWeight: "bold",
+                }}
+              >
+                Total Gain (Watt)
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -643,6 +664,11 @@ const SolarGainCalculation = () => {
                 <TableCell align="right">
                   {totalInternalGains[month]
                     ? totalInternalGains[month].toFixed(2)
+                    : "0.00"}
+                </TableCell>
+                <TableCell align="right">
+                  {totalGainWatt[month]
+                    ? totalGainWatt[month].toFixed(2)
                     : "0.00"}
                 </TableCell>
               </TableRow>
