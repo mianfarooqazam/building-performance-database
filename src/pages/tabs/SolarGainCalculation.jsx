@@ -45,7 +45,7 @@ const SolarGainCalculation = () => {
   // 1. Wrap daysInMonth in useMemo to stabilize its reference
   const daysInMonth = useMemo(() => ({
     January: 31,
-    February: 28, 
+    February: 28,
     March: 31,
     April: 30,
     May: 31,
@@ -59,7 +59,14 @@ const SolarGainCalculation = () => {
   }), []);
 
   // 2. Retrieve EL (Total Wattage) from useFloorPlanStore
-  const totalWattage = useFloorPlanStore((state) => state.totalWattage);
+  const totalWattage = useFloorPlanStore((state) => Number(state.totalWattage) || 0);
+
+  // 3. Retrieve numberOfOccupants from useFloorPlanStore
+  const numberOfOccupants = useFloorPlanStore((state) => Number(state.numberOfOccupants) || 0);
+
+  // 4. Calculate Metabolic and Cooking Gains
+  const metabolicW = useMemo(() => 20 * numberOfOccupants, [numberOfOccupants]);
+  const cookingW = useMemo(() => 35 + 7 * numberOfOccupants, [numberOfOccupants]);
 
   // Calculate ABC values for each orientation
   const ABC_table = useMemo(() => {
@@ -215,9 +222,8 @@ const SolarGainCalculation = () => {
       const radian = (angle * ( 3.14/180)); 
       const divideby12 = (radian) / 12; 
       const cosValue = Math.cos(divideby12);
-
-      const nm = daysInMonth[month] || 30; 
-      const E = (EL * (1 + 0.5 * cosValue) * nm) / 365; 
+      const nm = daysInMonth[month] || 30;
+      const E = (EL * (1 + 0.5 * cosValue) * nm) / 365;
       E_kWh[selectedCity][month] = E;
     });
     return E_kWh;
@@ -237,6 +243,18 @@ const SolarGainCalculation = () => {
     });
     return lg;
   }, [months, E_kWh_values, selectedCity, daysInMonth]);
+
+  // 4. Calculate Total Internal Gains for each month
+  const totalInternalGains = useMemo(() => {
+    const totals = {};
+    if (!selectedCity) return totals;
+
+    months.forEach((month) => {
+      const lighting = lightingGains[selectedCity][month] || 0;
+      totals[month] = lighting + metabolicW + cookingW;
+    });
+    return totals;
+  }, [months, lightingGains, selectedCity, metabolicW, cookingW]);
 
   if (!selectedCity) {
     return (
@@ -331,7 +349,7 @@ const SolarGainCalculation = () => {
                   fontWeight: "bold",
                 }}
               >
-                {phiValue.toFixed(5)}
+                {phiValue !== null ? phiValue.toFixed(5) : "N/A"}
               </TableCell>
             </TableRow>
           </TableHead>
@@ -537,7 +555,7 @@ const SolarGainCalculation = () => {
         </TableContainer>
       )}
 
-      {/* New Table: Total Gains (Watt) with Lighting gains */}
+      {/* New Table: Total Gains (Watt) with Lighting gains, Metabolic, Cooking, and Total Internal Gain */}
       <TableContainer component={Paper} sx={{ marginBottom: 4 }}>
         <Typography variant="h6" align="center" gutterBottom>
           Total Gains (Watt) for {selectedCity}
@@ -569,7 +587,34 @@ const SolarGainCalculation = () => {
                   fontWeight: "bold",
                 }}
               >
-                Lighting gains (W)
+                Lighting Gains (W)
+              </TableCell>
+              <TableCell
+                align="right"
+                sx={{
+                  backgroundColor: "lightblue",
+                  fontWeight: "bold",
+                }}
+              >
+                Metabolic (W)
+              </TableCell>
+              <TableCell
+                align="right"
+                sx={{
+                  backgroundColor: "lightblue",
+                  fontWeight: "bold",
+                }}
+              >
+                Cooking (W)
+              </TableCell>
+              <TableCell
+                align="right"
+                sx={{
+                  backgroundColor: "lightblue",
+                  fontWeight: "bold",
+                }}
+              >
+                Total Internal Gain (W)
               </TableCell>
             </TableRow>
           </TableHead>
@@ -587,6 +632,17 @@ const SolarGainCalculation = () => {
                 <TableCell align="right">
                   {lightingGains[selectedCity][month]
                     ? lightingGains[selectedCity][month].toFixed(2)
+                    : "0.00"}
+                </TableCell>
+                <TableCell align="right">
+                  {metabolicW.toFixed(2)}
+                </TableCell>
+                <TableCell align="right">
+                  {cookingW.toFixed(2)}
+                </TableCell>
+                <TableCell align="right">
+                  {totalInternalGains[month]
+                    ? totalInternalGains[month].toFixed(2)
                     : "0.00"}
                 </TableCell>
               </TableRow>
