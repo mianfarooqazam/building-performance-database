@@ -37,7 +37,7 @@ const SolarGainCalculation = () => {
 
   const { windows: floorPlanWindows } = useFloorPlanStore();
 
-  const pbytwo = 0.785398163; 
+  const pbytwo = 0.785398163;
   const sin_pbytwo = Math.sin(pbytwo);
   const sin_pbytwo_sq = Math.pow(sin_pbytwo, 2);
   const sin_pbytwo_cub = Math.pow(sin_pbytwo, 3);
@@ -154,6 +154,29 @@ const SolarGainCalculation = () => {
     floorPlanWindows,
   ]);
 
+  // Ensure all useMemo hooks are called unconditionally
+  const months = useMemo(() => {
+    if (!selectedCity) return [];
+    return Object.keys(City_solar_irradiance[selectedCity]);
+  }, [selectedCity]);
+
+  // Filter orientations to only those that have windows (so we only display those orientations)
+  const orientationsWithWindows = useMemo(() => {
+    if (!selectedCity) return [];
+    return Object.keys(solarGainValues[selectedCity] || {});
+  }, [solarGainValues, selectedCity]);
+
+  // Calculate totals across orientations for each month
+  const monthlyTotals = useMemo(() => {
+    const totals = {};
+    months.forEach((month) => {
+      totals[month] = orientationsWithWindows.reduce((acc, orientation) => {
+        return acc + (solarGainValues[selectedCity][orientation][month] || 0);
+      }, 0);
+    });
+    return totals;
+  }, [months, orientationsWithWindows, solarGainValues, selectedCity]);
+
   if (!selectedCity) {
     return (
       <Typography variant="h6" align="center">
@@ -161,11 +184,6 @@ const SolarGainCalculation = () => {
       </Typography>
     );
   }
-
-  const months = Object.keys(City_solar_irradiance[selectedCity]);
-
-  // Filter orientations to only those that have windows (so we only display those orientations)
-  const orientationsWithWindows = Object.keys(solarGainValues[selectedCity] || {});
 
   return (
     <Box>
@@ -424,21 +442,11 @@ const SolarGainCalculation = () => {
                     {month}
                   </TableCell>
                 ))}
-                <TableCell
-                  align="right"
-                  sx={{
-                    backgroundColor: "lightblue",
-                    fontWeight: "bold",
-                  }}
-                >
-                  Total
-                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {orientationsWithWindows.map((orientation) => {
                 const solarGainData = solarGainValues[selectedCity][orientation];
-                const total = Object.values(solarGainData).reduce((acc, curr) => acc + curr, 0);
                 return (
                   <TableRow key={orientation}>
                     <TableCell component="th" scope="row">
@@ -449,10 +457,20 @@ const SolarGainCalculation = () => {
                         {solarGainData[month].toFixed(5)}
                       </TableCell>
                     ))}
-                    <TableCell align="right">{total.toFixed(5)}</TableCell>
                   </TableRow>
                 );
               })}
+              {/* Total Row */}
+              <TableRow>
+                <TableCell component="th" scope="row" sx={{ fontWeight: "bold" }}>
+                  Total
+                </TableCell>
+                {months.map((month) => (
+                  <TableCell key={month} align="right" sx={{ fontWeight: "bold" }}>
+                    {monthlyTotals[month].toFixed(5)}
+                  </TableCell>
+                ))}
+              </TableRow>
             </TableBody>
           </Table>
         </TableContainer>
