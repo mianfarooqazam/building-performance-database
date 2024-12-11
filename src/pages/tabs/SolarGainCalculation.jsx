@@ -37,11 +37,31 @@ const SolarGainCalculation = () => {
 
   const { windows: floorPlanWindows } = useFloorPlanStore();
 
-  const pbytwo = 0.785398163;
+  const pbytwo = 0.785398163; // pi/4
   const sin_pbytwo = Math.sin(pbytwo);
   const sin_pbytwo_sq = Math.pow(sin_pbytwo, 2);
   const sin_pbytwo_cub = Math.pow(sin_pbytwo, 3);
 
+  // 1. Wrap daysInMonth in useMemo to stabilize its reference
+  const daysInMonth = useMemo(() => ({
+    January: 31,
+    February: 28, // Adjust for leap years if necessary
+    March: 31,
+    April: 30,
+    May: 31,
+    June: 30,
+    July: 31,
+    August: 31,
+    September: 30,
+    October: 31,
+    November: 30,
+    December: 31,
+  }), []);
+
+  // 2. Retrieve EL (Total Wattage) from useFloorPlanStore
+  const totalWattage = useFloorPlanStore((state) => state.totalWattage);
+
+  // Calculate ABC values for each orientation
   const ABC_table = useMemo(() => {
     return Object.keys(Orientation_k_values).map((orientation) => {
       const kValues = Orientation_k_values[orientation];
@@ -55,12 +75,14 @@ const SolarGainCalculation = () => {
     });
   }, [sin_pbytwo, sin_pbytwo_sq, sin_pbytwo_cub]);
 
+  // Get Phi value based on selected city
   const phiValue = useMemo(() => {
     if (!selectedCity) return null;
     const latitude = City_latitude[selectedCity];
     return latitude;
   }, [selectedCity]);
 
+  // Calculate Solar Irradiance Values
   const solarIrradianceValues = useMemo(() => {
     const solarIrradiance = {};
     if (!selectedCity || phiValue === null) return solarIrradiance;
@@ -72,6 +94,7 @@ const SolarGainCalculation = () => {
     return solarIrradiance;
   }, [selectedCity, phiValue]);
 
+  // Calculate Rhnic Values
   const rhnicValues = useMemo(() => {
     const rhnic = {};
     if (!selectedCity || !solarIrradianceValues[selectedCity]) return rhnic;
@@ -89,6 +112,7 @@ const SolarGainCalculation = () => {
     return rhnic;
   }, [ABC_table, solarIrradianceValues, selectedCity]);
 
+  // Calculate Sorient Values
   const sorientValues = useMemo(() => {
     const sorient = {};
     if (!selectedCity) return sorient;
@@ -106,6 +130,7 @@ const SolarGainCalculation = () => {
     return sorient;
   }, [ABC_table, rhnicValues, selectedCity]);
 
+  // Calculate Solar Gain Values
   const solarGainValues = useMemo(() => {
     const solarGain = {};
     if (!selectedCity || !sorientValues[selectedCity]) return solarGain;
@@ -154,7 +179,7 @@ const SolarGainCalculation = () => {
     floorPlanWindows,
   ]);
 
-  // Ensure all useMemo hooks are called unconditionally
+  // Get list of months
   const months = useMemo(() => {
     if (!selectedCity) return [];
     return Object.keys(City_solar_irradiance[selectedCity]);
@@ -176,6 +201,27 @@ const SolarGainCalculation = () => {
     });
     return totals;
   }, [months, orientationsWithWindows, solarGainValues, selectedCity]);
+
+  // Calculate E(kWh) for each month
+  const E_kWh_values = useMemo(() => {
+    const E_kWh = {};
+    if (!selectedCity) return E_kWh;
+
+    E_kWh[selectedCity] = {};
+    months.forEach((month, index) => {
+      const EL = totalWattage; 
+      const monthIndex = index + 1; 
+      const angle = (6.28 * (monthIndex - 0.2)) ; 
+      const radian = (angle * ( 3.14/180)); 
+      const divideby12 = (radian) / 12; 
+      const cosValue = Math.cos(divideby12);
+
+      const nm = daysInMonth[month] || 30; 
+      const E = (EL * (1 + 0.5 * cosValue) * nm) / 365; 
+      E_kWh[selectedCity][month] = E;
+    });
+    return E_kWh;
+  }, [months, totalWattage, selectedCity, daysInMonth]);
 
   if (!selectedCity) {
     return (
@@ -475,6 +521,50 @@ const SolarGainCalculation = () => {
           </Table>
         </TableContainer>
       )}
+
+      {/* New Table: Total Gains (Watt) */}
+      <TableContainer component={Paper} sx={{ marginBottom: 4 }}>
+        <Typography variant="h6" align="center" gutterBottom>
+          Total Gains (Watt) for {selectedCity}
+        </Typography>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell
+                sx={{
+                  backgroundColor: "lightblue",
+                  fontWeight: "bold",
+                }}
+              >
+                Month
+              </TableCell>
+              <TableCell
+                align="right"
+                sx={{
+                  backgroundColor: "lightblue",
+                  fontWeight: "bold",
+                }}
+              >
+                E(kWh)
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {months.map((month) => (
+              <TableRow key={month}>
+                <TableCell component="th" scope="row">
+                  {month}
+                </TableCell>
+                <TableCell align="right">
+                  {E_kWh_values[selectedCity][month]
+                    ? E_kWh_values[selectedCity][month].toFixed(5)
+                    : "0.00000"}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Box>
   );
 };
