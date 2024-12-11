@@ -81,8 +81,9 @@ function FloorPlan() {
     hoursOfOperation,
     setHoursOfOperation,
 
-    // New action for storing individual window dimensions
+    // New actions for storing individual window dimensions
     setWindowDimension,
+    setWindowDimensionMeters,
   } = useFloorPlanStore();
 
   const [newWindowOrientation, setNewWindowOrientation] = useState("");
@@ -215,15 +216,19 @@ function FloorPlan() {
   const handleAddWindow = () => {
     if (windows.length < 4 && newWindowOrientation && newWindowArea) {
       const windowAreaValue = parseFloat(newWindowArea);
+      const windowAreaInMeters = convertSqFtToSqM(windowAreaValue);
       setWindows([
         ...windows,
         {
           orientation: newWindowOrientation,
           area: windowAreaValue,
+          areaInMeters: windowAreaInMeters,
         },
       ]);
-      // Store the individual window area by orientation
+      // Store the individual window area by orientation in feet
       setWindowDimension(newWindowOrientation, windowAreaValue);
+      // Store the individual window area by orientation in meters
+      setWindowDimensionMeters(newWindowOrientation, windowAreaInMeters);
 
       setNewWindowOrientation("");
       setNewWindowArea("");
@@ -231,7 +236,11 @@ function FloorPlan() {
   };
 
   const handleRemoveWindow = (index) => {
+    const removedWindow = windows[index];
     setWindows(windows.filter((_, i) => i !== index));
+    // Remove from windowDimensions
+    setWindowDimension(removedWindow.orientation, undefined);
+    setWindowDimensionMeters(removedWindow.orientation, undefined);
   };
 
   const handleAddDoor = () => {
@@ -549,7 +558,7 @@ function FloorPlan() {
               >
                 <Box>
                   Window {index + 1}: Orientation - {window.orientation}, Area -{" "}
-                  {window.area} ft²
+                  {window.area} ft² [{window.areaInMeters ? window.areaInMeters.toFixed(2) : 'N/A'} m²]
                 </Box>
                 <Button
                   variant="outlined"

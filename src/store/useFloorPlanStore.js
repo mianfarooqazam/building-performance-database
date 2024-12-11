@@ -23,6 +23,7 @@ const useFloorPlanStore = create(
       doors: [],
       // Store individual window dimensions keyed by orientation
       windowDimensions: {},
+      windowDimensionsMeters: {},
 
       // Lighting variables
       numberOfOccupants: '',
@@ -59,7 +60,14 @@ const useFloorPlanStore = create(
       setLights: (lights) => set({ lights }),
       setTotalWattage: (totalWattage) => set({ totalWattage }),
 
-      // Action to set individual window dimension by orientation
+      // Actions for Indoor Conditions section
+      setSetTemperature: (setTemperature) => set({ setTemperature }),
+      setHoursOfOperation: (hoursOfOperation) =>
+        set({
+          hoursOfOperation: Array.isArray(hoursOfOperation) ? hoursOfOperation : [],
+        }),
+
+      // Actions to set individual window dimension by orientation in feet
       setWindowDimension: (orientation, area) =>
         set((state) => ({
           windowDimensions: {
@@ -68,12 +76,14 @@ const useFloorPlanStore = create(
           },
         })),
 
-      // Actions for Indoor Conditions section
-      setSetTemperature: (setTemperature) => set({ setTemperature }),
-      setHoursOfOperation: (hoursOfOperation) =>
-        set({
-          hoursOfOperation: Array.isArray(hoursOfOperation) ? hoursOfOperation : [],
-        }),
+      // Actions to set individual window dimension by orientation in meters
+      setWindowDimensionMeters: (orientation, areaInMeters) =>
+        set((state) => ({
+          windowDimensionsMeters: {
+            ...state.windowDimensionsMeters,
+            [orientation]: areaInMeters,
+          },
+        })),
     }),
     {
       name: 'floorplan-storage', // Unique name for the storage key
