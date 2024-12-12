@@ -7,7 +7,7 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
-  Grid,
+  Stack, 
   Table,
   TableBody,
   TableCell,
@@ -29,7 +29,7 @@ import {
   calculateShelterFactor,
   calculateWindFactor,
   calculateAdjustedInfiltrationRate,
-  calculateFinalInfiltrationRate, // Import the new function
+  calculateFinalInfiltrationRate, 
 } from "../../calculations/VentilationCal/VentilationCalculation.js"; 
 
 import useFloorPlanStore from "../../store/useFloorPlanStore.js";
@@ -188,10 +188,10 @@ function Ventilation() {
 
   return (
     <Box p={3}>
-      {/* Inputs Side by Side */}
-      <Grid container spacing={2}>
+      {/* Inputs Side by Side using Stack */}
+      <Stack spacing={2} direction={{ xs: "column", sm: "row" }}>
         {/* Number of Intermittent Fans Input */}
-        <Grid item xs={6}>
+        <Box flex={1}>
           <TextField
             label="Number of Intermittent Fans"
             variant="outlined"
@@ -199,7 +199,11 @@ function Ventilation() {
             value={numberOfFans}
             onChange={(e) => setNumberOfFans(e.target.value)}
             type="number"
-            inputProps={{ min: 2 }}
+            slotProps={{
+              input: {
+                min: 2,
+              },
+            }}
             error={numberOfFans !== "" && parseFloat(numberOfFans) < 2}
             helperText={
               numberOfFans !== "" && parseFloat(numberOfFans) < 2
@@ -207,10 +211,10 @@ function Ventilation() {
                 : ""
             }
           />
-        </Grid>
+        </Box>
 
         {/* Construction Type Input */}
-        <Grid item xs={6}>
+        <Box flex={1}>
           <FormControl fullWidth variant="outlined">
             <InputLabel>Construction Type</InputLabel>
             <Select
@@ -223,10 +227,12 @@ function Ventilation() {
               <MenuItem value="timber">Timber</MenuItem>
             </Select>
           </FormControl>
-        </Grid>
+        </Box>
+      </Stack>
 
+      <Stack spacing={2} direction={{ xs: "column", sm: "row" }} mt={2}>
         {/* Lobby Type Input */}
-        <Grid item xs={6}>
+        <Box flex={1}>
           <FormControl fullWidth variant="outlined">
             <InputLabel>Lobby Type</InputLabel>
             <Select
@@ -238,10 +244,10 @@ function Ventilation() {
               <MenuItem value="Draught">Draught</MenuItem>
             </Select>
           </FormControl>
-        </Grid>
+        </Box>
 
         {/* Percentage of Windows/Doors Draught Proofed */}
-        <Grid item xs={6}>
+        <Box flex={1}>
           <TextField
             label="Percentage of Windows/Doors Draught Proofed (%)"
             variant="outlined"
@@ -249,12 +255,19 @@ function Ventilation() {
             value={percentageDraughtProofed}
             onChange={(e) => setPercentageDraughtProofed(e.target.value)}
             type="number"
-            inputProps={{ min: 0, max: 100 }}
+            slotProps={{
+              input: {
+                min: 0,
+                max: 100,
+              },
+            }}
           />
-        </Grid>
+        </Box>
+      </Stack>
 
+      <Stack spacing={2} direction={{ xs: "column", sm: "row" }} mt={2}>
         {/* Ventilation Type Input */}
-        <Grid item xs={6}>
+        <Box flex={1}>
           <FormControl fullWidth variant="outlined">
             <InputLabel>Ventilation Type</InputLabel>
             <Select
@@ -266,8 +279,8 @@ function Ventilation() {
               <MenuItem value="Mechanical Ventilation">Mechanical Ventilation</MenuItem>
             </Select>
           </FormControl>
-        </Grid>
-      </Grid>
+        </Box>
+      </Stack>
 
       {/* Blue Background Values Below Inputs */}
       <Box mt={4}>
