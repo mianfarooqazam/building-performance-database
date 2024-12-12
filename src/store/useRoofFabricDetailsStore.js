@@ -18,6 +18,7 @@ const useRoofFabricDetailsStore = create(
       uValue: null,
       uaValue: null,
       kappaValue: null,
+      totalFabricHeatLoss: null,
 
       // Actions
       setOuterLayerMaterial: (outerLayerMaterial) => set({ outerLayerMaterial }),
@@ -35,6 +36,8 @@ const useRoofFabricDetailsStore = create(
       setUValue: (uValue) => set({ uValue }),
       setUAValue: (uaValue) => set({ uaValue }),
       setKappaValue: (kappaValue) => set({ kappaValue }),
+      setTotalFabricHeatLoss: (totalFabricHeatLoss) =>
+        set({ totalFabricHeatLoss }),
     }),
     {
       name: 'roof-fabric-details-storage', // Unique name for storage key
