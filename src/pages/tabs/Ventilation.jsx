@@ -30,7 +30,7 @@ import {
   calculateWindFactor,
   calculateAdjustedInfiltrationRate,
   calculateFinalInfiltrationRate, // Import the new function
-} from "../../calculations/VentilationCal/VentilationCalculation.js";
+} from "../../calculations/VentilationCal/VentilationCalculation.js"; 
 
 import useFloorPlanStore from "../../store/useFloorPlanStore.js";
 import useBuildingInformationStore from "../../store/useBuildingInformationStore";
@@ -48,7 +48,7 @@ function Ventilation() {
   const [constructionType, setConstructionType] = useState("");
   const [lobbyType, setLobbyType] = useState("");
   const [percentageDraughtProofed, setPercentageDraughtProofed] = useState("");
-  const [ventilationType, setVentilationType] = useState(""); // New state variable
+  const [ventilationType, setVentilationType] = useState(""); 
 
   // Get dwellingVolume, numberOfFloors, and sidesConnected from the store
   const { dwellingVolume, numberOfFloors, sidesConnected } =

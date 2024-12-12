@@ -41,7 +41,7 @@ export const lobbyTypeValue = (lobbyType) => {
 };
 
 export const calculateWindowInfiltration = (percentageDraughtProofed) => {
-  return 0.25 - (0.2 * percentageDraughtProofed) / 100;
+  return 0.25 - (0.2 * percentageDraughtProofed/100) / 100;
 };
 
 export const calculateInfiltrationRate = (
@@ -86,11 +86,11 @@ export const calculateFinalInfiltrationRate = (
 ) => {
   if (ventilationType === "Mechanical Ventilation") {
     return adjustedInfiltrationRateArray.map(
-      (value) => 0.5 + value * value * 0.5
+      (value) => value + 0.5 * 0.5
     );
   } else if (ventilationType === "Natural Ventilation") {
     return adjustedInfiltrationRateArray.map(
-      (value) => value + 0.5 * 0.5
+      (value) => 0.5 + value * value * 0.5
     );
   } else {
     throw new Error("Invalid ventilation type.");
