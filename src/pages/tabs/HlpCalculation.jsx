@@ -57,7 +57,7 @@ const HlpCalculation = () => {
   const totalFabricHeatLossTotal =
     fabricHeatLossFromRoof + thermalBridges;
 
-  // Data for the table
+  // Data for the Fabric & Thermal table
   const calculationData = [
     { label: 'Fabric Heat Loss (Roof)', value: `${fabricHeatLossFromRoof.toFixed(2)} W` },
     { label: 'Heat Capacity', value: `${heatCapacity.toFixed(2)} J/K` },
@@ -79,18 +79,23 @@ const HlpCalculation = () => {
     const ventHeatLoss = 0.33 * dwellingVolumeM3 * infiltrationRate; // Heat Loss in Watts
     return {
       month,
-      ventHeatLoss: ventHeatLoss.toFixed(2),
+      ventHeatLoss: ventHeatLoss,
     };
   });
 
-  // Data for Ventilation Heat Loss Table
-  const ventilationHeatLossCalculationData = ventilationHeatLossData.map((row) => ({
-    label: `Ventilation Heat Loss (${row.month})`,
-    value: `${row.ventHeatLoss} W`,
-  }));
+  // Calculate Heat Transfer Coefficient (Monthly)
+  // Heat Transfer Coefficient = Total Fabric Heat Loss + Ventilation Heat Loss (each month)
+  const heatTransferCoefficientData = ventilationHeatLossData.map((row) => {
+    const heatTransferCoefficient = totalFabricHeatLossTotal + row.ventHeatLoss;
+    return {
+      month: row.month,
+      heatTransferCoefficient: heatTransferCoefficient,
+      ventHeatLoss: row.ventHeatLoss,
+    };
+  });
 
   return (
-    <Box sx={{ backgroundColor: 'lightblue', padding: '20px' }}>
+    <Box sx={{ padding: '20px' }}>
       <Typography variant="h6" gutterBottom>
         HLP Calculations
       </Typography>
@@ -115,23 +120,25 @@ const HlpCalculation = () => {
         </Table>
       </TableContainer>
 
-      {/* Ventilation Heat Loss Table */}
+      {/* Combined Ventilation Heat Loss and Heat Transfer Coefficient Table */}
       <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>
-        Ventilation Heat Loss (Monthly) {ventilationType ? `(${ventilationType})` : ''}
+       Monthly {ventilationType ? `(${ventilationType})` : ''}
       </Typography>
       <TableContainer component={Paper} sx={{ mt: 2 }}>
-        <Table aria-label="ventilation heat loss">
+        <Table aria-label="combined table">
           <TableHead>
             <TableRow>
               <TableCell><strong>Month</strong></TableCell>
               <TableCell><strong>Ventilation Heat Loss (W)</strong></TableCell>
+              <TableCell><strong>Heat Transfer Coefficient (W)</strong></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {ventilationHeatLossCalculationData.map((row) => (
-              <TableRow key={row.label}>
-                <TableCell>{row.label.replace('Ventilation Heat Loss (', '').replace(')', '')}</TableCell>
-                <TableCell>{row.value}</TableCell>
+            {heatTransferCoefficientData.map((row) => (
+              <TableRow key={row.month}>
+                <TableCell>{row.month}</TableCell>
+                <TableCell>{row.ventHeatLoss.toFixed(2)}</TableCell>
+                <TableCell>{row.heatTransferCoefficient.toFixed(2)}</TableCell>
               </TableRow>
             ))}
           </TableBody>
