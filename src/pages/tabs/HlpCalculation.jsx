@@ -140,9 +140,9 @@ const HlpCalculation = () => {
           <TableHead>
             <TableRow>
               <TableCell><strong>Month</strong></TableCell>
-              <TableCell><strong>Ventilation Heat Loss (W)</strong></TableCell>
-              <TableCell><strong>Heat Transfer Coefficient (W)</strong></TableCell>
-              <TableCell><strong>Heat Loss Parameter (W/m²)</strong></TableCell>
+              <TableCell><strong>Ventilation Heat Loss </strong></TableCell>
+              <TableCell><strong>Heat Transfer Coefficient </strong></TableCell>
+              <TableCell><strong>Heat Loss Parameter </strong></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
