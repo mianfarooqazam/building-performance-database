@@ -94,6 +94,17 @@ const HlpCalculation = () => {
     };
   });
 
+  // Calculate Heat Loss Parameter (Monthly)
+  const heatLossParameterData = heatTransferCoefficientData.map((row) => {
+    const heatLossParameter = totalFloorAreaM2 !== 0 ? (row.heatTransferCoefficient / totalFloorAreaM2) : 0;
+    return {
+      month: row.month,
+      ventHeatLoss: row.ventHeatLoss,
+      heatTransferCoefficient: row.heatTransferCoefficient,
+      heatLossParameter: heatLossParameter,
+    };
+  });
+
   return (
     <Box sx={{ padding: '20px' }}>
       <Typography variant="h6" gutterBottom>
@@ -120,9 +131,9 @@ const HlpCalculation = () => {
         </Table>
       </TableContainer>
 
-      {/* Combined Ventilation Heat Loss and Heat Transfer Coefficient Table */}
+      {/* Combined Ventilation Heat Loss, Heat Transfer Coefficient, and Heat Loss Parameter Table */}
       <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>
-       Monthly {ventilationType ? `(${ventilationType})` : ''}
+        Monthly {ventilationType ? `(${ventilationType})` : ''}
       </Typography>
       <TableContainer component={Paper} sx={{ mt: 2 }}>
         <Table aria-label="combined table">
@@ -131,14 +142,16 @@ const HlpCalculation = () => {
               <TableCell><strong>Month</strong></TableCell>
               <TableCell><strong>Ventilation Heat Loss (W)</strong></TableCell>
               <TableCell><strong>Heat Transfer Coefficient (W)</strong></TableCell>
+              <TableCell><strong>Heat Loss Parameter (W/m²)</strong></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {heatTransferCoefficientData.map((row) => (
+            {heatLossParameterData.map((row) => (
               <TableRow key={row.month}>
                 <TableCell>{row.month}</TableCell>
                 <TableCell>{row.ventHeatLoss.toFixed(2)}</TableCell>
                 <TableCell>{row.heatTransferCoefficient.toFixed(2)}</TableCell>
+                <TableCell>{row.heatLossParameter.toFixed(4)}</TableCell>
               </TableRow>
             ))}
           </TableBody>
