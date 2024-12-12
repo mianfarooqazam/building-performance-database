@@ -1,5 +1,3 @@
-// Ventilation.jsx
-import { useState } from "react";
 import {
   Box,
   TextField,
@@ -7,7 +5,7 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
-  Stack, 
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -16,6 +14,7 @@ import {
   TableRow,
   Paper,
   Typography,
+  Button, 
 } from "@mui/material";
 
 import {
@@ -29,7 +28,7 @@ import {
   calculateShelterFactor,
   calculateWindFactor,
   calculateAdjustedInfiltrationRate,
-  calculateFinalInfiltrationRate, 
+  calculateFinalInfiltrationRate,
 } from "../../calculations/VentilationCal/VentilationCalculation.js"; 
 
 import useFloorPlanStore from "../../store/useFloorPlanStore.js";
@@ -42,13 +41,23 @@ import LahoreWind from "../../utils/wind/LahoreWind.json";
 import MultanWind from "../../utils/wind/MultanWind.json";
 import PeshawarWind from "../../utils/wind/PeshawarWind.json";
 
+import useVentilationStore from "../../store/useVentilationStore.js"; 
+
 function Ventilation() {
-  // State variables
-  const [numberOfFans, setNumberOfFans] = useState("");
-  const [constructionType, setConstructionType] = useState("");
-  const [lobbyType, setLobbyType] = useState("");
-  const [percentageDraughtProofed, setPercentageDraughtProofed] = useState("");
-  const [ventilationType, setVentilationType] = useState(""); 
+  // Use Zustand store instead of useState
+  const {
+    numberOfFans,
+    setNumberOfFans,
+    constructionType,
+    setConstructionType,
+    lobbyType,
+    setLobbyType,
+    percentageDraughtProofed,
+    setPercentageDraughtProofed,
+    ventilationType,
+    setVentilationType,
+    resetVentilation,
+  } = useVentilationStore();
 
   // Get dwellingVolume, numberOfFloors, and sidesConnected from the store
   const { dwellingVolume, numberOfFloors, sidesConnected } =
@@ -186,6 +195,26 @@ function Ventilation() {
     console.error(error.message);
   }
 
+  // Handlers for input validation
+  const handleNumberOfFansChange = (e) => {
+    const value = e.target.value;
+    if (value === '' || parseFloat(value) >= 2) {
+      setNumberOfFans(value);
+    }
+  };
+
+  const handlePercentageChange = (e) => {
+    const value = e.target.value;
+    if (value === '' || (parseFloat(value) >= 0 && parseFloat(value) <= 100)) {
+      setPercentageDraughtProofed(value);
+    }
+  };
+
+  // Handler for resetting the form (optional)
+  const handleReset = () => {
+    resetVentilation();
+  };
+
   return (
     <Box p={3}>
       {/* Inputs Side by Side using Stack */}
@@ -197,13 +226,8 @@ function Ventilation() {
             variant="outlined"
             fullWidth
             value={numberOfFans}
-            onChange={(e) => setNumberOfFans(e.target.value)}
+            onChange={handleNumberOfFansChange}
             type="number"
-            slotProps={{
-              input: {
-                min: 2,
-              },
-            }}
             error={numberOfFans !== "" && parseFloat(numberOfFans) < 2}
             helperText={
               numberOfFans !== "" && parseFloat(numberOfFans) < 2
@@ -253,14 +277,18 @@ function Ventilation() {
             variant="outlined"
             fullWidth
             value={percentageDraughtProofed}
-            onChange={(e) => setPercentageDraughtProofed(e.target.value)}
+            onChange={handlePercentageChange}
             type="number"
-            slotProps={{
-              input: {
-                min: 0,
-                max: 100,
-              },
-            }}
+            error={
+              percentageDraughtProofed !== "" &&
+              (parseFloat(percentageDraughtProofed) < 0 || parseFloat(percentageDraughtProofed) > 100)
+            }
+            helperText={
+              percentageDraughtProofed !== "" &&
+              (parseFloat(percentageDraughtProofed) < 0 || parseFloat(percentageDraughtProofed) > 100)
+                ? "Value must be between 0 and 100"
+                : ""
+            }
           />
         </Box>
       </Stack>
@@ -281,6 +309,13 @@ function Ventilation() {
           </FormControl>
         </Box>
       </Stack>
+
+      {/* Optional: Reset Button */}
+      <Box mt={2}>
+        <Button variant="contained" color="secondary" onClick={handleReset}>
+          Reset
+        </Button>
+      </Box>
 
       {/* Blue Background Values Below Inputs */}
       <Box mt={4}>
