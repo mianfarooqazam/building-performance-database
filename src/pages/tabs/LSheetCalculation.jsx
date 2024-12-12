@@ -11,6 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import useBuildingInformationStore from "../../store/useBuildingInformationStore";
+import useFloorPlanStore from "../../store/useFloorPlanStore"; // Import the floor plan store
 
 // Import temperature data
 import IslamabadTemperature from "../../utils/temperature/IslamabadTemperature.json";
@@ -20,7 +21,7 @@ import LahoreTemperature from "../../utils/temperature/LahoreTemperature.json";
 import PeshawarTemperature from "../../utils/temperature/PeshawarTemperature.json";
 
 const monthFactors = {
-  1: 924.36,
+  1: 940.79,
   2: 925.43,
   3: 925.05,
   4: 925.09,
@@ -98,6 +99,10 @@ const getTemperatureData = (city) => {
 };
 
 const SheetCalculation = () => {
+  // Retrieve setTemperature from the store and parse it to a float
+  const setTemperatureStr = useFloorPlanStore((state) => state.setTemperature);
+  const setTemperature = parseFloat(setTemperatureStr) || 24; // Default to 24 if parsing fails
+
   const selectedCity = useBuildingInformationStore(
     (state) => state.selectedCity
   );
@@ -112,7 +117,8 @@ const SheetCalculation = () => {
         const gammaHeat = gammaHeatValues[entry.MO];
         const a = aValues[entry.MO];
 
-        const calculation = (24 - entry.T2M) * factor;
+        // Replace 24 with setTemperature
+        const calculation = (setTemperature - entry.T2M) * factor;
 
         // Calculate y values
         const yCooling = gammaCool / calculation;
@@ -173,7 +179,7 @@ const SheetCalculation = () => {
     } else {
       setCalculationResults([]);
     }
-  }, [selectedCity]);
+  }, [selectedCity, setTemperature]);
 
   // Split the results into first 10 and last 2
   const first10 = calculationResults.slice(0, 10);
@@ -264,6 +270,23 @@ const SheetCalculation = () => {
                     <TableCell>{row["cooling load"]}</TableCell>
                   </TableRow>
                 ))}
+
+                {/* Averages Row */}
+                <TableRow>
+                  <TableCell><strong>Average</strong></TableCell>
+                  <TableCell></TableCell> {/* No average for DY */}
+                  <TableCell></TableCell> {/* No average for HR */}
+                  <TableCell></TableCell> {/* No average for T2M */}
+                  <TableCell></TableCell> {/* No average for Calculation */}
+                  <TableCell></TableCell> {/* No average for Gamma-cool */}
+                  <TableCell></TableCell> {/* No average for Gamma-heat */}
+                  <TableCell></TableCell> {/* No average for n-cooling */}
+                  <TableCell></TableCell> {/* No average for n-heating */}
+                  <TableCell></TableCell> {/* No average for Cooling nxlm */}
+                  <TableCell></TableCell> {/* No average for Heating nxgm */}
+                  <TableCell></TableCell> {/* No average for Heating Load */}
+                  <TableCell></TableCell> {/* No average for Cooling Load */}
+                </TableRow>
               </TableBody>
             </Table>
           </TableContainer>
