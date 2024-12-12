@@ -59,11 +59,11 @@ const HlpCalculation = () => {
 
   // Data for the Fabric & Thermal table
   const calculationData = [
-    { label: 'Fabric Heat Loss (Roof)', value: `${fabricHeatLossFromRoof.toFixed(2)} W` },
-    { label: 'Heat Capacity', value: `${heatCapacity.toFixed(2)} J/K` },
-    { label: 'Thermal Mass Parameter', value: `${thermalMassParameter.toFixed(2)} J/K/m²` },
-    { label: 'Thermal Bridges', value: `${thermalBridges.toFixed(2)} W` },
-    { label: 'Total Fabric Heat Loss', value: `${totalFabricHeatLossTotal.toFixed(2)} W` },
+    { label: 'Fabric Heat Loss (Roof)', value: `${fabricHeatLossFromRoof.toFixed(2)} ` },
+    { label: 'Heat Capacity', value: `${heatCapacity.toFixed(2)} ` },
+    { label: 'Thermal Mass Parameter', value: `${thermalMassParameter.toFixed(2)} ` },
+    { label: 'Thermal Bridges', value: `${thermalBridges.toFixed(2)} ` },
+    { label: 'Total Fabric Heat Loss', value: `${totalFabricHeatLossTotal.toFixed(2)} ` },
   ];
 
   // Ventilation Heat Loss Calculations
@@ -104,6 +104,10 @@ const HlpCalculation = () => {
       heatLossParameter: heatLossParameter,
     };
   });
+
+  // Calculate Averages
+  const averageHeatTransferCoefficient = heatTransferCoefficientData.reduce((acc, curr) => acc + curr.heatTransferCoefficient, 0) / months.length;
+  const averageHeatLossParameter = heatLossParameterData.reduce((acc, curr) => acc + curr.heatLossParameter, 0) / months.length;
 
   return (
     <Box sx={{ padding: '20px' }}>
@@ -154,6 +158,31 @@ const HlpCalculation = () => {
                 <TableCell>{row.heatLossParameter.toFixed(4)}</TableCell>
               </TableRow>
             ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      {/* Averages Table */}
+      <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>
+        Averages
+      </Typography>
+      <TableContainer component={Paper} sx={{ mt: 2, maxWidth: 600 }}>
+        <Table aria-label="averages table">
+          <TableHead>
+            <TableRow>
+              <TableCell><strong>Parameter</strong></TableCell>
+              <TableCell><strong>Average Value</strong></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <TableRow>
+              <TableCell>Average Heat Transfer Coefficient </TableCell>
+              <TableCell>{averageHeatTransferCoefficient.toFixed(2)}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Average Heat Loss Parameter</TableCell>
+              <TableCell>{averageHeatLossParameter.toFixed(4)}</TableCell>
+            </TableRow>
           </TableBody>
         </Table>
       </TableContainer>
