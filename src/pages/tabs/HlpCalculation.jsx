@@ -1,6 +1,4 @@
-// HlpCalculation.jsx
-import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import useFloorPlanStore from '../../store/useFloorPlanStore';
 import useWallFabricDetailsStore from '../../store/useWallFabricDetailsStore';
 import useRoofFabricDetailsStore from '../../store/useRoofFabricDetailsStore';
@@ -40,37 +38,36 @@ const HlpCalculation = () => {
   const totalFabricHeatLossTotal =
     fabricHeatLossFromRoof + thermalBridges;
 
+  // Data for the table
+  const calculationData = [
+    { label: 'Fabric Heat Loss (Roof)', value: `${fabricHeatLossFromRoof.toFixed(2)} ` },
+    { label: 'Heat Capacity', value: `${heatCapacity.toFixed(2)} ` },
+    { label: 'Thermal Mass Parameter', value: `${thermalMassParameter.toFixed(2)} ` },
+    { label: 'Thermal Bridges', value: `${thermalBridges.toFixed(2)} ` },
+    { label: 'Total Fabric Heat Loss', value: `${totalFabricHeatLossTotal.toFixed(2)} ` },
+  ];
+
   return (
     <Box sx={{ backgroundColor: 'lightblue', padding: '20px' }}>
-      <Typography variant="h5" gutterBottom>
-        Fabric Heat Loss: {fabricHeatLossFromRoof.toFixed(2)} 
-      </Typography>
-      <Typography variant="h5" gutterBottom>
-        Heat Capacity: {heatCapacity.toFixed(2)} 
-      </Typography>
-      <Typography variant="h5" gutterBottom>
-        Thermal Mass Parameter: {thermalMassParameter.toFixed(2)}
-      </Typography>
-      <Typography variant="h5" gutterBottom>
-        Thermal Bridges: {thermalBridges.toFixed(2)} 
-      </Typography>
-      <Typography variant="h5" gutterBottom>
-        Total Fabric Heat Loss: {totalFabricHeatLossTotal.toFixed(2)} 
-      </Typography>
-      <Box sx={{ mt: 4 }}>
-        <Typography variant="h6">Store Values (Converted to m²):</Typography>
-        <Typography>
-          Net Wall Area: {netWallAreaFt2} ft² ({netWallAreaM2.toFixed(2)} m²)
-        </Typography>
-        <Typography>
-          Total Floor Area: {totalFloorAreaFt2} ft² ({totalFloorAreaM2.toFixed(2)} m²)
-        </Typography>
-        <Typography>
-          Total Area (Σ): {totalAreaFt2} ft² ({totalAreaM2.toFixed(2)} m²)
-        </Typography>
-        <Typography>Kappa Value (Wall): {kappaValueWall}</Typography>
-        <Typography>Kappa Value (Roof): {kappaValueRoof}</Typography>
-      </Box>
+     
+      <TableContainer component={Paper} sx={{ mt: 2 }}>
+        <Table aria-label="calculation results">
+          <TableHead>
+            <TableRow>
+              <TableCell><strong>Parameter</strong></TableCell>
+              <TableCell><strong>Value</strong></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {calculationData.map((row) => (
+              <TableRow key={row.label}>
+                <TableCell>{row.label}</TableCell>
+                <TableCell>{row.value}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Box>
   );
 };
