@@ -14,7 +14,6 @@ import {
   TableRow,
   Paper,
   Typography,
-  Button, 
 } from "@mui/material";
 
 import {
@@ -56,7 +55,6 @@ function Ventilation() {
     setPercentageDraughtProofed,
     ventilationType,
     setVentilationType,
-    resetVentilation,
   } = useVentilationStore();
 
   // Get dwellingVolume, numberOfFloors, and sidesConnected from the store
@@ -210,10 +208,6 @@ function Ventilation() {
     }
   };
 
-  // Handler for resetting the form (optional)
-  const handleReset = () => {
-    resetVentilation();
-  };
 
   return (
     <Box p={3}>
@@ -310,12 +304,7 @@ function Ventilation() {
         </Box>
       </Stack>
 
-      {/* Optional: Reset Button */}
-      <Box mt={2}>
-        <Button variant="contained" color="secondary" onClick={handleReset}>
-          Reset
-        </Button>
-      </Box>
+   
 
       {/* Blue Background Values Below Inputs */}
       <Box mt={4}>
