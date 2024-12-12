@@ -14,6 +14,7 @@ import AppliancesLoad from "./tabs/AppliancesLoad";
 import AnnualEnergyDemand from "./tabs/AnnualEnergyDemand";
 import LSheetCalculation from "./tabs/LSheetCalculation";
 import SolarGainCalculation from "./tabs/SolarGainCalculation";
+import HlpCalculation from "./tabs/HlpCalculation";
 
 function BuildingDetails() {
   const [value, setValue] = useState(0);
@@ -55,30 +56,35 @@ function BuildingDetails() {
             label="Fabric Details"
             className={`${value === 2 ? "bg-blue-100 rounded-lg" : ""}`}
           />
+           <Tab
+            icon={<HeatingCoolingIcon />}
+            label="HLP Calculation"
+            className={`${value === 3 ? "bg-blue-100 rounded-lg" : ""}`}
+          />
           <Tab
             icon={<HeatingCoolingIcon />}
             label="Ventilation"
-            className={`${value === 3 ? "bg-blue-100 rounded-lg" : ""}`}
+            className={`${value === 4 ? "bg-blue-100 rounded-lg" : ""}`}
           />
           <Tab
             icon={<AppliancesIcon />}
             label="Appliances Load"
-            className={`${value === 4 ? "bg-blue-100 rounded-lg" : ""}`}
-          />
-          <Tab
-            icon={<EnergyIcon />}
-            label="Annual Energy Demand"
             className={`${value === 5 ? "bg-blue-100 rounded-lg" : ""}`}
           />
           <Tab
             icon={<EnergyIcon />}
-            label="Solar Gain Calculation"
+            label="Annual Energy Demand"
             className={`${value === 6 ? "bg-blue-100 rounded-lg" : ""}`}
           />
           <Tab
             icon={<EnergyIcon />}
-            label="L Sheet Calculation"
+            label="Solar Gain Calculation"
             className={`${value === 7 ? "bg-blue-100 rounded-lg" : ""}`}
+          />
+          <Tab
+            icon={<EnergyIcon />}
+            label="L Sheet Calculation"
+            className={`${value === 8 ? "bg-blue-100 rounded-lg" : ""}`}
           />
         </Tabs>
       </div>
@@ -120,33 +126,40 @@ function BuildingDetails() {
         <Box role="tabpanel" hidden={value !== 3}>
           {value === 3 && (
             <div className="overflow-x-auto">
-              <Ventilation />
+              <HlpCalculation />
             </div>
           )}
         </Box>
         <Box role="tabpanel" hidden={value !== 4}>
           {value === 4 && (
             <div className="overflow-x-auto">
-              <AppliancesLoad />
+              <Ventilation />
             </div>
           )}
         </Box>
         <Box role="tabpanel" hidden={value !== 5}>
           {value === 5 && (
             <div className="overflow-x-auto">
-              <AnnualEnergyDemand />
+              <AppliancesLoad />
             </div>
           )}
         </Box>
         <Box role="tabpanel" hidden={value !== 6}>
           {value === 6 && (
             <div className="overflow-x-auto">
-              <SolarGainCalculation />
+              <AnnualEnergyDemand />
             </div>
           )}
         </Box>
         <Box role="tabpanel" hidden={value !== 7}>
           {value === 7 && (
+            <div className="overflow-x-auto">
+              <SolarGainCalculation />
+            </div>
+          )}
+        </Box>
+        <Box role="tabpanel" hidden={value !== 8}>
+          {value === 8 && (
             <div className="overflow-x-auto">
               <LSheetCalculation />
             </div>
