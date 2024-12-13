@@ -1,3 +1,4 @@
+// SheetCalculation.js
 import { useEffect, useState } from "react";
 import {
   Box,
@@ -75,9 +76,8 @@ const SheetCalculation = () => {
   const solarGainWatt = useSolarGainStore((state) => state.solarGainWatt);
   const totalGainWatt = useSolarGainStore((state) => state.totalGainWatt);
 
-  // Local states
+  // Local state
   const [calculationResults, setCalculationResults] = useState([]);
-  const [hasAlerted, setHasAlerted] = useState(false);
 
   // Define the divisor
   const DIVISOR = 3000;
@@ -102,7 +102,7 @@ const SheetCalculation = () => {
     ) {
       const cityData = getTemperatureData(selectedCity);
 
-      // Compute calculation results for each hour
+      // Compute calculation results for each entry
       const results = cityData.map((entry) => {
         const month = entry.MO;
         const factor = heatTransferCoefficient[month - 1];
@@ -178,7 +178,7 @@ const SheetCalculation = () => {
       const coolingSums = coolingMonthsToSum.map((month) => {
         const monthEntries = results.filter((r) => r.MO === month);
         const sum = monthEntries.reduce((acc, curr) => acc + curr["cooling load"], 0);
-        const scaledSum = sum / DIVISOR; // Divide by 3000
+        const scaledSum = sum / DIVISOR; 
         return {
           month: getMonthName(month),
           totalCoolingLoad: parseFloat(scaledSum.toFixed(2)),
@@ -191,7 +191,7 @@ const SheetCalculation = () => {
       const heatingSums = heatingMonthsToSum.map((month) => {
         const monthEntries = results.filter((r) => r.MO === month);
         const sum = monthEntries.reduce((acc, curr) => acc + curr["heating load"], 0);
-        const scaledSum = sum / DIVISOR; // Divide by 3000
+        const scaledSum = sum / DIVISOR; 
         return {
           month: getMonthName(month),
           totalHeatingLoad: parseFloat(scaledSum.toFixed(2)),
@@ -199,9 +199,6 @@ const SheetCalculation = () => {
       });
 
       setMonthlyHeatingLoads(heatingSums);
-
-      // Reset alert flag when data changes
-      setHasAlerted(false);
     } else {
       setCalculationResults([]);
       setMonthlyCoolingLoads([]);
@@ -221,32 +218,6 @@ const SheetCalculation = () => {
     resetMonthlyCoolingLoads,
     resetMonthlyHeatingLoads,
   ]);
-
-  useEffect(() => {
-    if (
-      monthlyCoolingLoads.length > 0 &&
-      monthlyHeatingLoads.length > 0 &&
-      !hasAlerted
-    ) {
-      // Prepare cooling loads message
-      const coolingMessage = monthlyCoolingLoads
-        .map((cl) => `${cl.month}: ${cl.totalCoolingLoad}`)
-        .join("\n");
-
-      // Prepare heating loads message
-      const heatingMessage = monthlyHeatingLoads
-        .map((hl) => `${hl.month}: ${hl.totalHeatingLoad}`)
-        .join("\n");
-
-      // Combine both messages
-      const combinedMessage = `Total Cooling Loads (April - September) divided by 3000:\n${coolingMessage}\n\nTotal Heating Loads (January, February, March, October, November, December) divided by 3000:\n${heatingMessage}`;
-
-      // Display alert
-      alert(combinedMessage);
-
-      setHasAlerted(true);
-    }
-  }, [monthlyCoolingLoads, monthlyHeatingLoads, hasAlerted]);
 
   // Split the results into first 10 and last 2 for existing tables
   const first10 = calculationResults.slice(0, 10);
@@ -346,7 +317,7 @@ const SheetCalculation = () => {
           {/* New Section for Monthly Cooling Loads (April - September) */}
           <Box mt={4}>
             <Typography variant="h6" gutterBottom>
-              Total Cooling Loads (April - September) divided by 3000
+              Total Cooling Loads (April - September) 
             </Typography>
             <TableContainer component={Paper} sx={{ marginBottom: 4 }}>
               <Table>
@@ -371,7 +342,7 @@ const SheetCalculation = () => {
           {/* New Section for Monthly Heating Loads (January, February, March, October, November, December) */}
           <Box mt={4}>
             <Typography variant="h6" gutterBottom>
-              Total Heating Loads (January, February, March, October, November, December) divided by 3000
+              Total Heating Loads (January, February, March, October, November, December) 
             </Typography>
             <TableContainer component={Paper}>
               <Table>
