@@ -11,8 +11,9 @@ import {
   Typography,
 } from "@mui/material";
 import useBuildingInformationStore from "../../store/useBuildingInformationStore";
-import useFloorPlanStore from "../../store/useFloorPlanStore"; // Import the floor plan store
-import useHlpStore from "../../store/useHlpStore"; // Import the HLP store
+import useFloorPlanStore from "../../store/useFloorPlanStore"; 
+import useHlpStore from "../../store/useHlpStore";
+import useSolarGainStore from "../../store/useSolarGainStore";
 
 // Import temperature data
 import IslamabadTemperature from "../../utils/temperature/IslamabadTemperature.json";
@@ -20,36 +21,6 @@ import MultanTemperature from "../../utils/temperature/MultanTemperature.json";
 import KarachiTemperature from "../../utils/temperature/KarachiTemperature.json";
 import LahoreTemperature from "../../utils/temperature/LahoreTemperature.json";
 import PeshawarTemperature from "../../utils/temperature/PeshawarTemperature.json";
-
-const gammaCoolValues = {
-  1: 424.4,
-  2: 470.24,
-  3: 556.5,
-  4: 658.07,
-  5: 676.12,
-  6: 709.76,
-  7: 635.17,
-  8: 588.43,
-  9: 536.17,
-  10: 492.28,
-  11: 441.31,
-  12: 398.67,
-};
-
-const gammaHeatValues = {
-  1: 564.84,
-  2: 595.77,
-  3: 653.95,
-  4: 797.17,
-  5: 811.38,
-  6: 837.87,
-  7: 779.13,
-  8: 742.32,
-  9: 701.15,
-  10: 610.58,
-  11: 576.23,
-  12: 547.5,
-};
 
 const aValues = {
   1: 2.17486,
@@ -85,42 +56,46 @@ const getTemperatureData = (city) => {
 };
 
 const SheetCalculation = () => {
-  // Retrieve setTemperature from the store and parse it to a float
   const setTemperatureStr = useFloorPlanStore((state) => state.setTemperature);
-  const setTemperature = parseFloat(setTemperatureStr) || 24; // Default to 24 if parsing fails
-
+  const setTemperature = parseFloat(setTemperatureStr) || 24; 
   const selectedCity = useBuildingInformationStore((state) => state.selectedCity);
   const [calculationResults, setCalculationResults] = useState([]);
 
-  // Retrieve heatTransferCoefficient from HLP Store
   const heatTransferCoefficient = useHlpStore((state) => state.heatTransferCoefficient);
+
+  // Retrieve solarGainWatt and totalGainWatt from Solar Gain Store
+  const solarGainWatt = useSolarGainStore((state) => state.solarGainWatt);
+  const totalGainWatt = useSolarGainStore((state) => state.totalGainWatt);
 
   useEffect(() => {
     if (
       selectedCity &&
       heatTransferCoefficient &&
-      heatTransferCoefficient.length === 12
+      heatTransferCoefficient.length === 12 &&
+      solarGainWatt.length === 12 &&
+      totalGainWatt.length === 12
     ) {
       const cityData = getTemperatureData(selectedCity);
       const results = cityData.map((entry) => {
         const month = entry.MO;
-        const factor = heatTransferCoefficient[month - 1]; // Use heatTransferCoefficient directly
+        const factor = heatTransferCoefficient[month - 1]; 
 
-        const gammaCool = gammaCoolValues[month];
-        const gammaHeat = gammaHeatValues[month];
+        // Now gammaCool is taken from solarGainWatt array
+        const gammaCool = solarGainWatt[month - 1];
+
+        // gammaHeat is taken from totalGainWatt array
+        const gammaHeat = totalGainWatt[month - 1];
+
         const a = aValues[month];
 
         // Calculate using heatTransferCoefficient
         const calculation = (setTemperature - entry.T2M) * factor;
 
-        // Prevent division by zero
         const safeCalculation = calculation !== 0 ? calculation : 1;
 
-        // Calculate y values
         const yCooling = gammaCool / safeCalculation;
         const yHeating = gammaHeat / safeCalculation;
 
-        // Calculate n-cooling
         let nCooling;
         if (yCooling > 0 && yCooling !== 1) {
           nCooling =
@@ -132,7 +107,6 @@ const SheetCalculation = () => {
           nCooling = 1;
         }
 
-        // Calculate n-heating
         let nHeating;
         if (yHeating > 0 && yHeating !== 1) {
           nHeating =
@@ -144,16 +118,10 @@ const SheetCalculation = () => {
           nHeating = 1;
         }
 
-        // Calculate cooling nxlm
         const coolingNxlm = nCooling * calculation;
-
-        // Calculate heating nxgm
         const heatingNxgm = gammaHeat * nHeating;
 
-        // Calculation: heatingLoad
         const heatingLoad = calculation - heatingNxgm;
-
-        // Calculation: coolingLoad
         const coolingLoad = gammaCool - coolingNxlm;
 
         return {
@@ -177,7 +145,7 @@ const SheetCalculation = () => {
     } else {
       setCalculationResults([]);
     }
-  }, [selectedCity, setTemperature, heatTransferCoefficient]);
+  }, [selectedCity, setTemperature, heatTransferCoefficient, solarGainWatt, totalGainWatt]);
 
   // Split the results into first 10 and last 2
   const first10 = calculationResults.slice(0, 10);

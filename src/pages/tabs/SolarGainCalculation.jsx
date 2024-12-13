@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useRef } from "react";
 import {
   Table,
   TableBody,
@@ -19,6 +19,7 @@ import {
 import useBuildingInformationStore from "../../store/useBuildingInformationStore";
 import useWindowFabricDetailsStore from "../../store/useWindowFabricDetailsStore";
 import useFloorPlanStore from "../../store/useFloorPlanStore";
+import useSolarGainStore from "../../store/useSolarGainStore";
 
 const winterMonths = ["January", "February", "March", "October", "November", "December"];
 
@@ -31,44 +32,40 @@ const calculateABC = (k, sin_pbytwo, sin_pbytwo_sq, sin_pbytwo_cub) => {
 
 const SolarGainCalculation = () => {
   const selectedCity = useBuildingInformationStore((state) => state.selectedCity);
+  const { selectedWindowType, selectedFrameType, selectedShadingCover } = useWindowFabricDetailsStore();
+  const { windows: floorPlanWindows, totalWattage: rawTotalWattage, numberOfOccupants: rawNumberOfOccupants } =
+    useFloorPlanStore();
+  const { setSolarGainWatt, setTotalGainWatt } = useSolarGainStore();
 
-  const { selectedWindowType, selectedFrameType, selectedShadingCover } =
-    useWindowFabricDetailsStore();
-
-  const { windows: floorPlanWindows } = useFloorPlanStore();
+  const totalWattage = Number(rawTotalWattage) || 0;
+  const numberOfOccupants = Number(rawNumberOfOccupants) || 0;
 
   const pbytwo = 0.785398163; // pi/4
   const sin_pbytwo = Math.sin(pbytwo);
   const sin_pbytwo_sq = Math.pow(sin_pbytwo, 2);
   const sin_pbytwo_cub = Math.pow(sin_pbytwo, 3);
 
-  // 1. Wrap daysInMonth in useMemo to stabilize its reference
-  const daysInMonth = useMemo(() => ({
-    January: 31,
-    February: 28,
-    March: 31,
-    April: 30,
-    May: 31,
-    June: 30,
-    July: 31,
-    August: 31,
-    September: 30,
-    October: 31,
-    November: 30,
-    December: 31,
-  }), []);
+  const daysInMonth = useMemo(
+    () => ({
+      January: 31,
+      February: 28,
+      March: 31,
+      April: 30,
+      May: 31,
+      June: 30,
+      July: 31,
+      August: 31,
+      September: 30,
+      October: 31,
+      November: 30,
+      December: 31,
+    }),
+    []
+  );
 
-  // 2. Retrieve EL (Total Wattage) from useFloorPlanStore
-  const totalWattage = useFloorPlanStore((state) => Number(state.totalWattage) || 0);
-
-  // 3. Retrieve numberOfOccupants from useFloorPlanStore
-  const numberOfOccupants = useFloorPlanStore((state) => Number(state.numberOfOccupants) || 0);
-
-  // 4. Calculate Metabolic and Cooking Gains
   const metabolicW = useMemo(() => 20 * numberOfOccupants, [numberOfOccupants]);
   const cookingW = useMemo(() => 35 + 7 * numberOfOccupants, [numberOfOccupants]);
 
-  // Calculate ABC values for each orientation
   const ABC_table = useMemo(() => {
     return Object.keys(Orientation_k_values).map((orientation) => {
       const kValues = Orientation_k_values[orientation];
@@ -82,14 +79,12 @@ const SolarGainCalculation = () => {
     });
   }, [sin_pbytwo, sin_pbytwo_sq, sin_pbytwo_cub]);
 
-  // Get Phi value based on selected city
   const phiValue = useMemo(() => {
     if (!selectedCity) return null;
     const latitude = City_latitude[selectedCity];
     return latitude;
   }, [selectedCity]);
 
-  // Calculate Solar Irradiance Values
   const solarIrradianceValues = useMemo(() => {
     const solarIrradiance = {};
     if (!selectedCity || phiValue === null) return solarIrradiance;
@@ -101,7 +96,6 @@ const SolarGainCalculation = () => {
     return solarIrradiance;
   }, [selectedCity, phiValue]);
 
-  // Calculate Rhnic Values
   const rhnicValues = useMemo(() => {
     const rhnic = {};
     if (!selectedCity || !solarIrradianceValues[selectedCity]) return rhnic;
@@ -119,7 +113,6 @@ const SolarGainCalculation = () => {
     return rhnic;
   }, [ABC_table, solarIrradianceValues, selectedCity]);
 
-  // Calculate Sorient Values
   const sorientValues = useMemo(() => {
     const sorient = {};
     if (!selectedCity) return sorient;
@@ -137,7 +130,6 @@ const SolarGainCalculation = () => {
     return sorient;
   }, [ABC_table, rhnicValues, selectedCity]);
 
-  // Calculate Solar Gain Values
   const solarGainValues = useMemo(() => {
     const solarGain = {};
     if (!selectedCity || !sorientValues[selectedCity]) return solarGain;
@@ -145,10 +137,8 @@ const SolarGainCalculation = () => {
     solarGain[selectedCity] = {};
 
     ABC_table.forEach(({ Orientation }) => {
-      // Find the corresponding window for this orientation
       const windowData = floorPlanWindows.find((w) => w.orientation === Orientation);
       if (!windowData) {
-        // If no window for this orientation, skip this orientation entirely
         return;
       }
 
@@ -168,9 +158,7 @@ const SolarGainCalculation = () => {
         const shgc = selectedWindowType ? selectedWindowType.shgc : 0.75;
         const frameFactor = selectedFrameType ? selectedFrameType.frame_factor : 0.80;
 
-        // Use window area in meters instead of 1.67
         const factor = windowAreaInMeters * shadingValue * shgc * frameFactor * 0.9;
-
         solarGain[selectedCity][Orientation][month] = factor * sorient;
       }
     });
@@ -186,21 +174,19 @@ const SolarGainCalculation = () => {
     floorPlanWindows,
   ]);
 
-  // Get list of months
   const months = useMemo(() => {
     if (!selectedCity) return [];
     return Object.keys(City_solar_irradiance[selectedCity]);
   }, [selectedCity]);
 
-  // Filter orientations to only those that have windows (so we only display those orientations)
   const orientationsWithWindows = useMemo(() => {
     if (!selectedCity) return [];
     return Object.keys(solarGainValues[selectedCity] || {});
   }, [solarGainValues, selectedCity]);
 
-  // Calculate totals across orientations for each month
   const monthlyTotals = useMemo(() => {
     const totals = {};
+    if (!selectedCity || months.length === 0) return totals;
     months.forEach((month) => {
       totals[month] = orientationsWithWindows.reduce((acc, orientation) => {
         return acc + (solarGainValues[selectedCity][orientation][month] || 0);
@@ -209,18 +195,17 @@ const SolarGainCalculation = () => {
     return totals;
   }, [months, orientationsWithWindows, solarGainValues, selectedCity]);
 
-  // Calculate E(kWh) for each month
   const E_kWh_values = useMemo(() => {
     const E_kWh = {};
-    if (!selectedCity) return E_kWh;
+    if (!selectedCity || months.length === 0) return E_kWh;
 
     E_kWh[selectedCity] = {};
     months.forEach((month, index) => {
-      const EL = totalWattage; 
-      const monthIndex = index + 1; 
-      const angle = (6.28 * (monthIndex - 0.2)) ; 
-      const radian = (angle * ( 3.14/180)); 
-      const divideby12 = (radian) / 12; 
+      const EL = totalWattage;
+      const monthIndex = index + 1;
+      const angle = (6.28 * (monthIndex - 0.2));
+      const radian = (angle * (3.14 / 180));
+      const divideby12 = radian / 12;
       const cosValue = Math.cos(divideby12);
 
       const nm = daysInMonth[month] || 30;
@@ -230,10 +215,9 @@ const SolarGainCalculation = () => {
     return E_kWh;
   }, [months, totalWattage, selectedCity, daysInMonth]);
 
-  // 3. Calculate Lighting Gains for each month
   const lightingGains = useMemo(() => {
     const lg = {};
-    if (!selectedCity) return lg;
+    if (!selectedCity || months.length === 0) return lg;
 
     lg[selectedCity] = {};
     months.forEach((month) => {
@@ -245,21 +229,20 @@ const SolarGainCalculation = () => {
     return lg;
   }, [months, E_kWh_values, selectedCity, daysInMonth]);
 
-  // 4. Calculate Total Internal Gains for each month
   const totalInternalGains = useMemo(() => {
     const totals = {};
-    if (!selectedCity) return totals;
+    if (!selectedCity || months.length === 0) return totals;
 
     months.forEach((month) => {
-      const lighting = lightingGains[selectedCity][month] || 0;
+      const lighting = lightingGains[selectedCity] ? lightingGains[selectedCity][month] || 0 : 0;
       totals[month] = lighting + metabolicW + cookingW;
     });
     return totals;
   }, [months, lightingGains, selectedCity, metabolicW, cookingW]);
 
-  // 5. Calculate Total Gain (Watt) for each month
-  const totalGainWatt = useMemo(() => {
+  const totalGainMap = useMemo(() => {
     const totals = {};
+    if (months.length === 0) return totals;
     months.forEach((month) => {
       const internalGain = totalInternalGains[month] || 0;
       const solarGain = monthlyTotals[month] || 0;
@@ -267,6 +250,28 @@ const SolarGainCalculation = () => {
     });
     return totals;
   }, [months, totalInternalGains, monthlyTotals]);
+
+  const solarGainArray = useMemo(() => months.map((month) => monthlyTotals[month] || 0), [months, monthlyTotals]);
+  const totalGainArray = useMemo(() => months.map((month) => totalGainMap[month] || 0), [months, totalGainMap]);
+
+  const prevSolarGainRef = useRef(solarGainArray);
+  const prevTotalGainRef = useRef(totalGainArray);
+
+  useEffect(() => {
+    if (selectedCity) {
+      const solarChanged = JSON.stringify(solarGainArray) !== JSON.stringify(prevSolarGainRef.current);
+      const totalChanged = JSON.stringify(totalGainArray) !== JSON.stringify(prevTotalGainRef.current);
+
+      if (solarChanged) {
+        setSolarGainWatt(solarGainArray);
+        prevSolarGainRef.current = solarGainArray;
+      }
+      if (totalChanged) {
+        setTotalGainWatt(totalGainArray);
+        prevTotalGainRef.current = totalGainArray;
+      }
+    }
+  }, [selectedCity, solarGainArray, totalGainArray, setSolarGainWatt, setTotalGainWatt]);
 
   if (!selectedCity) {
     return (
@@ -441,7 +446,7 @@ const SolarGainCalculation = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {Object.keys(rhnicValues[selectedCity]).map((orientation) => (
+            {Object.keys(rhnicValues[selectedCity] || {}).map((orientation) => (
               <TableRow key={orientation}>
                 <TableCell component="th" scope="row">
                   {orientation}
@@ -488,7 +493,7 @@ const SolarGainCalculation = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {Object.keys(sorientValues[selectedCity]).map((orientation) => (
+            {Object.keys(sorientValues[selectedCity] || {}).map((orientation) => (
               <TableRow key={orientation}>
                 <TableCell component="th" scope="row">
                   {orientation}
@@ -504,7 +509,6 @@ const SolarGainCalculation = () => {
         </Table>
       </TableContainer>
 
-      {/* Solar Gain Table (Only orientations with windows) */}
       {orientationsWithWindows.length > 0 && (
         <TableContainer component={Paper} sx={{ marginBottom: 4 }}>
           <Typography variant="h6" align="center" gutterBottom>
@@ -551,7 +555,6 @@ const SolarGainCalculation = () => {
                   </TableRow>
                 );
               })}
-              {/* Total Row */}
               <TableRow>
                 <TableCell component="th" scope="row" sx={{ fontWeight: "bold" }}>
                   Solar Gain (Watt)
@@ -567,7 +570,6 @@ const SolarGainCalculation = () => {
         </TableContainer>
       )}
 
-      {/* New Table: Total Gains (Watt) with Lighting gains, Metabolic, Cooking, Total Internal Gain, and Total Gain */}
       <TableContainer component={Paper} sx={{ marginBottom: 4 }}>
         <Typography variant="h6" align="center" gutterBottom>
           Total Gains (Watt) for {selectedCity}
@@ -655,20 +657,16 @@ const SolarGainCalculation = () => {
                     ? lightingGains[selectedCity][month].toFixed(2)
                     : "0.00"}
                 </TableCell>
-                <TableCell align="right">
-                  {metabolicW.toFixed(2)}
-                </TableCell>
-                <TableCell align="right">
-                  {cookingW.toFixed(2)}
-                </TableCell>
+                <TableCell align="right">{metabolicW.toFixed(2)}</TableCell>
+                <TableCell align="right">{cookingW.toFixed(2)}</TableCell>
                 <TableCell align="right">
                   {totalInternalGains[month]
                     ? totalInternalGains[month].toFixed(2)
                     : "0.00"}
                 </TableCell>
                 <TableCell align="right">
-                  {totalGainWatt[month]
-                    ? totalGainWatt[month].toFixed(2)
+                  {totalGainMap[month]
+                    ? totalGainMap[month].toFixed(2)
                     : "0.00"}
                 </TableCell>
               </TableRow>
