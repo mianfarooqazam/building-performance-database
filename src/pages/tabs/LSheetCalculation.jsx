@@ -15,6 +15,9 @@ import useFloorPlanStore from "../../store/useFloorPlanStore";
 import useHlpStore from "../../store/useHlpStore";
 import useSolarGainStore from "../../store/useSolarGainStore";
 
+// Import the LSheetStore
+import useLSheetStore from "../../store/useLSheetStore";
+
 // Import temperature data
 import IslamabadTemperature from "../../utils/temperature/IslamabadTemperature.json";
 import MultanTemperature from "../../utils/temperature/MultanTemperature.json";
@@ -74,12 +77,20 @@ const SheetCalculation = () => {
 
   // Local states
   const [calculationResults, setCalculationResults] = useState([]);
-  const [monthlyCoolingLoads, setMonthlyCoolingLoads] = useState([]);
-  const [monthlyHeatingLoads, setMonthlyHeatingLoads] = useState([]);
   const [hasAlerted, setHasAlerted] = useState(false);
 
   // Define the divisor
-  const DIVISOR = 3000; // <-- Added divisor constant
+  const DIVISOR = 3000;
+
+  // Subscribe to the store's state for reactive updates
+  const monthlyCoolingLoads = useLSheetStore((state) => state.monthlyCoolingLoads);
+  const monthlyHeatingLoads = useLSheetStore((state) => state.monthlyHeatingLoads);
+
+  // Access actions from LSheetStore
+  const setMonthlyCoolingLoads = useLSheetStore((state) => state.setMonthlyCoolingLoads);
+  const setMonthlyHeatingLoads = useLSheetStore((state) => state.setMonthlyHeatingLoads);
+  const resetMonthlyCoolingLoads = useLSheetStore((state) => state.resetMonthlyCoolingLoads);
+  const resetMonthlyHeatingLoads = useLSheetStore((state) => state.resetMonthlyHeatingLoads);
 
   useEffect(() => {
     if (
@@ -167,7 +178,7 @@ const SheetCalculation = () => {
       const coolingSums = coolingMonthsToSum.map((month) => {
         const monthEntries = results.filter((r) => r.MO === month);
         const sum = monthEntries.reduce((acc, curr) => acc + curr["cooling load"], 0);
-        const scaledSum = sum / DIVISOR; // <-- Divide by 3000
+        const scaledSum = sum / DIVISOR; // Divide by 3000
         return {
           month: getMonthName(month),
           totalCoolingLoad: parseFloat(scaledSum.toFixed(2)),
@@ -180,7 +191,7 @@ const SheetCalculation = () => {
       const heatingSums = heatingMonthsToSum.map((month) => {
         const monthEntries = results.filter((r) => r.MO === month);
         const sum = monthEntries.reduce((acc, curr) => acc + curr["heating load"], 0);
-        const scaledSum = sum / DIVISOR; // <-- Divide by 3000
+        const scaledSum = sum / DIVISOR; // Divide by 3000
         return {
           month: getMonthName(month),
           totalHeatingLoad: parseFloat(scaledSum.toFixed(2)),
@@ -189,13 +200,27 @@ const SheetCalculation = () => {
 
       setMonthlyHeatingLoads(heatingSums);
 
-      setHasAlerted(false); // Reset alert flag when data changes
+      // Reset alert flag when data changes
+      setHasAlerted(false);
     } else {
       setCalculationResults([]);
       setMonthlyCoolingLoads([]);
       setMonthlyHeatingLoads([]);
+      // Optionally reset the store as well
+      resetMonthlyCoolingLoads();
+      resetMonthlyHeatingLoads();
     }
-  }, [selectedCity, setTemperature, heatTransferCoefficient, solarGainWatt, totalGainWatt]);
+  }, [
+    selectedCity,
+    setTemperature,
+    heatTransferCoefficient,
+    solarGainWatt,
+    totalGainWatt,
+    setMonthlyCoolingLoads,
+    setMonthlyHeatingLoads,
+    resetMonthlyCoolingLoads,
+    resetMonthlyHeatingLoads,
+  ]);
 
   useEffect(() => {
     if (
