@@ -1,4 +1,4 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Table,
@@ -11,7 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import useBuildingInformationStore from "../../store/useBuildingInformationStore";
-import useFloorPlanStore from "../../store/useFloorPlanStore"; 
+import useFloorPlanStore from "../../store/useFloorPlanStore";
 import useHlpStore from "../../store/useHlpStore";
 import useSolarGainStore from "../../store/useSolarGainStore";
 
@@ -22,6 +22,7 @@ import KarachiTemperature from "../../utils/temperature/KarachiTemperature.json"
 import LahoreTemperature from "../../utils/temperature/LahoreTemperature.json";
 import PeshawarTemperature from "../../utils/temperature/PeshawarTemperature.json";
 
+// Constants for aValues
 const aValues = {
   1: 2.17486,
   2: 2.17342,
@@ -55,17 +56,30 @@ const getTemperatureData = (city) => {
   }
 };
 
+// Utility function to get month name from month number
+const getMonthName = (monthNumber) => {
+  const date = new Date();
+  date.setMonth(monthNumber - 1);
+  return date.toLocaleString("default", { month: "long" });
+};
+
 const SheetCalculation = () => {
+  // State from stores
   const setTemperatureStr = useFloorPlanStore((state) => state.setTemperature);
-  const setTemperature = parseFloat(setTemperatureStr) || 24; 
+  const setTemperature = parseFloat(setTemperatureStr) || 24;
   const selectedCity = useBuildingInformationStore((state) => state.selectedCity);
-  const [calculationResults, setCalculationResults] = useState([]);
-
   const heatTransferCoefficient = useHlpStore((state) => state.heatTransferCoefficient);
-
-  // Retrieve solarGainWatt and totalGainWatt from Solar Gain Store
   const solarGainWatt = useSolarGainStore((state) => state.solarGainWatt);
   const totalGainWatt = useSolarGainStore((state) => state.totalGainWatt);
+
+  // Local states
+  const [calculationResults, setCalculationResults] = useState([]);
+  const [monthlyCoolingLoads, setMonthlyCoolingLoads] = useState([]);
+  const [monthlyHeatingLoads, setMonthlyHeatingLoads] = useState([]);
+  const [hasAlerted, setHasAlerted] = useState(false);
+
+  // Define the divisor
+  const DIVISOR = 3000; // <-- Added divisor constant
 
   useEffect(() => {
     if (
@@ -76,11 +90,13 @@ const SheetCalculation = () => {
       totalGainWatt.length === 12
     ) {
       const cityData = getTemperatureData(selectedCity);
+
+      // Compute calculation results for each hour
       const results = cityData.map((entry) => {
         const month = entry.MO;
-        const factor = heatTransferCoefficient[month - 1]; 
+        const factor = heatTransferCoefficient[month - 1];
 
-        // Now gammaCool is taken from solarGainWatt array
+        // gammaCool is taken from solarGainWatt array
         const gammaCool = solarGainWatt[month - 1];
 
         // gammaHeat is taken from totalGainWatt array
@@ -142,12 +158,72 @@ const SheetCalculation = () => {
       });
 
       setCalculationResults(results);
+
+      // Define the months for cooling and heating loads
+      const coolingMonthsToSum = [4, 5, 6, 7, 8, 9]; // April to September
+      const heatingMonthsToSum = [1, 2, 3, 10, 11, 12]; // January, February, March, October, November, December
+
+      // Aggregate cooling loads for specified months
+      const coolingSums = coolingMonthsToSum.map((month) => {
+        const monthEntries = results.filter((r) => r.MO === month);
+        const sum = monthEntries.reduce((acc, curr) => acc + curr["cooling load"], 0);
+        const scaledSum = sum / DIVISOR; // <-- Divide by 3000
+        return {
+          month: getMonthName(month),
+          totalCoolingLoad: parseFloat(scaledSum.toFixed(2)),
+        };
+      });
+
+      setMonthlyCoolingLoads(coolingSums);
+
+      // Aggregate heating loads for specified months
+      const heatingSums = heatingMonthsToSum.map((month) => {
+        const monthEntries = results.filter((r) => r.MO === month);
+        const sum = monthEntries.reduce((acc, curr) => acc + curr["heating load"], 0);
+        const scaledSum = sum / DIVISOR; // <-- Divide by 3000
+        return {
+          month: getMonthName(month),
+          totalHeatingLoad: parseFloat(scaledSum.toFixed(2)),
+        };
+      });
+
+      setMonthlyHeatingLoads(heatingSums);
+
+      setHasAlerted(false); // Reset alert flag when data changes
     } else {
       setCalculationResults([]);
+      setMonthlyCoolingLoads([]);
+      setMonthlyHeatingLoads([]);
     }
   }, [selectedCity, setTemperature, heatTransferCoefficient, solarGainWatt, totalGainWatt]);
 
-  // Split the results into first 10 and last 2
+  useEffect(() => {
+    if (
+      monthlyCoolingLoads.length > 0 &&
+      monthlyHeatingLoads.length > 0 &&
+      !hasAlerted
+    ) {
+      // Prepare cooling loads message
+      const coolingMessage = monthlyCoolingLoads
+        .map((cl) => `${cl.month}: ${cl.totalCoolingLoad}`)
+        .join("\n");
+
+      // Prepare heating loads message
+      const heatingMessage = monthlyHeatingLoads
+        .map((hl) => `${hl.month}: ${hl.totalHeatingLoad}`)
+        .join("\n");
+
+      // Combine both messages
+      const combinedMessage = `Total Cooling Loads (April - September) divided by 3000:\n${coolingMessage}\n\nTotal Heating Loads (January, February, March, October, November, December) divided by 3000:\n${heatingMessage}`;
+
+      // Display alert
+      alert(combinedMessage);
+
+      setHasAlerted(true);
+    }
+  }, [monthlyCoolingLoads, monthlyHeatingLoads, hasAlerted]);
+
+  // Split the results into first 10 and last 2 for existing tables
   const first10 = calculationResults.slice(0, 10);
   const last2 = calculationResults.slice(-2);
 
@@ -158,6 +234,8 @@ const SheetCalculation = () => {
           <Typography variant="h5" gutterBottom>
             Calculations for {selectedCity}
           </Typography>
+
+          {/* Existing Tables */}
           <TableContainer component={Paper} sx={{ marginBottom: 4 }}>
             <Table>
               <TableHead>
@@ -199,7 +277,7 @@ const SheetCalculation = () => {
             </Table>
           </TableContainer>
 
-          <TableContainer component={Paper}>
+          <TableContainer component={Paper} sx={{ marginBottom: 4 }}>
             <Table>
               <TableHead>
                 <TableRow>
@@ -239,6 +317,56 @@ const SheetCalculation = () => {
               </TableBody>
             </Table>
           </TableContainer>
+
+          {/* New Section for Monthly Cooling Loads (April - September) */}
+          <Box mt={4}>
+            <Typography variant="h6" gutterBottom>
+              Total Cooling Loads (April - September) divided by 3000
+            </Typography>
+            <TableContainer component={Paper} sx={{ marginBottom: 4 }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Month</TableCell>
+                    <TableCell>Total Cooling Load</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {monthlyCoolingLoads.map((cl, index) => (
+                    <TableRow key={`monthly-cooling-${index}`}>
+                      <TableCell>{cl.month}</TableCell>
+                      <TableCell>{cl.totalCoolingLoad.toFixed(2)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+
+          {/* New Section for Monthly Heating Loads (January, February, March, October, November, December) */}
+          <Box mt={4}>
+            <Typography variant="h6" gutterBottom>
+              Total Heating Loads (January, February, March, October, November, December) divided by 3000
+            </Typography>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Month</TableCell>
+                    <TableCell>Total Heating Load</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {monthlyHeatingLoads.map((hl, index) => (
+                    <TableRow key={`monthly-heating-${index}`}>
+                      <TableCell>{hl.month}</TableCell>
+                      <TableCell>{hl.totalHeatingLoad.toFixed(2)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
         </>
       ) : (
         <Typography variant="h6">
