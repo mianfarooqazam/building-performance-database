@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -7,20 +8,21 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper
+  Paper,
 } from '@mui/material';
 import useFloorPlanStore from '../../store/useFloorPlanStore';
 import useWallFabricDetailsStore from '../../store/useWallFabricDetailsStore';
 import useRoofFabricDetailsStore from '../../store/useRoofFabricDetailsStore';
-import useVentilationStore from '../../store/useVentilationStore'; // Import the ventilation store
+import useVentilationStore from '../../store/useVentilationStore';
+import useHlpStore from '../../store/useHlpStore';
 
 const HlpCalculation = () => {
   const ft2ToM2 = 0.092903;
   const ft3ToM3 = 0.0283168;
 
   const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December",
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
   ];
 
   // Extract data from Floor Plan Store
@@ -44,18 +46,17 @@ const HlpCalculation = () => {
 
   // Calculate Heat Capacity
   const heatCapacity =
-    (netWallAreaM2 * kappaValueWall) + (totalFloorAreaM2 * kappaValueRoof);
+    netWallAreaM2 * kappaValueWall + totalFloorAreaM2 * kappaValueRoof;
 
   // Calculate Thermal Mass Parameter
   const thermalMassParameter =
-    totalFloorAreaM2 !== 0 ? (heatCapacity / totalFloorAreaM2) : 0;
+    totalFloorAreaM2 !== 0 ? heatCapacity / totalFloorAreaM2 : 0;
 
   // Calculate Thermal Bridges
   const thermalBridges = 0.2 * totalAreaM2;
 
   // Calculate Total Fabric Heat Loss
-  const totalFabricHeatLossTotal =
-    fabricHeatLossFromRoof + thermalBridges;
+  const totalFabricHeatLossTotal = fabricHeatLossFromRoof + thermalBridges;
 
   // Data for the Fabric & Thermal table
   const calculationData = [
@@ -79,7 +80,7 @@ const HlpCalculation = () => {
     const ventHeatLoss = 0.33 * dwellingVolumeM3 * infiltrationRate; // Heat Loss in Watts
     return {
       month,
-      ventHeatLoss: ventHeatLoss,
+      ventHeatLoss,
     };
   });
 
@@ -89,32 +90,53 @@ const HlpCalculation = () => {
     const heatTransferCoefficient = totalFabricHeatLossTotal + row.ventHeatLoss;
     return {
       month: row.month,
-      heatTransferCoefficient: heatTransferCoefficient,
+      heatTransferCoefficient,
       ventHeatLoss: row.ventHeatLoss,
     };
   });
 
   // Calculate Heat Loss Parameter (Monthly)
   const heatLossParameterData = heatTransferCoefficientData.map((row) => {
-    const heatLossParameter = totalFloorAreaM2 !== 0 ? (row.heatTransferCoefficient / totalFloorAreaM2) : 0;
+    const heatLossParameter = totalFloorAreaM2 !== 0 ? row.heatTransferCoefficient / totalFloorAreaM2 : 0;
     return {
       month: row.month,
       ventHeatLoss: row.ventHeatLoss,
       heatTransferCoefficient: row.heatTransferCoefficient,
-      heatLossParameter: heatLossParameter,
+      heatLossParameter,
     };
   });
 
   // Calculate Averages
-  const averageHeatTransferCoefficient = heatTransferCoefficientData.reduce((acc, curr) => acc + curr.heatTransferCoefficient, 0) / months.length;
-  const averageHeatLossParameter = heatLossParameterData.reduce((acc, curr) => acc + curr.heatLossParameter, 0) / months.length;
+  const averageHeatTransferCoefficient =
+    heatTransferCoefficientData.reduce((acc, curr) => acc + curr.heatTransferCoefficient, 0) / months.length;
+  const averageHeatLossParameter =
+    heatLossParameterData.reduce((acc, curr) => acc + curr.heatLossParameter, 0) / months.length;
+
+  // Store data in HLP Store
+  const setVentilationHeatLoss = useHlpStore((state) => state.setVentilationHeatLoss);
+  const setHeatTransferCoefficient = useHlpStore((state) => state.setHeatTransferCoefficient);
+  const setHeatLossParameter = useHlpStore((state) => state.setHeatLossParameter);
+
+  // Update the store when the component mounts or data changes
+  useEffect(() => {
+    setVentilationHeatLoss(ventilationHeatLossData.map((d) => d.ventHeatLoss));
+    setHeatTransferCoefficient(heatTransferCoefficientData.map((d) => d.heatTransferCoefficient));
+    setHeatLossParameter(heatLossParameterData.map((d) => d.heatLossParameter));
+  }, [
+    ventilationHeatLossData,
+    heatTransferCoefficientData,
+    heatLossParameterData,
+    setVentilationHeatLoss,
+    setHeatTransferCoefficient,
+    setHeatLossParameter,
+  ]);
 
   return (
     <Box sx={{ padding: '20px' }}>
       <Typography variant="h6" gutterBottom>
         HLP Calculations
       </Typography>
-      
+
       {/* Fabric and Thermal Calculations Table */}
       <TableContainer component={Paper} sx={{ mt: 2 }}>
         <Table aria-label="calculation results">
@@ -144,9 +166,9 @@ const HlpCalculation = () => {
           <TableHead>
             <TableRow>
               <TableCell><strong>Month</strong></TableCell>
-              <TableCell><strong>Ventilation Heat Loss </strong></TableCell>
-              <TableCell><strong>Heat Transfer Coefficient </strong></TableCell>
-              <TableCell><strong>Heat Loss Parameter </strong></TableCell>
+              <TableCell><strong>Ventilation Heat Loss</strong></TableCell>
+              <TableCell><strong>Heat Transfer Coefficient</strong></TableCell>
+              <TableCell><strong>Heat Loss Parameter</strong></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -176,7 +198,7 @@ const HlpCalculation = () => {
           </TableHead>
           <TableBody>
             <TableRow>
-              <TableCell>Average Heat Transfer Coefficient </TableCell>
+              <TableCell>Average Heat Transfer Coefficient</TableCell>
               <TableCell>{averageHeatTransferCoefficient.toFixed(2)}</TableCell>
             </TableRow>
             <TableRow>

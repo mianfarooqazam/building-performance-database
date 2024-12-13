@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import {
   Box,
   Table,
@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import useBuildingInformationStore from "../../store/useBuildingInformationStore";
 import useFloorPlanStore from "../../store/useFloorPlanStore"; // Import the floor plan store
+import useHlpStore from "../../store/useHlpStore"; // Import the HLP store
 
 // Import temperature data
 import IslamabadTemperature from "../../utils/temperature/IslamabadTemperature.json";
@@ -19,21 +20,6 @@ import MultanTemperature from "../../utils/temperature/MultanTemperature.json";
 import KarachiTemperature from "../../utils/temperature/KarachiTemperature.json";
 import LahoreTemperature from "../../utils/temperature/LahoreTemperature.json";
 import PeshawarTemperature from "../../utils/temperature/PeshawarTemperature.json";
-
-const monthFactors = {
-  1: 940.79,
-  2: 925.43,
-  3: 925.05,
-  4: 925.09,
-  5: 927.15,
-  6: 925.43,
-  7: 926.15,
-  8: 923.95,
-  9: 922.95,
-  10: 924.36,
-  11: 925.13,
-  12: 924.0,
-};
 
 const gammaCoolValues = {
   1: 424.4,
@@ -103,32 +89,43 @@ const SheetCalculation = () => {
   const setTemperatureStr = useFloorPlanStore((state) => state.setTemperature);
   const setTemperature = parseFloat(setTemperatureStr) || 24; // Default to 24 if parsing fails
 
-  const selectedCity = useBuildingInformationStore(
-    (state) => state.selectedCity
-  );
+  const selectedCity = useBuildingInformationStore((state) => state.selectedCity);
   const [calculationResults, setCalculationResults] = useState([]);
 
+  // Retrieve heatTransferCoefficient from HLP Store
+  const heatTransferCoefficient = useHlpStore((state) => state.heatTransferCoefficient);
+
   useEffect(() => {
-    if (selectedCity) {
+    if (
+      selectedCity &&
+      heatTransferCoefficient &&
+      heatTransferCoefficient.length === 12
+    ) {
       const cityData = getTemperatureData(selectedCity);
       const results = cityData.map((entry) => {
-        const factor = monthFactors[entry.MO];
-        const gammaCool = gammaCoolValues[entry.MO];
-        const gammaHeat = gammaHeatValues[entry.MO];
-        const a = aValues[entry.MO];
+        const month = entry.MO;
+        const factor = heatTransferCoefficient[month - 1]; // Use heatTransferCoefficient directly
 
-        // Replace 24 with setTemperature
+        const gammaCool = gammaCoolValues[month];
+        const gammaHeat = gammaHeatValues[month];
+        const a = aValues[month];
+
+        // Calculate using heatTransferCoefficient
         const calculation = (setTemperature - entry.T2M) * factor;
 
+        // Prevent division by zero
+        const safeCalculation = calculation !== 0 ? calculation : 1;
+
         // Calculate y values
-        const yCooling = gammaCool / calculation;
-        const yHeating = gammaHeat / calculation;
+        const yCooling = gammaCool / safeCalculation;
+        const yHeating = gammaHeat / safeCalculation;
 
         // Calculate n-cooling
         let nCooling;
         if (yCooling > 0 && yCooling !== 1) {
           nCooling =
-            (1 - Math.pow(yCooling, -a)) / (1 - Math.pow(yCooling, -(a + 1)));
+            (1 - Math.pow(yCooling, -a)) /
+            (1 - Math.pow(yCooling, -(a + 1)));
         } else if (yCooling === 1) {
           nCooling = a / (a + 1);
         } else {
@@ -139,7 +136,8 @@ const SheetCalculation = () => {
         let nHeating;
         if (yHeating > 0 && yHeating !== 1) {
           nHeating =
-            (1 - Math.pow(yHeating, a)) / (1 - Math.pow(yHeating, a + 1));
+            (1 - Math.pow(yHeating, a)) /
+            (1 - Math.pow(yHeating, a + 1));
         } else if (yHeating === 1) {
           nHeating = a / (a + 1);
         } else {
@@ -179,7 +177,7 @@ const SheetCalculation = () => {
     } else {
       setCalculationResults([]);
     }
-  }, [selectedCity, setTemperature]);
+  }, [selectedCity, setTemperature, heatTransferCoefficient]);
 
   // Split the results into first 10 and last 2
   const first10 = calculationResults.slice(0, 10);
@@ -270,23 +268,6 @@ const SheetCalculation = () => {
                     <TableCell>{row["cooling load"]}</TableCell>
                   </TableRow>
                 ))}
-
-                {/* Averages Row */}
-                <TableRow>
-                  <TableCell><strong>Average</strong></TableCell>
-                  <TableCell></TableCell> {/* No average for DY */}
-                  <TableCell></TableCell> {/* No average for HR */}
-                  <TableCell></TableCell> {/* No average for T2M */}
-                  <TableCell></TableCell> {/* No average for Calculation */}
-                  <TableCell></TableCell> {/* No average for Gamma-cool */}
-                  <TableCell></TableCell> {/* No average for Gamma-heat */}
-                  <TableCell></TableCell> {/* No average for n-cooling */}
-                  <TableCell></TableCell> {/* No average for n-heating */}
-                  <TableCell></TableCell> {/* No average for Cooling nxlm */}
-                  <TableCell></TableCell> {/* No average for Heating nxgm */}
-                  <TableCell></TableCell> {/* No average for Heating Load */}
-                  <TableCell></TableCell> {/* No average for Cooling Load */}
-                </TableRow>
               </TableBody>
             </Table>
           </TableContainer>
